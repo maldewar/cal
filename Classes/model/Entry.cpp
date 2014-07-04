@@ -1,4 +1,6 @@
 #include "Entry.h"
+#include "Unit.h"
+#include "../util/CMath.h"
 
 Entry::Entry() : Entity() {
   m_state = 0;
@@ -13,9 +15,16 @@ Entry::Entry() : Entity() {
   m_forceMaxAngularImpulse = 0.0f;
   m_state = 0;
   m_armature = nullptr;
+  m_transition = false;
+  m_width = 0.2f;
+  m_height = 0.075f;
 }
 
 Entry::~Entry() {
+}
+
+int Entry::getType() {
+  return ENTITY_TYPE_ENTRY;
 }
 
 Entry* Entry::create()
@@ -32,45 +41,14 @@ Entry* Entry::create()
 
 bool Entry::init(void)
 {
-  /*
-  cocos2d::SpriteBatchNode* spritebatch = cocos2d::SpriteBatchNode::create("sprite/entry/entry.pvr");
-  cocos2d::SpriteFrameCache* cache = cocos2d::SpriteFrameCache::getInstance();
-  cache->addSpriteFramesWithFile("sprite/entry/entry.plist");
-  m_sprite = cocos2d::Sprite::createWithSpriteFrameName("frame0000.png");
-  spritebatch->addChild(m_sprite);
-  if (m_sprite) {
-    m_sprite->setScale(m_sprite->getContentSize().width/(0.2 * 840));
-    addChild(spritebatch);
-    return true;
-  }
-  */
-
-  /*
-  cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("armature/bear.ExportJson");
-  m_armature = cocostudio::Armature::create("bear");
-  CCLOG("..Entry::init created armature");
-  m_armature->getAnimation()->playWithIndex(0);
-  if (m_armature) {
-    addChild(m_armature);
-    return true;
-  }
-  */
-
   m_armature = cocostudio::Armature::create("entry");
-  CCLOG("..Entry::init created armature");
-  //m_armature->getAnimation()->playWithIndex(0);
   if (m_armature) {
-    m_armature->setScale(m_armature->getContentSize().width/(0.2 * 840));
     addChild(m_armature);
+    setScale(PX_TO_M);
     return true;
   }
   return false;
 }
-
-/*
-void Entry::onEnter() {
-};
-*/
 
 /*
 std::string Entry::getDescription() const
@@ -92,66 +70,81 @@ int Entry::getUnits() {
     return m_units;
 }
 
-void Entry::open() {
-    if (m_state == ENTRY_STATE_CLOSED)
-        setState(ENTRY_STATE_OPENING);
-    else
-        setState(ENTRY_STATE_OPEN);
+void Entry::open(float dt) {
+  unschedule(schedule_selector(Entry::open));
+  if (m_state == ENTRY_STATE_CLOSED) {
+    if (m_armature) {
+      m_armature->getAnimation()->playWithIndex(ENTRY_ANIM_OPENING);
+    }
+    m_state = ENTRY_STATE_OPENING;
+    schedule(schedule_selector(Entry::open), 1);
+  } else if (m_state == ENTRY_STATE_OPENING) {
+    m_state = ENTRY_STATE_OPEN;
+    m_transition = false;
+  }
 }
 
-void Entry::close() {
-    if (m_state == ENTRY_STATE_OPEN)
-        setState(ENTRY_STATE_CLOSING);
+void Entry::close(float dt) {
+  unschedule(schedule_selector(Entry::close));
+  if (m_state == ENTRY_STATE_OPEN) {
+    if (m_armature) {
+      m_armature->getAnimation()->playWithIndex(ENTRY_ANIM_CLOSING);
+    }
+    m_state = ENTRY_STATE_CLOSING;
+    schedule(schedule_selector(Entry::close), 1);
+  } else if (m_state == ENTRY_STATE_CLOSING) {
+    m_state = ENTRY_STATE_CLOSED;
+    m_transition = false;
+  }
 }
 
 void Entry::setOpen(bool isOpen) {
-    if (isOpen)
-        open();
-    else
-        close();
+  if (isOpen)
+    open(0);
+  else
+    close(0);
 }
 
 void Entry::setOpenTimer(int openTimer) {
-    m_openTimer = openTimer;
+  m_openTimer = openTimer;
 }
 
 void Entry::setInterval(int interval) {
-    if (interval >= 0) {
-        m_interval = interval;
-        m_units = m_capacity;
-    }
+  if (interval >= 0) {
+    m_interval = interval;
+  }
 }
 
 int Entry::getInterval() {
-    return m_interval;
+  return m_interval;
 }
 
 void Entry::setForceMinDistance(float distance) {
-    m_forceMinDistance = distance;
+  m_forceMinDistance = distance;
 }
 
 float Entry::getForceMinDistance() {
-    return m_forceMinDistance;
+  return m_forceMinDistance;
 }
 
 void Entry::setForceMaxDistance(float distance) {
-    m_forceMaxDistance = distance;
+  m_forceMaxDistance = distance;
 }
 
 float Entry::getForceMaxDistance() {
-    return m_forceMaxDistance;
+  return m_forceMaxDistance;
 }
 
 void Entry::setForceMaxAngle(float angle) {
-    m_forceMaxAngle = angle;
+  m_forceMaxAngle = angle;
 }
 
 float Entry::getForceMaxAngle() {
-    return m_forceMaxAngle;
+  return m_forceMaxAngle;
 }
 
 void Entry::setForceMinAngularImpulse(float angularImpulse) {
-    m_forceMinAngularImpulse = angularImpulse;
+  m_forceMinAngularImpulse = angularImpulse;
 }
 
 float Entry::getForceMinAngularImpulse() {
@@ -166,10 +159,42 @@ float Entry::getForceMaxAngularImpulse() {
     return m_forceMaxAngularImpulse;
 }
 
-/*
+void Entry::update(float dt) {
+  Entity::update(dt);
+  if (m_state == ENTRY_STATE_CLOSED) {
+    if (!m_transition && m_units != m_capacity) {
+      schedule(schedule_selector(Entry::open), (float)m_openTimer/1000);
+      m_transition = true;
+    }
+    return;
+  } else if (m_state == ENTRY_STATE_OPEN) {
+    if (m_units != m_capacity && !m_transition) {
+      schedule(schedule_selector(Entry::spawnUnit), (float)m_interval/1000, m_capacity, 0);
+      m_transition = true;
+    } else {
+      unscheduleUpdate();
+    }
+    return;
+  }
+}
+
+void Entry::spawnUnit(float dt) {
+  Unit* newUnit = Unit::create(true, true);
+  newUnit->getBody()->SetTransform(getBody()->GetPosition(), 0);
+  newUnit->getBody()->ApplyLinearImpulse( getRandomForce(), newUnit->getBody()->GetWorldCenter(), true);
+  float angularImpulse = CMath::Random(m_forceMinAngularImpulse, m_forceMaxAngularImpulse);
+  angularImpulse = m_forceMinAngularImpulse - m_forceMaxAngularImpulse/2 + angularImpulse;
+  newUnit->getBody()->ApplyAngularImpulse(angularImpulse, true);
+  newUnit->update(0);
+  newUnit->scheduleUpdate();
+  getParent()->addChild(newUnit);
+  m_armature->getAnimation()->playWithIndex(ENTRY_ANIM_RELEASE);
+  m_units += 1;
+}
+
 b2Vec2 Entry::getRandomForce() {
     b2Vec2 force;
-    float angle = m_rotation + m_rotationOffset;
+    float angle = getBody()->GetAngle() - M_PI_2;
     if (m_forceMaxAngle > 0 || m_forceMaxDistance > 0) {
         float randomAngle = CMath::Random(0.0f, m_forceMaxAngle);
         angle = angle - m_forceMaxAngle/2 + randomAngle;
@@ -182,46 +207,3 @@ b2Vec2 Entry::getRandomForce() {
     }
     return force;
 }
-*/
-
-void Entry::setState(int state) {
-    /*
-    m_state = state;
-    if (m_state == ENTRY_STATE_OPENING) {
-        SetAnimation(ENTRY_ANIM_OPENING);
-    } else if(m_state == ENTRY_STATE_CLOSING) {
-        SetAnimation(ENTRY_ANIM_CLOSING);
-    }
-    */
-}
-
-/*
-void Entry::OnLoop() {
-    if (m_state == ENTRY_STATE_CLOSED) {
-        if (m_timerRef < 0 || m_timerRef + m_openTimer > SDL_GetTicks())
-            return;
-        m_timerRef = -1;
-        Open();
-    } else if (m_state == ENTRY_STATE_OPEN) {
-        if (m_units > 0) {
-            if (m_timerRef + m_interval < SDL_GetTicks()) {
-                m_timerRef = SDL_GetTicks();
-                Unit* unit = new Unit(this->GetLayer());
-                unit->SetX(this->GetX());
-                unit->SetY(this->GetY());
-                unit->SetBody();
-                ((WorldLayer*)this->GetLayer())->AddUnit(unit);
-                unit->GetBody()->ApplyLinearImpulse( GetRandomForce(), unit->GetBody()->GetWorldCenter() );
-                float angularImpulse = CMath::Random(m_forceMinAngularImpulse, m_forceMaxAngularImpulse);
-                angularImpulse = m_forceMinAngularImpulse - m_forceMaxAngularImpulse/2 + angularImpulse;
-                unit->GetBody()->ApplyAngularImpulse(angularImpulse);
-                m_units--;
-            }
-        }
-    } else if (m_state == ENTRY_STATE_OPENING) {
-        if (!IsPlaying())
-          Open();
-    }
-    LayeredElem::OnLoop();
-};
-*/

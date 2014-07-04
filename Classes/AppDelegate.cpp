@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 
 #include "cocos2d.h"
+#include "manager/ConfigurationManager.h"
 //#include "cocostudio/CocoStudio.h"
 //#include "extensions/coco-ext.h"
 

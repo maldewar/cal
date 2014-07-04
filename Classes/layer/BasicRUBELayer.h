@@ -52,6 +52,7 @@ protected:
     b2Body* m_mouseJointGroundBody;
     // Keep track of which touch started the mouse joint.
     cocos2d::Touch* m_mouseJointTouch;
+    bool m_debugDrawEnabled;
         
 public:
     BasicRUBELayer();
@@ -77,14 +78,15 @@ public:
     virtual void update(float dt);
     virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) override;
     
-    void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
     // Return the first fixture found under the touch location.
     b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
     // Return false from this function to prevent punch zoom and pan.
     virtual bool allowPinchZoom();
+    virtual bool enableDebugDraw(bool enable);
 };
 
 #endif /* BASIC_RUBE_LAYER */

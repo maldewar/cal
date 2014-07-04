@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include "LevelScene.h"
 #include "layer/WorldLevelLayer.h"
+#include "scene/WorldLevelScene.h"
 #include "editor-support/cocostudio/CCSGUIReader.h"
 #include "editor-support/cocostudio/CCActionManagerEx.h"
 #include "ui/UILayout.h"
@@ -96,7 +97,9 @@ bool HelloWorld::init()
 void HelloWorld::startBtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
-      Director::sharedDirector()->replaceScene( WorldLevelLayer::scene() );
+      //Director::getInstance()->replaceScene( WorldLevelLayer::scene() );
+      //Director::sharedDirector()->pushScene(WorldLevelLayer::scene());
+      Director::getInstance()->pushScene(WorldLevelScene::create(""));
       /*
       auto newScene = LevelScene::createScene();
       Director::getInstance()->setDepthTest(true);
@@ -243,6 +246,7 @@ void HelloWorld::setTouchEnabled(bool enabled) {
 }
 
 void HelloWorld::pushState(State state) {
+  CCLOG("Pushing state %d", state);
   if (!m_states.empty()) {
     playAnimationOut(m_states.top());
   }

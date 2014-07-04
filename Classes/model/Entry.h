@@ -13,6 +13,7 @@ const int ENTRY_STATE_OPENING = 3;
 
 const int ENTRY_ANIM_OPENING = 0;
 const int ENTRY_ANIM_CLOSING = 1;
+const int ENTRY_ANIM_RELEASE = 2;
 
 class Entry : public Entity
 {
@@ -28,6 +29,7 @@ protected:
     float m_forceMinAngularImpulse;
     float m_forceMaxAngularImpulse;
     int m_state;
+    bool m_transition;
     cocostudio::Armature* m_armature;
 
 public:
@@ -39,6 +41,11 @@ public:
      * Class destructor.
      */
     virtual ~Entry(void);
+    /**
+     * Get the identifier for this class.
+     * @return Type identifier.
+     */
+    virtual int getType();
     /**
      * Returns an instance of this class.
      * @return Entry instance.
@@ -72,11 +79,11 @@ public:
     /**
      * Opens the Entry so Unit instances can be generated.
      */
-    void open();
+    void open(float dt);
     /**
      * Closes the Entry stoping the the generation of Unit instances.
      */
-    void close();
+    void close(float dt);
     /**
      * Sets the state of the Entry as open or closed.
      * @param isOpen True if the Entry has to be open.
@@ -126,7 +133,9 @@ public:
      * @param state State the entry is on.
      */
     void setState(int state);
-    //virtual void update(float dt);
+    virtual void update(float dt);
+    virtual void spawnUnit(float dt);
+    b2Vec2 getRandomForce();
     //virtual void onEnter();
 };
 

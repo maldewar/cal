@@ -1,56 +1,33 @@
-#ifndef WORLD_LEVEL_LAYER
-#define WORLD_LEVEL_LAYER
+#ifndef __WORLD_LEVEL_LAYER__
+#define __WORLD_LEVEL_LAYER__
 
 #include "BasicRUBELayer.h"
 #include "cocostudio/CocoStudio.h"
 
-//
-//  ImageInfo
-//
-//  Holds information about one image in the layer, most importantly
-//  the body it is attached to and its position relative to that body.
-//
-//  When the body is moved by the physics engine, this information is
-//  used to place the image in the correct position to match the physics.
-//  If the body is NULL, the position is relative to 0,0 and angle zero.
-//
-struct ImageInfo {
-    cocos2d::Sprite* sprite;
-    std::string name;
-    class b2Body* body;
-    float scale;
-    float aspectScale;
-    float angle;
-    cocos2d::Point center;
-    float opacity;
-    bool flip;
-    int colorTint[4];
-    
-};
-
-//-------------------------
-
 class WorldLevelLayer : public BasicRUBELayer
 {
 protected:
-    std::set<ImageInfo*> m_imageInfos;
+    cocos2d::Layer* m_unitLayer;
+    cocos2d::Layer* m_areaLayer;
+    cocos2d::Layer* m_assetLayer;
+    bool m_manageTouch;
     
 public:
-    static cocos2d::Scene* scene();
-    CREATE_FUNC(WorldLevelLayer);
+    WorldLevelLayer();
+    static WorldLevelLayer* create();
+    virtual bool init();
     virtual std::string getFilename();
     virtual cocos2d::Point initialWorldOffset();
     virtual float initialWorldScale();
     virtual void afterLoadProcessing(b2dJson* json);
+    virtual void addChild(cocos2d::Node* node);
     virtual void clear();
-    void setImagePositionsFromPhysicsBodies();
-    virtual void onEnter() override;
     virtual void update(float dt);
     void removeBodyFromWorld(b2Body* body);
-    void removeImageFromWorld(ImageInfo* imgInfo);
-    cocos2d::Sprite* getAnySpriteOnBody(b2Body* body);
-    cocos2d::Sprite* getSpriteWithImageName(std::string name);
+    virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
 
 };
 
-#endif /* WORLD_LEVEL_LAYER */
+#endif /* __WORLD_LEVEL_LAYER__ */

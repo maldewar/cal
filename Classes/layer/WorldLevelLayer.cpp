@@ -1,26 +1,44 @@
 #include "WorldLevelLayer.h"
+#include "WorldLevelUILayer.h"
 #include "../util/b2dJson.h"
 #include "../util/b2dJsonImage.h"
+#include "../util/QueryCallbacks.h"
+#include "../model/ImageNode.h"
+#include "../model/ImageBody.h"
+#include "../model/Entity.h"
 #include "../model/Entry.h"
 #include "../model/Unit.h"
+#include "../factory/BodyFactory.h"
+#include "../factory/EntityFactory.h"
+#include "../system/ContactSystem.h"
 
 using namespace std;
 using namespace cocos2d;
 
-
-// Standard Cocos2d method, simply returns a scene with an instance of this class as a child
-Scene* WorldLevelLayer::scene()
-{
-    cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/entry/entry.pvr", "sprite/entry/entry.plist", "entry.ExportJson");
-    cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/unit/unit.pvr","sprite/unit/unit.plist","unit.ExportJson");
-    auto scene = Scene::create();
-    WorldLevelLayer* layer = WorldLevelLayer::create();
-    scene->addChild(layer);
-    return scene;
+WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
+  m_unitLayer = Layer::create();
+  m_areaLayer = Layer::create();
+  m_assetLayer = Layer::create();
+  BasicRUBELayer::addChild(m_areaLayer, 3);
+  BasicRUBELayer::addChild(m_unitLayer, 2);
+  BasicRUBELayer::addChild(m_assetLayer, 1);
 }
 
-string WorldLevelLayer::getFilename()
-{
+WorldLevelLayer* WorldLevelLayer::create() {
+  WorldLevelLayer* worldLevelLayer = new (std::nothrow) WorldLevelLayer();
+  if (worldLevelLayer && worldLevelLayer->init()) {
+    worldLevelLayer->autorelease();
+    return worldLevelLayer;
+  }
+  CC_SAFE_DELETE(worldLevelLayer);
+  return nullptr;
+}
+
+bool WorldLevelLayer::init() {
+  return BasicRUBELayer::init();
+}
+
+string WorldLevelLayer::getFilename() {
     return "scene/calaverasTemplate.json";
 }
 
@@ -49,7 +67,7 @@ float WorldLevelLayer::initialWorldScale()
 {
     Size s = Director::sharedDirector()->getWinSize();
     //return s.height / 35; //screen will be 35 physics units high
-    return s.height/4;
+    return s.height/3;
 }
 
 
@@ -57,25 +75,59 @@ float WorldLevelLayer::initialWorldScale()
 // is still available to do extra loading. Here is where we load the images.
 void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
 {
+    BodyFactory::getInstance()->setWorld(m_world);
+    ContactSystem* contactSystem = new ContactSystem();
+    m_world->SetContactListener(contactSystem);
+    // Process bodies
     std::vector<b2Body*> b2Bodies;
     json->getAllBodies(b2Bodies);
     for (int i = 0; i < b2Bodies.size(); i++) {
       if (json->hasCustomString(b2Bodies[i], "category")) {
         std::string category = json->getCustomString(b2Bodies[i], "category");
         if (category.compare("entry") == 0) {
-          Entry* entry = Entry::create();
-          entry->setScale(1/(float)840);
-          entry->setBody(b2Bodies[i]);
-          entry->update(0);
+          Entry* entry = EntityFactory::getInstance()->getEntry(json, b2Bodies[i]);
           addChild(entry);
         } else if (category.compare("unit") == 0) {
-          Unit* unit = Unit::create();
-          unit->setScale(1/(float)840);
-          unit->setBody(b2Bodies[i]);
-          unit->scheduleUpdate();
-          unit->update(0);
+          Unit* unit = EntityFactory::getInstance()->getUnit(json, b2Bodies[i]);
           addChild(unit);
+        } else if (category.compare("area") == 0) {
+          Area* area = EntityFactory::getInstance()->getArea(json, b2Bodies[i]);
+          addChild(area);
         }
+        BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
+      }
+    }
+
+    // Process images
+    std::vector<b2dJsonImage*> b2dImages;
+    json->getAllImages(b2dImages);
+    for (int i = 0; i < b2dImages.size(); i++) {
+      b2dJsonImage* image = b2dImages[i];
+      if (image->body) {
+        ImageBody* imageBody = ImageBody::create(image->file, image->body);
+        if (!imageBody) {
+          continue;
+        }
+        addChild(imageBody);
+      } else {
+        ImageNode* imageNode = ImageNode::create(image->file);
+        if (!imageNode) {
+          continue;
+        }
+        imageNode->getSprite()->setFlipX(image->flip);
+        imageNode->getSprite()->setColor(ccc3(image->colorTint[0], image->colorTint[1], image->colorTint[2]));
+        imageNode->getSprite()->setOpacity(image->colorTint[3]);
+        Size size = imageNode->getSprite()->getContentSize();
+        float sizeRatio = size.height / 840.0f;
+        float spriteScale = image->scale / sizeRatio;
+        imageNode->getSprite()->setScale(spriteScale);
+        Point pos = CCPointMake(image->center.x, image->center.y);
+        b2Vec2 localPos( pos.x, pos.y );
+        pos.x = localPos.x;
+        pos.y = localPos.y;
+        imageNode->setRotation( CC_RADIANS_TO_DEGREES(-image->angle) );
+        imageNode->setPosition( pos );
+        addChild(imageNode);
       }
     }
     /*
@@ -127,11 +179,26 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
     */
 }
 
+void WorldLevelLayer::addChild(Node* node) {
+  Entity* entity = dynamic_cast<Entity*>(node);
+  if (entity) {
+    if (entity->getType() == ENTITY_TYPE_UNIT) {
+      m_unitLayer->addChild(node);
+      return;
+    } else if (entity->getType() == ENTITY_TYPE_AREA) {
+      m_areaLayer->addChild(node);
+      return;
+    }
+  }
+  m_assetLayer->addChild(node);
+}
+
 
 // This method should undo anything that was done by afterLoadProcessing, and make sure
 // to call the superclass method so it can do the same
 void WorldLevelLayer::clear()
 {
+  /*
     for (set<ImageInfo*>::iterator it = m_imageInfos.begin(); it != m_imageInfos.end(); ++it) {
         ImageInfo* imgInfo = *it;
         removeChild(imgInfo->sprite, true);
@@ -139,14 +206,8 @@ void WorldLevelLayer::clear()
     m_imageInfos.clear();
     
     BasicRUBELayer::clear();
+  */
 }
-
-void WorldLevelLayer::onEnter()
-{
-  cocos2d::Layer::onEnter();
-  //cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/entry/entry.pvr", "sprite/entry/entry.plist", "entry.ExportJson");
-}
-
 
 // Standard Cocos2d method. Call the super class to step the physics world, and then
 // move the images to match the physics body positions
@@ -157,31 +218,10 @@ void WorldLevelLayer::update(float dt)
     //setImagePositionsFromPhysicsBodies();
 }
 
-// Move all the images to where the physics engine says they should be
-void WorldLevelLayer::setImagePositionsFromPhysicsBodies()
-{
-    for (set<ImageInfo*>::iterator it = m_imageInfos.begin(); it != m_imageInfos.end(); ++it) {
-        ImageInfo* imgInfo = *it;
-        Point pos = imgInfo->center;
-        float angle = -imgInfo->angle;
-        if ( imgInfo->body ) {            
-            //need to rotate image local center by body angle
-            b2Vec2 localPos( pos.x, pos.y );
-            b2Rot rot( imgInfo->body->GetAngle() );
-            localPos = b2Mul(rot, localPos) + imgInfo->body->GetPosition();
-            pos.x = localPos.x;
-            pos.y = localPos.y;
-            angle += -imgInfo->body->GetAngle();
-        }
-        imgInfo->sprite->setRotation( CC_RADIANS_TO_DEGREES(angle) );
-        imgInfo->sprite->setPosition( pos );
-    }
-}
-
-
 // Remove one body and any images is had attached to it from the layer
 void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
 {
+  /*
     //destroy the body in the physics world
     m_world->DestroyBody( body );
     
@@ -198,32 +238,139 @@ void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
     //also remove the infos for those images from the image info array
     for (int i = 0; i < imagesToRemove.size(); i++)
         m_imageInfos.erase( imagesToRemove[i] );
+  */
 }
 
+void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
+  if (!m_manageTouch) {
+    BasicRUBELayer::onTouchesBegan(touches, unused_event);
+    return;
+  }
+  Touch *touch = touches[0];
+  Point screenPos = touch->getLocationInView();
+  b2Vec2 worldPos = screenToWorld(screenPos);
+  CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
 
-// Remove one image from the layer
-void WorldLevelLayer::removeImageFromWorld(ImageInfo* imgInfo)
-{
-    removeChild(imgInfo->sprite, true);
-    m_imageInfos.erase(imgInfo);
-}
+  // Make a small box around the touched point to query for overlapping fixtures
+  b2AABB aabb;
+  b2Vec2 d(0.001f, 0.001f);
+  aabb.lowerBound = worldPos - d;
+  aabb.upperBound = worldPos + d;
 
-Sprite* WorldLevelLayer::getAnySpriteOnBody(b2Body* body)
-{
-    for (set<ImageInfo*>::iterator it = m_imageInfos.begin(); it != m_imageInfos.end(); ++it) {
-        ImageInfo* imgInfo = *it;
-        if ( imgInfo->body == body )
-            return imgInfo->sprite;
+  // Query the world for overlapping fixtures (the TouchDownQueryCallback simply
+  // looks for any fixture that contains the touched point)
+  TouchDownQueryCallback callback(worldPos);
+  m_world->QueryAABB(&callback, aabb);
+
+  // Check if we found something, and it was a dynamic body (can't drag static bodies)
+  if (callback.m_fixture)
+  {
+    switch(callback.m_fixture->GetBody()->GetType()) {
+      case b2_staticBody:
+        void* bodyUserData;
+        bodyUserData  = callback.m_fixture->GetBody()->GetUserData();
+        if (bodyUserData) {
+          Entity* entity = (Entity*)bodyUserData;
+          if (entity->getType() == ENTITY_TYPE_AREA) {
+            CCLOG("Area touched.");
+          }
+        } else {
+          CCLOG("Static body touched.");
+        }
+        break;
+        break;
+      case b2_kinematicBody:
+        CCLOG("Kinematic body touched.");
+        break;
+      case b2_dynamicBody:
+        void* dynamicBodyUserData;
+        dynamicBodyUserData = callback.m_fixture->GetBody()->GetUserData();
+        if (dynamicBodyUserData) {
+          Entity* entity = (Entity*)dynamicBodyUserData;
+          if (entity->getType() == ENTITY_TYPE_UNIT) {
+            CCLOG("Unit touched.");
+          }
+        } else {
+          CCLOG("Dynamic body touched.");
+        }
+        break;
     }
-    return NULL;
+    /*
+    // The touched point was over a dynamic body, so make a mouse joint
+    b2Body* body = callback.m_fixture->GetBody();
+    b2MouseJointDef md;
+    md.bodyA = m_mouseJointGroundBody;
+    md.bodyB = body;
+    md.target = worldPos;
+    md.maxForce = 2500.0f * body->GetMass();
+    m_mouseJoint = (b2MouseJoint*)m_world->CreateJoint(&md);
+    body->SetAwake(true);
+    m_mouseJointTouch = touch;
+    */
+  } else {
+    CCLOG("World touched.");
+  }
 }
 
-Sprite* WorldLevelLayer::getSpriteWithImageName(std::string name)
-{
-    for (set<ImageInfo*>::iterator it = m_imageInfos.begin(); it != m_imageInfos.end(); ++it) {
-        ImageInfo* imgInfo = *it;
-        if ( imgInfo->name == name )
-            return imgInfo->sprite;
+void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
+  if (!m_manageTouch) {
+    BasicRUBELayer::onTouchesMoved(touches, unused_event);
+    return;
+  }
+  if ( touches.size() > 1 ) {
+    // At least two touches are moving at the same time
+    if ( ! allowPinchZoom() )
+      return;
+
+    // Take the first two touches and use their movement to pan and zoom the scene.
+    Touch *touch0 = touches[0];
+    Touch *touch1 = touches[1];
+    Point screenPos0 = touch0->getLocationInView();
+    Point screenPos1 = touch1->getLocationInView();
+    Point previousScreenPos0 = touch0->getPreviousLocationInView();
+    Point previousScreenPos1 = touch1->getPreviousLocationInView();
+
+    Point layerOffset = getPosition();
+    float layerScale = getScale();
+
+    // Panning
+    // The midpoint is the point exactly between the two touches. The scene
+    // should move by the same distance that the midpoint just moved.
+    Point previousMidpoint = ccpMidpoint(previousScreenPos0, previousScreenPos1);
+    Point currentMidpoint = ccpMidpoint(screenPos0, screenPos1);
+    Point moved = ccpSub(currentMidpoint, previousMidpoint);
+    moved.y *= -1;
+    layerOffset = ccpAdd(layerOffset, moved);
+
+    // Zooming
+    // The scale should change by the same ratio as the previous and current
+    // distance between the two touches. Unfortunately simply setting the scale
+    // has the side-effect of moving the view center. We want to keep the midpoint
+    // of the touches unchanged by scaling, so we need to look at what it was
+    // before we scale...
+    b2Vec2 worldCenterBeforeScaling = screenToWorld(currentMidpoint);
+
+    // ... then perform the scale change...
+    float previousSeparation = ccpDistance(previousScreenPos0, previousScreenPos1);
+    float currentSeparation = ccpDistance(screenPos0, screenPos1);
+    if ( previousSeparation > 10 ) { //just in case, prevent divide by zero
+      layerScale *= currentSeparation / previousSeparation;
+      setScale(layerScale);
     }
-    return NULL;
+
+    // ... now check how that affected the midpoint, and cancel out the change:
+    Point screenCenterAfterScaling = worldToScreen(worldCenterBeforeScaling);
+    Point movedCausedByScaling = ccpSub(screenCenterAfterScaling, currentMidpoint);
+    movedCausedByScaling.y *= -1;
+    layerOffset = ccpSub(layerOffset, movedCausedByScaling);
+
+    setPosition(layerOffset);
+  }
+}
+
+void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
+  if (!m_manageTouch) {
+    BasicRUBELayer::onTouchesEnded(touches, unused_event);
+    return;
+  }
 }

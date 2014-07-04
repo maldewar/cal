@@ -20,6 +20,7 @@ BasicRUBELayer::BasicRUBELayer()
     m_mouseJoint = NULL;
     m_mouseJointGroundBody = NULL;
     m_mouseJointTouch = NULL;
+    m_debugDrawEnabled = false;
 }
 
 BasicRUBELayer::~BasicRUBELayer()
@@ -133,8 +134,6 @@ void BasicRUBELayer::loadWorld()
     m_world = json.readFromString(jsonContent, errMsg);
     
     if ( m_world ) {
-        log("Loaded JSON ok");
-        
         // Set up a debug draw so we can see what's going on in the physics engine.
         // The scale for rendering will be handled by the layer scale, which will affect
         // the entire layer, so we keep the PTM ratio here to 1 (ie. one physics unit
@@ -198,27 +197,29 @@ void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t fl
  
     // debug draw display will be on top of anything else
     Layer::draw(renderer, transform, flags);
-        
-    ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
-    kmGLPushMatrix();
-    
-    m_world->DrawDebugData();
-    
-    // Draw mouse joint line
-    if ( m_mouseJoint ) {
-        b2Vec2 p1 = m_mouseJoint->GetAnchorB();
-        b2Vec2 p2 = m_mouseJoint->GetTarget();
-        
-        b2Color c;
-        c.Set(0.0f, 1.0f, 0.0f);
-        m_debugDraw->DrawPoint(p1, 4.0f, c);
-        m_debugDraw->DrawPoint(p2, 4.0f, c);
-        
-        c.Set(0.8f, 0.8f, 0.8f);
-        m_debugDraw->DrawSegment(p1, p2, c);
+
+    if (m_debugDrawEnabled) {   
+      ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+      kmGLPushMatrix();
+      
+      m_world->DrawDebugData();
+      
+      // Draw mouse joint line
+      if ( m_mouseJoint ) {
+          b2Vec2 p1 = m_mouseJoint->GetAnchorB();
+          b2Vec2 p2 = m_mouseJoint->GetTarget();
+          
+          b2Color c;
+          c.Set(0.0f, 1.0f, 0.0f);
+          m_debugDraw->DrawPoint(p1, 4.0f, c);
+          m_debugDraw->DrawPoint(p2, 4.0f, c);
+          
+          c.Set(0.8f, 0.8f, 0.8f);
+          m_debugDraw->DrawSegment(p1, p2, c);
+      }
+      
+      kmGLPopMatrix();
     }
-    
-    kmGLPopMatrix();  
 }
 
 
@@ -258,6 +259,7 @@ void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
     Touch *touch = touches[0];
     Point screenPos = touch->getLocationInView();
     b2Vec2 worldPos = screenToWorld(screenPos);
+    CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
     
     // Make a small box around the touched point to query for overlapping fixtures
     b2AABB aabb;
@@ -355,6 +357,10 @@ void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
 // Standard Cocos2d method
 void BasicRUBELayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event)
 {
+    Touch *touch = touches[0];
+    Point screenPos = touch->getLocationInView();
+    b2Vec2 worldPos = screenToWorld(screenPos);
+    CCLOG("Touches ended at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
     // Check if one of the touches is the one that started the mouse joint.
     // If so we need to destroy the mouse joint and reset some variables.
     if ( m_mouseJoint ) {
@@ -397,17 +403,6 @@ bool BasicRUBELayer::allowPinchZoom()
     return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+bool BasicRUBELayer::enableDebugDraw(bool enable) {
+  m_debugDrawEnabled = enable;
+}
