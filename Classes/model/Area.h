@@ -3,9 +3,14 @@
 
 #include "cocos2d.h"
 #include "Entity.h"
+#include "renderer/CCRenderer.h"
+#include "renderer/CCCustomCommand.h"
 
 class Area : public Entity
 {
+protected:
+  void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
+  cocos2d::CustomCommand m_customCommand;
 
 public:
     /**

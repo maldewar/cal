@@ -25,14 +25,14 @@ bool WorldLevelScene::init(void) {
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/unit/unit.pvr",
     "sprite/unit/unit.plist","unit.ExportJson");
   BackgroundLayer* bgLayer = BackgroundLayer::create();
-  addChild(bgLayer);
+  addChild(bgLayer, 0);
   WorldLevelLayer* layer = WorldLevelLayer::create();
   layer->enableDebugDraw(true);
   addWorldLevelLayer(layer);
   WorldLevelUILayer* uiLayer = WorldLevelUILayer::create();
   m_worldLevelUILayer = uiLayer;
   uiLayer->setScene(this);
-  addChild(uiLayer);
+  addChild(uiLayer, 2);
   return true;
 }
 
@@ -53,7 +53,7 @@ void WorldLevelScene::togglePause() {
 
 void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer) {
   m_worldLevelLayers.push_back(worldLevelLayer);
-  addChild(worldLevelLayer);
+  addChild(worldLevelLayer, 1);
 }
 
 void WorldLevelScene::pauseChildrenRecursive(cocos2d::Node* node, bool pause) {

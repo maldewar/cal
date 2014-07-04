@@ -34,6 +34,8 @@
 #include "cocos2d.h"
 #include <Box2D/Box2D.h>
 #include "../util/Box2DDebugDraw.h"
+#include "renderer/CCRenderer.h"
+#include "renderer/CCCustomCommand.h"
 
 #ifndef BASIC_RUBE_LAYER
 #define BASIC_RUBE_LAYER
@@ -53,6 +55,10 @@ protected:
     // Keep track of which touch started the mouse joint.
     cocos2d::Touch* m_mouseJointTouch;
     bool m_debugDrawEnabled;
+    cocos2d::CustomCommand m_customCommand;
+
+protected:
+  void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
         
 public:
     BasicRUBELayer();

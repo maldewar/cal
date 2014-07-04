@@ -192,15 +192,24 @@ void BasicRUBELayer::update(float dt)
 // Standard Cocos2d method
 void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
+  Layer::draw(renderer, transform, flags);
+  m_customCommand.init(_globalZOrder + 1);
+  m_customCommand.func = CC_CALLBACK_0(BasicRUBELayer::onDraw, this, transform, flags);
+  renderer->addCommand(&m_customCommand);
+}
+
+void BasicRUBELayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
     if ( !m_world )
         return;
- 
     // debug draw display will be on top of anything else
-    Layer::draw(renderer, transform, flags);
+    //Layer::draw(renderer, transform, flags);
 
     if (m_debugDrawEnabled) {   
-      ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
-      kmGLPushMatrix();
+      //ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+      //kmGLPushMatrix();
+      Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+      Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
+      
       
       m_world->DrawDebugData();
       
@@ -218,7 +227,8 @@ void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t fl
           m_debugDraw->DrawSegment(p1, p2, c);
       }
       
-      kmGLPopMatrix();
+      //kmGLPopMatrix();
+      Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     }
 }
 

@@ -24,7 +24,7 @@ void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* aVertices, int32 aVertexCoun
         mVertices[i].setPoint( mRatio * aVertices[i].x, mRatio * aVertices[i].y );
     
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    ccDrawSolidPoly(mVertices, aVertexCount, ccc4f(aColor.r, aColor.g, aColor.b, 0.5));
+    ccDrawSolidPoly(mVertices, aVertexCount, ccc4f(aColor.r, aColor.g, aColor.b, 0.25));
     
     ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
     ccDrawPoly(mVertices, aVertexCount, true);
@@ -51,7 +51,7 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& aCenter, float32 aRadius, con
         
         mVertices[i].setPoint( j, k );
     }
-    ccDrawSolidPoly(mVertices, DEBUG_DRAW_CIRCLE_SEGMENTS, ccc4f(aColor.r, aColor.g, aColor.b, 0.5));
+    ccDrawSolidPoly(mVertices, DEBUG_DRAW_CIRCLE_SEGMENTS, ccc4f(aColor.r, aColor.g, aColor.b, 0.25));
     
     ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
     ccDrawCircle( CCPointMake(mRatio * aCenter.x, mRatio * aCenter.y), aRadius, 0, DEBUG_DRAW_CIRCLE_SEGMENTS, false);
