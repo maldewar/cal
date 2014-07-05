@@ -45,6 +45,7 @@ bool Entry::init(void)
   if (m_armature) {
     addChild(m_armature);
     setScale(PX_TO_M);
+    scheduleUpdate();
     return true;
   }
   return false;

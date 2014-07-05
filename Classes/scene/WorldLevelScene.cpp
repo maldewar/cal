@@ -24,10 +24,12 @@ bool WorldLevelScene::init(void) {
     "sprite/entry/entry.plist", "entry.ExportJson");
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/unit/unit.pvr",
     "sprite/unit/unit.plist","unit.ExportJson");
+  cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/gravitron/gravitron.pvr",
+    "sprite/gravitron/gravitron.plist", "gravitron.ExportJson");
   BackgroundLayer* bgLayer = BackgroundLayer::create();
-  addChild(bgLayer, 0);
+  //addChild(bgLayer, 0);
   WorldLevelLayer* layer = WorldLevelLayer::create();
-  layer->enableDebugDraw(true);
+  layer->enableDebugDraw(false);
   addWorldLevelLayer(layer);
   WorldLevelUILayer* uiLayer = WorldLevelUILayer::create();
   m_worldLevelUILayer = uiLayer;

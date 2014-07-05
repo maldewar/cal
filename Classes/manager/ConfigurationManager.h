@@ -6,8 +6,8 @@
 
 #include "cocos2d.h"
 
-const float M_TO_PX = 840.0f;
-const float PX_TO_M = 1/840.0f;
+const float M_TO_PX = 420.0f;
+const float PX_TO_M = 1/420.0f;
 
 class ConfigurationManager : public cocos2d::Ref
 {

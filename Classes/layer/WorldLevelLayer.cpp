@@ -35,6 +35,7 @@ WorldLevelLayer* WorldLevelLayer::create() {
 }
 
 bool WorldLevelLayer::init() {
+  m_manageTouch = false;
   return BasicRUBELayer::init();
 }
 
@@ -67,7 +68,7 @@ float WorldLevelLayer::initialWorldScale()
 {
     Size s = Director::sharedDirector()->getWinSize();
     //return s.height / 35; //screen will be 35 physics units high
-    return s.height/3;
+    return s.height/6;
 }
 
 
@@ -93,6 +94,9 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
         } else if (category.compare("area") == 0) {
           Area* area = EntityFactory::getInstance()->getArea(json, b2Bodies[i]);
           addChild(area);
+        } else if (category.compare("gravitron") == 0) {
+          Gravitron* gravitron = EntityFactory::getInstance()->getGravitron(json, b2Bodies[i]);
+          addChild(gravitron);
         }
         BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
       }
@@ -271,8 +275,13 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
         bodyUserData  = callback.m_fixture->GetBody()->GetUserData();
         if (bodyUserData) {
           Entity* entity = (Entity*)bodyUserData;
-          if (entity->getType() == ENTITY_TYPE_AREA) {
-            CCLOG("Area touched.");
+          switch(entity->getType()) {
+            case ENTITY_TYPE_AREA:
+              CCLOG("Area touched.");
+              break;
+            case ENTITY_TYPE_GRAVITRON:
+              CCLOG("Gravitron touched.");
+              break;
           }
         } else {
           CCLOG("Static body touched.");
@@ -287,8 +296,13 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
         dynamicBodyUserData = callback.m_fixture->GetBody()->GetUserData();
         if (dynamicBodyUserData) {
           Entity* entity = (Entity*)dynamicBodyUserData;
-          if (entity->getType() == ENTITY_TYPE_UNIT) {
-            CCLOG("Unit touched.");
+          switch(entity->getType()) {
+            case ENTITY_TYPE_UNIT:
+              CCLOG("Unit touched.");
+              break;
+            case ENTITY_TYPE_GRAVITRON:
+              CCLOG("Gravitron touched.");
+              break;
           }
         } else {
           CCLOG("Dynamic body touched.");

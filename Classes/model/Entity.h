@@ -10,8 +10,9 @@ const int ENTITY_TYPE_UNIT  = 1;
 const int ENTITY_TYPE_ENTRY = 2;
 const int ENTITY_TYPE_AREA  = 3;
 const int ENTITY_TYPE_EXIT  = 4;
-const int ENTITY_TYPE_IMAGE = 5;
-const int ENTITY_TYPE_IMAGE_BODY = 6;
+const int ENTITY_TYPE_GRAVITRON = 5;
+const int ENTITY_TYPE_IMAGE = 6;
+const int ENTITY_TYPE_IMAGE_BODY = 7;
 
 class Entity : public cocos2d::Node
 {

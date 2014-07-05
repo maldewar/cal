@@ -30,7 +30,6 @@ Unit* EntityFactory::getUnit(b2dJson* json, b2Body* body) {
   Unit* unit = Unit::create(true);
   unit->setBody(body);
   unit->update(0);
-  unit->scheduleUpdate();
   return unit;
 }
 
@@ -47,7 +46,6 @@ Entry* EntityFactory::getEntry(b2dJson* json, b2Body* body) {
   entry->setForceMinAngularImpulse(json->getCustomFloat(body, "forceMinAngularImpulse", 0));
   entry->setForceMaxAngularImpulse(json->getCustomFloat(body, "forceMaxAngularImpulse", 0));
   entry->update(0);
-  entry->scheduleUpdate();
   return entry;
 }
 
@@ -55,4 +53,12 @@ Area* EntityFactory::getArea(b2dJson* json, b2Body* body) {
   Area* area = Area::create();
   area->setBody(body);
   return area;
+}
+
+Gravitron* EntityFactory::getGravitron(b2dJson* json, b2Body* body) {
+  bool active = json->getCustomBool(body, "active", true);
+  Gravitron* gravitron = Gravitron::create(active);
+  gravitron->setBody(body);
+  gravitron->update(0);
+  return gravitron;
 }

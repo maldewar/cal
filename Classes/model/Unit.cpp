@@ -45,6 +45,7 @@ bool Unit::init(void) {
   m_armature = cocostudio::Armature::create("unit");
   if (m_armature) {
     setAnimation(UNIT_ANIM_FALL);
+    scheduleUpdate();
     addChild(m_armature);
     setScale(PX_TO_M);
     return true;
