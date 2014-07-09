@@ -45,7 +45,7 @@ void Area::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
   cocos2d::CCPoint mVertices[maxVertices];
   const b2Transform& xf = m_body->GetTransform();
   for (b2Fixture* f = m_body->GetFixtureList(); f; f = f->GetNext()) {
-    const b2Color& color = b2Color(0.05f, 0.05f, 0.05f);
+    const b2Color& color = b2Color(0.1f, 0.1f, 0.1f);
     b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
     int32 vertexCount = poly->m_count;
     b2Assert(vertexCount <= b2_maxPolygonVertices);

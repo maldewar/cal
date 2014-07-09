@@ -16,6 +16,7 @@ using namespace std;
 using namespace cocos2d;
 
 WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
+  m_worldScene = nullptr;
   m_unitLayer = Layer::create();
   m_areaLayer = Layer::create();
   m_assetLayer = Layer::create();
@@ -193,8 +194,17 @@ void WorldLevelLayer::addChild(Node* node) {
       m_areaLayer->addChild(node);
       return;
     }
+    entity->setWorldLevelLayer(this);
   }
   m_assetLayer->addChild(node);
+}
+
+void WorldLevelLayer::setWorldLevelScene(WorldLevelScene* worldLevelScene) {
+  m_worldScene = worldLevelScene;
+}
+
+WorldLevelScene* WorldLevelLayer::getWorldLevelScene() {
+  return m_worldScene;
 }
 
 

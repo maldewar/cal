@@ -58,6 +58,10 @@ bool BasicRUBELayer::init()
     return true;
 }
 
+b2World* BasicRUBELayer::getWorld() {
+  return m_world;
+}
+
 void BasicRUBELayer::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
     /*
@@ -141,7 +145,7 @@ void BasicRUBELayer::loadWorld()
         m_debugDraw = new Box2DDebugDraw(1);
         
         // set the debug draw to show fixtures, and let the world know about it
-        m_debugDraw->SetFlags( b2Draw::e_shapeBit | b2Draw::e_jointBit );
+        m_debugDraw->SetFlags( b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_particleBit);
         m_world->SetDebugDraw(m_debugDraw);
 
         // This body is needed if we want to use a mouse joint to drag things around.
@@ -383,6 +387,45 @@ void BasicRUBELayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches,
             m_mouseJointTouch = NULL;
             break;
         }
+    } else {
+      //Try LiquidFun
+      /*
+      const b2ParticleSystemDef particleSystemDef;
+      m_particleSystems[0] = m_world->CreateParticleSystem(&particleSystemDef);
+      b2ParticleGroupDef pd;
+      b2PolygonShape shape;
+      shape.SetAsBox(10, 5);
+      pd.shape = &shape;
+      pd.flags = b2_elasticParticle;
+      pd.angle = -0.5f;
+      pd.angularVelocity = 2.0f;
+      pd.position.Set(10 + 20 * 2, 40);
+      pd.color.Set(2 * 255 / 5, 255 - 2 * 255 / 5, 128, 255);
+      m_particleSystems[0]->CreateParticleGroup(pd);
+      */
+
+      /*
+      b2ParticleSystemDef particleSystemDef;
+      particleSystemDef.dampingStrength = 0.2f;
+      particleSystemDef.radius = 0.3f;
+      _particleSystem = m_world->CreateParticleSystem(&particleSystemDef);
+      _particleSystem->SetGravityScale(0.4f);
+      _particleSystem->SetDensity(1.2f);
+      _particleSystem->SetRadius(0.15f);
+
+      b2ParticleGroupDef pd;
+      //pd.flags = b2_waterParticle | b2_colorMixingParticle;
+      //pd.flags = b2_solidParticleGroup;
+      pd.flags = b2_solidParticleGroup | b2_elasticParticle;
+      pd.color.Set(30, 64, 194, 255);
+
+      b2PolygonShape shape2;
+      shape2.SetAsBox(0.5f, 0.5f, b2Vec2(0.0f, 0.0f), 0.0);
+
+      pd.shape = &shape2;
+      _particleSystem->CreateParticleGroup(pd);
+      */
+
     }
 }
 

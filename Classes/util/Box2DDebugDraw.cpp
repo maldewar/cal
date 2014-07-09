@@ -1,10 +1,28 @@
 
 #include "Box2DDebugDraw.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+
+#ifndef WIN32
+#include <alloca.h>
+#endif
 
 using namespace cocos2d;
 
 Box2DDebugDraw::Box2DDebugDraw(float aRatio) : mRatio(aRatio)
+    , mPointSizeLocation(-1)
+    , mColorLocation(-1)
 {
+  initShader();
+}
+
+
+void Box2DDebugDraw::initShader( void )
+{
+    mShaderProgram = ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_U_COLOR);
+    mPointSizeLocation = mShaderProgram->getUniformLocation("u_pointSize");
+    mColorLocation = mShaderProgram->getUniformLocation("u_color");
 }
 
 
@@ -58,6 +76,50 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& aCenter, float32 aRadius, con
     
     b2Vec2 p = aCenter + aRadius * aAxis;
     ccDrawLine(ccp(aCenter.x, aCenter.y), ccp(p.x, p.y));
+}
+
+
+void Box2DDebugDraw::DrawParticles(const b2Vec2 *centers_old, float32 radius, const b2ParticleColor *colors, int32 count) {
+/*
+  // normally this is how we'd enable them on desktop OpenGL,
+  // but for some reason this is not applying textures, so we use alpha instead
+  glEnable(GL_POINT_SPRITE);
+  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+  */
+  const float particle_size_multiplier = 8;  // no falloff
+  const float global_alpha = 0.35f;  // instead of texture
+
+  mShaderProgram->setUniformLocationWith1f(mPointSizeLocation, radius * mRatio * particle_size_multiplier);
+
+  GL::blendFunc(GL_SRC_ALPHA, GL_ONE);
+
+  b2Vec2* centers = (b2Vec2 *) alloca(sizeof(b2Vec2) * count);
+  for(int i=0; i<count; i++) {
+    centers[i].x = centers_old[i].x *mRatio;
+    centers[i].y = centers_old[i].y *mRatio;
+  }
+
+  glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, centers);
+  glVertexAttrib4f(GLProgram::VERTEX_ATTRIB_TEX_COORDS, 0, 0, 1, 1);
+
+  if (0 /*colors*/)
+  {
+    // hack to render with proper alpha on desktop for Testbed
+    b2ParticleColor * mcolors = const_cast<b2ParticleColor *>(colors);
+    for (int i = 0; i < count; i++)
+    {
+      mcolors[i].a = static_cast<uint8>(global_alpha * 255);
+    }
+    glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, &colors[0].r);
+  }
+  else
+  {
+    glVertexAttrib4f(GLProgram::VERTEX_ATTRIB_COLOR, 1, 1, 1, global_alpha);
+    mShaderProgram->setUniformLocationWith4f(mColorLocation, 1, 1, 1, global_alpha);
+  }
+
+  glDrawArrays(GL_POINTS, 0, count);
+  CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1,count);
 }
 
 

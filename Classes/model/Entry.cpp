@@ -188,7 +188,7 @@ void Entry::spawnUnit(float dt) {
   newUnit->getBody()->ApplyAngularImpulse(angularImpulse, true);
   newUnit->update(0);
   newUnit->scheduleUpdate();
-  getParent()->addChild(newUnit);
+  getWorldLevelLayer()->addChild(newUnit);
   m_armature->getAnimation()->playWithIndex(ENTRY_ANIM_RELEASE);
   m_units += 1;
 }

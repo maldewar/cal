@@ -34,14 +34,16 @@ Gravitron* Gravitron::create(bool active) {
 bool Gravitron::init(bool active)
 {
   m_armature = cocostudio::Armature::create("gravitron");
+  m_armature->getAnimation()->playWithIndex(GRAVITRON_ANIM_ACTIVE);
   if (m_armature) {
     scheduleUpdate();
     addChild(m_armature);
     setScale(PX_TO_M);
+    setIsSensor(true);
     if (active) {
-      m_armature->getAnimation()->playWithIndex(GRAVITRON_ANIM_ACTIVE);
+      activate(0);
     } else {
-      m_armature->getAnimation()->playWithIndex(GRAVITRON_ANIM_INACTIVE);
+      deactivate(0);
     }
     return true;
   }
@@ -49,7 +51,7 @@ bool Gravitron::init(bool active)
 }
 
 void Gravitron::activate(float dt) {
-  if (m_state = GRAVITRON_STATE_INACTIVE) {
+  if (m_state == GRAVITRON_STATE_INACTIVE) {
     m_state = GRAVITRON_STATE_ACTIVE;
     if (m_armature) {
       m_armature->getAnimation()->playWithIndex(GRAVITRON_ANIM_ACTIVE);
@@ -58,7 +60,7 @@ void Gravitron::activate(float dt) {
 }
 
 void Gravitron::deactivate(float dt) {
-  if (m_state = GRAVITRON_STATE_ACTIVE) {
+  if (m_state == GRAVITRON_STATE_ACTIVE) {
     m_state = GRAVITRON_STATE_INACTIVE;
     if (m_armature) {
       m_armature->getAnimation()->playWithIndex(GRAVITRON_ANIM_INACTIVE);
@@ -68,4 +70,12 @@ void Gravitron::deactivate(float dt) {
 
 void Gravitron::update(float dt) {
   Entity::update(dt);
+}
+
+void Gravitron::sensorReceive(b2Body* body, Entity* receivedEntity) {
+  if (receivedEntity &&
+      receivedEntity->getType() == ENTITY_TYPE_UNIT &&
+      m_state == GRAVITRON_STATE_INACTIVE) {
+    activate(0);
+  }
 }

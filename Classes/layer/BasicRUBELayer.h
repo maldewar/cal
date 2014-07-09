@@ -31,6 +31,8 @@
 //  physics world coordinates.
 //
 
+#include <vector>
+
 #include "cocos2d.h"
 #include <Box2D/Box2D.h>
 #include "../util/Box2DDebugDraw.h"
@@ -56,6 +58,8 @@ protected:
     cocos2d::Touch* m_mouseJointTouch;
     bool m_debugDrawEnabled;
     cocos2d::CustomCommand m_customCommand;
+    std::vector<b2ParticleSystem*> m_particleSystems;
+    b2ParticleSystem* _particleSystem;
 
 protected:
   void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
@@ -66,6 +70,7 @@ public:
     static cocos2d::Scene* scene();
     virtual bool init();
     CREATE_FUNC(BasicRUBELayer);
+    virtual b2World* getWorld();
     void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
     // Override to specify which JSON file to load.
     virtual std::string getFilename();

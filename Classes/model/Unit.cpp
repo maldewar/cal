@@ -58,12 +58,14 @@ void Unit::update(float dt) {
   AIComponent::update(dt);
 }
 
-void Unit::contactStart() {
-  setAfoot();
+void Unit::contactStart(b2Body* body, Entity* contactEntity) {
+  if (hasContact() && !isAfoot())
+    setAfoot();
 }
 
-void Unit::contactEnd() {
-  setLoose();
+void Unit::contactEnd(b2Body* body, Entity* contactEntity) {
+  if (!hasContact())
+    setLoose();
 }
 
 void Unit::onStateChange(int state, int substate) {

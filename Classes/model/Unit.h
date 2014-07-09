@@ -56,8 +56,8 @@ public:
      * @return Seconds passed since last update.
      */
     virtual void update(float dt);
-    virtual void contactStart();
-    virtual void contactEnd();
+    virtual void contactStart(b2Body* body, Entity* contactEntity = nullptr);
+    virtual void contactEnd(b2Body* body, Entity* contactEntity = nullptr);
     virtual void onStateChange(int state, int substate);
     virtual void onSubstateChange(int substate);
     virtual void onDirectionChange(bool isRight);

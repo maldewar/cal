@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 Entity::Entity() {
+  m_worldLayer = nullptr;
   m_body = nullptr;
   m_width = 0;
   m_height = 0;
@@ -20,6 +21,14 @@ void Entity::setBody(b2Body* body) {
 
 b2Body* Entity::getBody() {
   return m_body;
+}
+
+void Entity::setWorldLevelLayer(WorldLevelLayer* worldLevelLayer) {
+  m_worldLayer = worldLevelLayer;
+}
+
+WorldLevelLayer* Entity::getWorldLevelLayer() {
+  return m_worldLayer;
 }
 
 void Entity::update(float dt)

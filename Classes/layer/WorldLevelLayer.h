@@ -3,10 +3,14 @@
 
 #include "BasicRUBELayer.h"
 #include "cocostudio/CocoStudio.h"
+#include "../scene/WorldLevelScene.h"
+
+class WorldLevelScene;
 
 class WorldLevelLayer : public BasicRUBELayer
 {
 protected:
+    WorldLevelScene* m_worldScene;
     cocos2d::Layer* m_unitLayer;
     cocos2d::Layer* m_areaLayer;
     cocos2d::Layer* m_assetLayer;
@@ -21,6 +25,8 @@ public:
     virtual float initialWorldScale();
     virtual void afterLoadProcessing(b2dJson* json);
     virtual void addChild(cocos2d::Node* node);
+    virtual void setWorldLevelScene(WorldLevelScene* worldScene);
+    virtual WorldLevelScene* getWorldLevelScene();
     virtual void clear();
     virtual void update(float dt);
     void removeBodyFromWorld(b2Body* body);

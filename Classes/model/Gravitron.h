@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "cocostudio/CocoStudio.h"
 #include "Entity.h"
+#include "../component/ContactComponent.h"
 
 const int GRAVITRON_STATE_INACTIVE = 0;
 const int GRAVITRON_STATE_ACTIVE   = 1;
@@ -12,7 +13,7 @@ const int GRAVITRON_STATE_LOCKED   = 2;
 const int GRAVITRON_ANIM_INACTIVE = 0;
 const int GRAVITRON_ANIM_ACTIVE   = 1;
 
-class Gravitron : public Entity
+class Gravitron : public Entity, public ContactComponent
 {
 protected:
     int m_state;
@@ -46,6 +47,8 @@ public:
     void activate(float dt);
     void deactivate(float dt);
     virtual void update(float dt);
+
+    virtual void sensorReceive(b2Body* body, Entity* receivedEntity);
 };
 
 #endif // __GRAVITRON_NODE_H__

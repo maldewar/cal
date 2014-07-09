@@ -8,25 +8,47 @@ ContactSystem::ContactSystem() : b2ContactListener() {
 void ContactSystem::BeginContact(b2Contact* contact) {
   void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
   void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
+  Entity* entityA = nullptr;
+  Entity* entityB = nullptr;
+  if (bodyAUserData) {
+    entityA = (Entity*)bodyAUserData;
+  }
+  if (bodyBUserData) {
+    entityB = (Entity*)bodyBUserData;
+  }
   if (bodyAUserData) {
     if (contact->GetFixtureB()->IsSensor()) {
-      CCLOG("Entering sensor area.");
-    } else {
-      Entity* entityA = (Entity*)bodyAUserData;
-      if (entityA->getType() == ENTITY_TYPE_UNIT) {
+      if (entityA->getType() == ENTITY_TYPE_UNIT ||
+          entityA->getType() == ENTITY_TYPE_GRAVITRON) {
         ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityA);
-        contactComponent->addContact();
+        contactComponent->enterSensor(contact->GetFixtureB()->GetBody(), entityB);
+      }
+    } else {
+      if (entityA->getType() == ENTITY_TYPE_UNIT ||
+          entityA->getType() == ENTITY_TYPE_GRAVITRON) {
+        ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityA);
+        contactComponent->addContact(contact->GetFixtureB()->GetBody(), entityB);
+        if (contact->GetFixtureA()->IsSensor() && contactComponent->isSensor()) {
+          contactComponent->sensorReceive(contact->GetFixtureB()->GetBody(), entityB);
+        }
       }
     }
   }
   if (bodyBUserData) {
     if (contact->GetFixtureA()->IsSensor()) {
-      CCLOG("Entering sensor area.");
-    } else {
-      Entity* entityB = (Entity*)bodyBUserData;
-      if (entityB->getType() == ENTITY_TYPE_UNIT) {
+      if (entityB->getType() == ENTITY_TYPE_UNIT ||
+          entityB->getType() == ENTITY_TYPE_GRAVITRON) {
         ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityB);
-        contactComponent->addContact();
+        contactComponent->enterSensor(contact->GetFixtureA()->GetBody(), entityA);
+      }
+    } else {
+      if (entityB->getType() == ENTITY_TYPE_UNIT ||
+          entityB->getType() == ENTITY_TYPE_GRAVITRON) {
+        ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityB);
+        contactComponent->addContact(contact->GetFixtureA()->GetBody(), entityA);
+        if (contact->GetFixtureB()->IsSensor() && contactComponent->isSensor()) {
+          contactComponent->sensorReceive(contact->GetFixtureA()->GetBody(), entityA);
+        }
       }
     }
   }
@@ -35,25 +57,48 @@ void ContactSystem::BeginContact(b2Contact* contact) {
 void ContactSystem::EndContact(b2Contact* contact) {
   void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
   void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
+  Entity* entityA = nullptr;
+  Entity* entityB = nullptr;
   if (bodyAUserData) {
-    Entity* entityA = (Entity*)bodyAUserData;
+    entityA = (Entity*)bodyAUserData;
+  }
+  if (bodyBUserData) {
+    entityB = (Entity*)bodyBUserData;
+  }
+  if (bodyAUserData) {
     if (contact->GetFixtureB()->IsSensor()) {
-      CCLOG("Leaving sensor area.");
-    } else {
-      if (entityA->getType() == ENTITY_TYPE_UNIT) {
+      if (entityA->getType() == ENTITY_TYPE_UNIT ||
+          entityA->getType() == ENTITY_TYPE_GRAVITRON) {
         ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityA);
-        contactComponent->removeContact();
+        contactComponent->exitSensor(contact->GetFixtureB()->GetBody(), entityB);
+      }
+    } else {
+      if (entityA->getType() == ENTITY_TYPE_UNIT ||
+          entityA->getType() == ENTITY_TYPE_GRAVITRON) {
+        ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityA);
+        contactComponent->removeContact(contact->GetFixtureB()->GetBody(), entityB);
+        if (contact->GetFixtureA()->IsSensor() && contactComponent->isSensor()) {
+          contactComponent->sensorLose(contact->GetFixtureB()->GetBody(), entityB);
+        }
       }
     }
   }
   if (bodyBUserData) {
-    Entity* entityB = (Entity*)bodyBUserData;
     if (contact->GetFixtureA()->IsSensor()) {
-      CCLOG("Leaving sensor area.");
-    } else {
-      if (entityB->getType() == ENTITY_TYPE_UNIT) {
+      if (entityB->getType() == ENTITY_TYPE_UNIT ||
+          entityB->getType() == ENTITY_TYPE_GRAVITRON) {
         ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityB);
-        contactComponent->removeContact();
+        contactComponent->exitSensor(contact->GetFixtureA()->GetBody(), entityA);
+      }
+    } else {
+      if (entityB->getType() == ENTITY_TYPE_UNIT ||
+          entityB->getType() == ENTITY_TYPE_GRAVITRON) {
+        ContactComponent* contactComponent = dynamic_cast<ContactComponent*>(entityB);
+        contactComponent->removeContact(contact->GetFixtureA()->GetBody(), entityA);
+        if (contact->GetFixtureB()->IsSensor() && contactComponent->isSensor()) {
+          CCLOG("sensor lose");
+          contactComponent->sensorLose(contact->GetFixtureA()->GetBody(), entityA);
+        }
       }
     }
   }
