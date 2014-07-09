@@ -10,3 +10,6 @@ proj.ios_mac/
 proj.linux/
 proj.wp8-xaml/
 proj.win32/
+cocos2d/
+.cocos-project.json
+._Classes
