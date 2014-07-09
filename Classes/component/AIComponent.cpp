@@ -2,7 +2,7 @@
 #include "cocos2d.h"
 #include "../util/CMath.h"
 
-float AIComponent::s_afoot_timeout = 0.15f;
+float AIComponent::s_afoot_timeout = 0.1f;
 float AIComponent::s_afoot_angular_velocity_tolerance = 7.0f;
 //static float s_afoot_linear_velocity_tolerance = 5.0f;
 
@@ -43,6 +43,14 @@ void AIComponent::setLoose() {
     m_touchGround = false;
     cancelTween();
   }
+}
+
+bool AIComponent::isAfoot() {
+  return (m_afoot_marked || m_state == AI_STATE_AFOOT);
+}
+
+bool AIComponent::isLoose() {
+  return (m_state == AI_STATE_LOOSE);
 }
 
 void AIComponent::update(float dt) {

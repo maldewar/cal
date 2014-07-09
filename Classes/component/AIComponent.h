@@ -45,6 +45,8 @@ public:
   virtual void setBody(b2Body* body);
   virtual void setAfoot();
   virtual void setLoose();
+  virtual bool isAfoot();
+  virtual bool isLoose();
   virtual void update(float dt);
   virtual void onStateChange(int state, int substate);
   virtual void onSubstateChange(int substate);
