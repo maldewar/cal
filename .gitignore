@@ -1,1 +1,12 @@
 *.sw*
+publish/
+linux-build/
+Resources/small/
+Resources/medium/
+Resources/large/
+Resources/design/
+proj.android/
+proj.ios_mac/
+proj.linux/
+proj.wp8-xaml/
+proj.win32/
