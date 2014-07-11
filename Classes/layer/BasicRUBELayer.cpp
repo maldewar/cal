@@ -43,7 +43,7 @@ bool BasicRUBELayer::init()
     
     setTouchEnabled( true );
     setAccelerometerEnabled( true );    
-    setAnchorPoint( CCPointMake(0,0) );
+    setAnchorPoint( Vec2(0,0) );
     
     // set the starting scale and offset values from the subclass
     setPosition( initialWorldOffset() );

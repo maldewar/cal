@@ -19,16 +19,20 @@ bool UILayer::init()
     m_winSize = Director::getInstance()->getWinSize();
 
     m_scene = nullptr;
+    m_state = -1;
 
     return true;
 }
 
 void UILayer::pushState(int state) {
+  /*
   if (!m_states.empty()) {
     playAnimationOut(m_states.top());
   }
+  */
   if ( m_states.empty() || state != m_states.top()) {
     m_states.push(state);
+    m_state = state;
     playAnimationIn(state);
   }
 }
@@ -38,9 +42,16 @@ void UILayer::popState() {
     playAnimationOut(m_states.top());
     m_states.pop();
     if (!m_states.empty()) {
+      m_state = m_states.top();
       playAnimationIn(m_states.top());
+    } else {
+      m_state = -1;
     }
   }
+}
+
+int UILayer::getState() {
+  return m_state;
 }
 
 void UILayer::playAnimationIn(int state) {

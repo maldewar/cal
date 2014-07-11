@@ -6,6 +6,7 @@
 #include "2d/CCNode.h"
 #include "../manager/ConfigurationManager.h"
 #include "../layer/WorldLevelLayer.h"
+class WorldLevelLayer;
 
 const int ENTITY_TYPE_UNIT  = 1;
 const int ENTITY_TYPE_ENTRY = 2;
@@ -62,6 +63,10 @@ public:
      * @param dt Time passed from the last update call.
      */
     virtual void update(float dt);
+    /**
+     * Entity is selected.
+     */
+    virtual void select();
 };
 
 #endif // __ENTITY_NODE_H__

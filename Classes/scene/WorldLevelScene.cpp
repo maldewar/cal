@@ -8,6 +8,7 @@ WorldLevelScene::WorldLevelScene() {
   m_paused = false;
   m_debug = true;
   m_gravityAngle = -M_PI_2;
+  m_ctrl = CTRL_NONE;
 }
 
 WorldLevelScene::~WorldLevelScene() {
@@ -30,6 +31,8 @@ bool WorldLevelScene::init(void) {
     "sprite/unit/unit.plist","unit.ExportJson");
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/gravitron/gravitron.pvr",
     "sprite/gravitron/gravitron.plist", "gravitron.ExportJson");
+  cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("ui/ctrl/ctrl.pvr",
+    "ui/ctrl/ctrl.plist", "wheelCtrl.ExportJson");
   //Background Layer
   BackgroundLayer* bgLayer = BackgroundLayer::create();
   //addChild(bgLayer, 0);
@@ -39,20 +42,22 @@ bool WorldLevelScene::init(void) {
   layer->enableDebugDraw(false);
   addWorldLevelLayer(layer);
 
-  //World Debug Layer
-  if (m_debug) {
-    CCLOG("ADDING DEBUG LAYER");
-    m_worldLevelDebugLayer = WorldLevelDebugLayer::create();
-    m_worldLevelDebugLayer->setScene(this);
-    addChild(m_worldLevelDebugLayer, 4);
-    CCLOG("DEBUG LAYER ADDED");
-  }
+  //Ctrl Layer
+  m_worldLevelCtrlLayer = WorldLevelCtrlLayer::create(this);
+  addChild(m_worldLevelCtrlLayer, 3);
 
   //World UI Layer
   WorldLevelUILayer* uiLayer = WorldLevelUILayer::create();
   m_worldLevelUILayer = uiLayer;
   uiLayer->setScene(this);
-  addChild(uiLayer, 3);
+  addChild(uiLayer, 4);
+
+  //World Debug Layer
+  if (m_debug) {
+    m_worldLevelDebugLayer = WorldLevelDebugLayer::create();
+    m_worldLevelDebugLayer->setScene(this);
+    addChild(m_worldLevelDebugLayer, 5);
+  }
 
   return true;
 }
@@ -106,6 +111,17 @@ void WorldLevelScene::setGravityAngle(float angle) {
     for (b2Body* b = worldLevelLayer->getWorld()->GetBodyList(); b; b = b->GetNext()) {
       b->SetAwake(true);
     }
+  }
+}
+
+float WorldLevelScene::getGravityAngle() {
+  return m_gravityAngle;
+}
+
+void WorldLevelScene::selectCtrl(int ctrl, Entity* entity) {
+  m_ctrl = ctrl;
+  if (m_ctrl == CTRL_GRAVITRON) {
+    m_worldLevelCtrlLayer->beginCtrlTouch(ctrl, entity);
   }
 }
 

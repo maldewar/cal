@@ -13,3 +13,4 @@ proj.win32/
 cocos2d/
 .cocos-project.json
 ._Classes
+Classes/.ycm_extra_conf.pyc

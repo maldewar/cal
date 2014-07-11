@@ -47,6 +47,7 @@ public:
     void activate(float dt);
     void deactivate(float dt);
     virtual void update(float dt);
+    virtual void select();
 
     virtual void sensorReceive(b2Body* body, Entity* receivedEntity);
 };

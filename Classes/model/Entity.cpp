@@ -48,3 +48,6 @@ void Entity::update(float dt)
     setPosition( pos );
   }
 }
+
+void Entity::select() {
+}

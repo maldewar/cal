@@ -12,6 +12,7 @@ class UILayer : public cocos2d::Layer
 {
 protected:
   std::stack<int> m_states;
+  int m_state;
   cocos2d::Size m_visibleSize;
   cocos2d::Size m_winSize;
   WorldLevelScene* m_scene;
@@ -36,6 +37,10 @@ public:
    * Removes the top most state in the stack.
    */
   virtual void popState();
+  /**
+   * Gets the top most stack in the stack.
+   */
+  virtual int getState();
   virtual void finishStateAnimation();
   virtual void setScene(WorldLevelScene* scene);
 

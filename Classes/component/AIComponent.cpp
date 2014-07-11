@@ -104,6 +104,8 @@ void AIComponent::setState(int state) {
       if (m_body) {
         m_body->SetTransform(m_body->GetPosition(), 0);
         m_body->SetFixedRotation(true);
+        float angle = atan2(m_body->GetWorld()->GetGravity().y, m_body->GetWorld()->GetGravity().x);
+        m_body->SetTransform(m_body->GetPosition(), angle + M_PI_2);
       }
       // TODO: check impact force, angular-linear velocity to stand or still.
       if (m_substate_stand_duration > 0) {

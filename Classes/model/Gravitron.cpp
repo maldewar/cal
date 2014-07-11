@@ -72,6 +72,10 @@ void Gravitron::update(float dt) {
   Entity::update(dt);
 }
 
+void Gravitron::select() {
+  getWorldLevelLayer()->getWorldLevelScene()->selectCtrl(CTRL_GRAVITRON, this);
+}
+
 void Gravitron::sensorReceive(b2Body* body, Entity* receivedEntity) {
   if (receivedEntity &&
       receivedEntity->getType() == ENTITY_TYPE_UNIT &&

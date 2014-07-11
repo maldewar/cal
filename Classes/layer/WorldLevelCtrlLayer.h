@@ -2,39 +2,41 @@
 #define __WORLD_LEVEL_CTRL_LAYER_H__
 
 #include <string>
-#include <stack>
+#include "UILayer.h"
+#include "../model/Entity.h"
+#include "../model/ctrl/WheelCtrl.h"
+class Entity;
+class WheelCtrl;
 
-#include "cocos2d.h"
-#include "../scene/WorldLevelScene.h"
-class WorldLevelScene;
-
-class WorldLevelCtrlLayer : public cocos2d::Layer
+class WorldLevelCtrlLayer : public UILayer
 {
-private:
+public:
   enum State {
+    Inactive,
     Showing,
     Waiting
   };
-  WorldLevelScene* m_scene;
 
 public:
-  CREATE_FUNC(WorldLevelCtrlLayer);
-  virtual bool init();
-  void pushState(State state);
-  void popState();
-  void settingsBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void returnBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void pauseBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void finishStateAnimation();
-  void setScene(WorldLevelScene* scene);
+  static WorldLevelCtrlLayer* create(WorldLevelScene* scene);
+  virtual bool init(WorldLevelScene* scene);
+  virtual void update(float dt);
+  virtual void beginCtrlTouch(int ctrl, Entity* entity);
+  virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+  virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
 
 private:
-  void setUILayer();
-  void setTouchEnabled(bool enabled);
-  void playAnimationIn(State state);
-  void playAnimationOut(State state);
+  cocos2d::ui::Layout* m_opacityLayout;
+  WheelCtrl* m_wheelCtrl;
+  cocos2d::Vec2* m_center;
+  float m_touchTime;
+  float m_showingTime;
+  int m_ctrl;
+
+private:
+  void playAnimationIn(int state);
+  void playAnimationOut(int state);
   void playStateAnimation(std::string name);
-  void scaleWidget(cocos2d::ui::Widget* widget, const Align align);
 };
 
 #endif // __WORLD_LEVEL_CTRL_LAYER_H__

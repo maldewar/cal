@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+#set( CMAKE_VERBOSE_MAKEFILE on )
+
 set(APP_NAME MyGame)
 project (${APP_NAME})
 
@@ -58,11 +60,13 @@ set(GAME_SRC
   Classes/model/Unit.cpp
   Classes/model/Area.cpp
   Classes/model/Gravitron.cpp
+  Classes/model/ctrl/WheelCtrl.cpp
   Classes/system/ContactSystem.cpp
   Classes/layer/UILayer.cpp
   Classes/layer/BackgroundLayer.cpp
   Classes/layer/BasicRUBELayer.cpp
   Classes/layer/WorldLevelLayer.cpp
+  Classes/layer/WorldLevelCtrlLayer.cpp
   Classes/layer/WorldLevelUILayer.cpp
   Classes/layer/WorldLevelDebugLayer.cpp
   Classes/scene/WorldLevelScene.cpp

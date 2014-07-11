@@ -36,7 +36,7 @@ WorldLevelLayer* WorldLevelLayer::create() {
 }
 
 bool WorldLevelLayer::init() {
-  m_manageTouch = false;
+  m_manageTouch = true;
   return BasicRUBELayer::init();
 }
 
@@ -290,7 +290,7 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
               CCLOG("Area touched.");
               break;
             case ENTITY_TYPE_GRAVITRON:
-              CCLOG("Gravitron touched.");
+              entity->select();
               break;
           }
         } else {
@@ -311,7 +311,7 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
               CCLOG("Unit touched.");
               break;
             case ENTITY_TYPE_GRAVITRON:
-              CCLOG("Gravitron touched.");
+              entity->select();
               break;
           }
         } else {

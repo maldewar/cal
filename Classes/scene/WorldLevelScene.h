@@ -6,21 +6,30 @@
 #include "cocos2d.h"
 #include "../layer/BackgroundLayer.h"
 #include "../layer/WorldLevelLayer.h"
+#include "../layer/WorldLevelCtrlLayer.h"
 #include "../layer/WorldLevelUILayer.h"
 #include "../layer/WorldLevelDebugLayer.h"
+#include "../model/Entity.h"
 class WorldLevelLayer;
 class WorldLevelUILayer;
+class WorldLevelCtrlLayer;
 class WorldLevelDebugLayer;
+class Entity;
+
+const int CTRL_NONE = 0;
+const int CTRL_GRAVITRON = 1;
 
 class WorldLevelScene : public cocos2d::Scene
 {
 protected:
   std::vector<WorldLevelLayer*> m_worldLevelLayers;
   WorldLevelUILayer* m_worldLevelUILayer;
+  WorldLevelCtrlLayer* m_worldLevelCtrlLayer;
   WorldLevelDebugLayer* m_worldLevelDebugLayer;
   bool m_paused;
   bool m_debug;
   float m_gravityAngle;
+  int m_ctrl;
 
 public:
   WorldLevelScene(void);
@@ -33,6 +42,8 @@ public:
   virtual void addWorldLevelLayer(WorldLevelLayer* worldLevelLayer);
   virtual void pauseChildrenRecursive(cocos2d::Node* node, bool pause);
   virtual void setGravityAngle(float angle);
+  virtual float getGravityAngle();
+  virtual void selectCtrl(int ctrl, Entity* entity);
   virtual bool isDebugEnable();
   virtual void enableDebug(bool debug);
 };
