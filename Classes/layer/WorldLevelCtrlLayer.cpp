@@ -39,7 +39,7 @@ bool WorldLevelCtrlLayer::init(WorldLevelScene* scene) {
 
   m_center = new Vec2(m_winSize.width/2, m_winSize.height/2);
   m_touchTime = 0;
-  m_showingTime = 0.75f;
+  m_showingTime = 0.34f;
   m_ctrl = 0;
 
   setTouchEnabled(true);

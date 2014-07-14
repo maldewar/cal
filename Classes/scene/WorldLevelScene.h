@@ -23,12 +23,14 @@ class WorldLevelScene : public cocos2d::Scene
 {
 protected:
   std::vector<WorldLevelLayer*> m_worldLevelLayers;
+  WorldLevelLayer* m_worldLevelLayer;
   WorldLevelUILayer* m_worldLevelUILayer;
   WorldLevelCtrlLayer* m_worldLevelCtrlLayer;
   WorldLevelDebugLayer* m_worldLevelDebugLayer;
   bool m_paused;
   bool m_debug;
   float m_gravityAngle;
+  bool m_gravityAngleRotatesWorld;
   int m_ctrl;
 
 public:
@@ -43,6 +45,7 @@ public:
   virtual void pauseChildrenRecursive(cocos2d::Node* node, bool pause);
   virtual void setGravityAngle(float angle);
   virtual float getGravityAngle();
+  virtual bool gravityAngleRotatesWorld();
   virtual void selectCtrl(int ctrl, Entity* entity);
   virtual bool isDebugEnable();
   virtual void enableDebug(bool debug);

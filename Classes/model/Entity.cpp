@@ -35,6 +35,7 @@ void Entity::update(float dt)
 {
   Node::update(dt);
   if ( m_body ) {
+    /*
     cocos2d::Point pos = cocos2d::CCPointMake(0, 0);
     float angle = 0;
     //need to rotate image local center by body angle
@@ -46,6 +47,12 @@ void Entity::update(float dt)
     angle += -m_body->GetAngle();
     setRotation( CC_RADIANS_TO_DEGREES(angle) );
     setPosition( pos );
+    */
+    cocos2d::Vec2 position = cocos2d::Vec2(0,0);
+    position.x = m_body->GetPosition().x;
+    position.y = m_body->GetPosition().y;
+    setRotation(CC_RADIANS_TO_DEGREES(-m_body->GetAngle()));
+    setPosition(position);
   }
 }
 

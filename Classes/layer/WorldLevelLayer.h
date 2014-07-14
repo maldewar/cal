@@ -15,7 +15,7 @@ protected:
     cocos2d::Layer* m_areaLayer;
     cocos2d::Layer* m_assetLayer;
     bool m_manageTouch;
-    
+
 public:
     WorldLevelLayer();
     static WorldLevelLayer* create();

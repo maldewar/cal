@@ -56,6 +56,24 @@ protected:
     b2Body* m_mouseJointGroundBody;
     // Keep track of which touch started the mouse joint.
     cocos2d::Touch* m_mouseJointTouch;
+
+    b2Vec2 m_worldCenter;
+
+    bool m_rotating;
+    float m_rotation;
+    float m_rotationOrigin;
+    float m_rotationTarget;
+
+    bool m_transitioning;
+    float m_transitionDuration;
+    float m_transitionLapse;
+    cocos2d::Vec2 m_transitionTemp;
+    cocos2d::Vec2 m_transitionOrigin;
+    cocos2d::Vec2 m_transitionTarget;
+
+    bool m_following;
+    b2Body* m_followingBody;
+
     bool m_debugDrawEnabled;
     cocos2d::CustomCommand m_customCommand;
     std::vector<b2ParticleSystem*> m_particleSystems;
@@ -63,6 +81,8 @@ protected:
 
 protected:
   void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
+  virtual cocos2d::Vec2 getCenteredPosition(float worldX, float worldY);
+  virtual void setCenteredRotation(float rotation);
         
 public:
     BasicRUBELayer();
@@ -98,6 +118,15 @@ public:
     // Return false from this function to prevent punch zoom and pan.
     virtual bool allowPinchZoom();
     virtual bool enableDebugDraw(bool enable);
+
+    virtual void centerPoint(float x, float y, float time = 0.0f);
+    virtual void centerBody(b2Body* body, float time = 0.0f);
+    virtual void transition(cocos2d::Vec2 origin, cocos2d::Vec2 target, float time);
+    virtual void cancelTransition();
+    virtual void follow(b2Body* body, float transitionTime = 0);
+    virtual void cancelFollow();
+    virtual void rotate(float angle, float transitionTime = 0);
+
 };
 
 #endif /* BASIC_RUBE_LAYER */

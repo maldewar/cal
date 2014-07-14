@@ -21,6 +21,17 @@ BasicRUBELayer::BasicRUBELayer()
     m_mouseJointGroundBody = NULL;
     m_mouseJointTouch = NULL;
     m_debugDrawEnabled = false;
+
+    m_worldCenter = b2Vec2(0,0);
+
+    m_rotating = false;
+    m_rotation = 0.0f;
+    m_transitioning = false;
+    m_transitionTemp = Vec2(0,0);
+    m_transitionOrigin = Vec2(0,0);
+    m_transitionTarget = Vec2(0,0);
+    m_following = false;
+    m_followingBody = nullptr;
 }
 
 BasicRUBELayer::~BasicRUBELayer()
@@ -190,14 +201,52 @@ void BasicRUBELayer::update(float dt)
   if ( m_world )
     m_world->Step(1/60.0, 8, 3);
   CCLayer::update(dt);
-}
+
+  if (m_rotating) {
+    m_transitionLapse += dt;
+    if (m_transitionLapse > m_transitionDuration) {
+      m_rotation = m_rotationTarget;
+      m_rotating = false;
+      //setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
+      setCenteredRotation(m_rotation);
+    } else {
+      m_rotation = ((m_rotationTarget - m_rotationOrigin) * (m_transitionLapse / m_transitionDuration)) + m_rotationOrigin;
+      //setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
+      setCenteredRotation(m_rotation);
+    }
+  } else {
+    if (m_following) {
+      if (m_transitionLapse > m_transitionDuration) {
+        setPosition(this->getCenteredPosition(m_followingBody->GetPosition().x, m_followingBody->GetPosition().y));
+      } else {
+        m_transitionLapse += dt;
+        m_transitionTarget = this->getCenteredPosition(m_followingBody->GetPosition().x, m_followingBody->GetPosition().y);
+        m_transitionTemp.x = ((m_transitionTarget.x - m_transitionOrigin.x) * (m_transitionLapse/m_transitionDuration)) + m_transitionOrigin.x;
+        m_transitionTemp.y = ((m_transitionTarget.y - m_transitionOrigin.y) * (m_transitionLapse/m_transitionDuration)) + m_transitionOrigin.y;
+        setPosition(m_transitionTemp);
+      }
+    } else {
+      if (m_transitioning) {
+        m_transitionLapse += dt;
+        if (m_transitionLapse > m_transitionDuration) {
+          m_transitioning = false;
+          setPosition(m_transitionTarget);
+        } else {
+          m_transitionTemp.x = ((m_transitionTarget.x - m_transitionOrigin.x) * (m_transitionLapse/m_transitionDuration)) +   m_transitionOrigin.x;
+          m_transitionTemp.y = ((m_transitionTarget.y - m_transitionOrigin.y) * (m_transitionLapse/m_transitionDuration)) +   m_transitionOrigin.y;
+          setPosition(m_transitionTemp);
+        }
+      }
+    }
+    }
+  }
 
 
-// Standard Cocos2d method
-void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
-{
-  Layer::draw(renderer, transform, flags);
-  m_customCommand.init(_globalZOrder + 1);
+  // Standard Cocos2d method
+  void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
+  {
+    Layer::draw(renderer, transform, flags);
+    m_customCommand.init(_globalZOrder + 1);
   m_customCommand.func = CC_CALLBACK_0(BasicRUBELayer::onDraw, this, transform, flags);
   renderer->addCommand(&m_customCommand);
 }
@@ -246,15 +295,20 @@ b2Vec2 BasicRUBELayer::screenToWorld(cocos2d::Point screenPos)
     screenPos.x -= layerOffset.x;
     screenPos.y -= layerOffset.y;
     
-    float layerScale = getScale();
+    float scale = getScale();
+    float angleSin = sin(m_rotation);
+    float angleCos = cos(m_rotation);
     
-    return b2Vec2(screenPos.x / layerScale, screenPos.y / layerScale);
+    b2Vec2 worldPoint = b2Vec2((screenPos.x * angleCos + screenPos.y * angleSin) / scale,
+                               (screenPos.y * angleCos - screenPos.x * angleSin) / scale);
+    return worldPoint;
 }
 
 
 // Converts a location in the physics world to a position in screen pixels
 cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
 {
+    // TODO
     worldPos *= getScale();
     Point layerOffset = getPosition();
     Point p = CCPointMake(worldPos.x + layerOffset.x, worldPos.y + layerOffset.y);
@@ -273,7 +327,7 @@ void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
     Touch *touch = touches[0];
     Point screenPos = touch->getLocationInView();
     b2Vec2 worldPos = screenToWorld(screenPos);
-    CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
+    //CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
     
     // Make a small box around the touched point to query for overlapping fixtures
     b2AABB aabb;
@@ -458,4 +512,74 @@ bool BasicRUBELayer::allowPinchZoom()
 
 bool BasicRUBELayer::enableDebugDraw(bool enable) {
   m_debugDrawEnabled = enable;
+  return m_debugDrawEnabled;
+}
+
+void BasicRUBELayer::centerPoint(float x, float y, float time) {
+  Vec2 centerPosition = getCenteredPosition(x, y);
+  if (time > 0) {
+    transition(getPosition(), centerPosition, time);
+  } else {
+    setPosition(centerPosition);
+  }
+}
+
+void BasicRUBELayer::centerBody(b2Body* body, float time) {
+  centerPoint(body->GetPosition().x, body->GetPosition().y, time);
+}
+
+void BasicRUBELayer::transition(Vec2 origin, Vec2 target, float time) {
+  m_transitioning = true;
+  m_transitionDuration = time;
+  m_transitionLapse = 0.0f;
+  m_transitionOrigin = origin;
+  m_transitionTarget = target;
+}
+
+void BasicRUBELayer::cancelTransition() {
+  m_transitioning = false;
+}
+
+void BasicRUBELayer::follow(b2Body* body, float transitionTime) {
+  m_worldCenter.x = body->GetPosition().x;
+  m_worldCenter.y = body->GetPosition().y;
+  m_following = true;
+  m_followingBody = body;
+  m_transitionDuration = transitionTime;
+  m_transitionLapse = 0;
+  m_transitionOrigin = getPosition();
+}
+
+void BasicRUBELayer::cancelFollow() {
+  m_following = false;
+}
+
+cocos2d::Vec2 BasicRUBELayer::getCenteredPosition(float worldX, float worldY) {
+  float angleSin = sin(m_rotation);
+  float angleCos = cos(m_rotation);
+  float scale = getScale();
+  Vec2 center = Vec2(960 - (worldX * angleCos - worldY * angleSin) * scale,
+                     540 - (worldY * angleCos + worldX * angleSin) * scale);
+  //CCLOG("World x:%F y=%f Offset x=%f y=%f angle=%f sin=%f cos=%f scale:%f", m_worldCenter.x, m_worldCenter.y, center.x, center.y, m_rotation, angleSin, angleCos, scale);
+  return center;
+}
+
+void BasicRUBELayer::rotate(float angle, float transitionTime) {
+  if (transitionTime > 0) {
+    m_rotating = true;
+    m_rotationOrigin = CC_DEGREES_TO_RADIANS(-getRotation());
+    m_rotationTarget = angle;
+    CCLOG("ORIGIN:%f TARGET:%f", m_rotationOrigin, m_rotationTarget);
+    m_transitionLapse = 0;
+    m_transitionDuration = transitionTime;
+  } else {
+    m_rotation = angle;
+    setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
+  }
+}
+
+void BasicRUBELayer::setCenteredRotation(float rotation) {
+  setRotation(CC_RADIANS_TO_DEGREES(-rotation));
+  Vec2 position = getCenteredPosition(m_worldCenter.x, m_worldCenter.y);
+  setPosition(position);
 }

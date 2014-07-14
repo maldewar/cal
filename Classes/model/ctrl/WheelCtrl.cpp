@@ -4,7 +4,7 @@
 WheelCtrl::WheelCtrl() : Node() {
   m_state = WHEEL_CTRL_STATE_HIDDEN;
   m_armature = nullptr;
-  m_pauseScene = true;
+  m_pauseScene = false;
   m_scene = nullptr;
   m_targetAngle = 0;
 }
@@ -40,7 +40,11 @@ bool WheelCtrl::init(WorldLevelScene* scene)
 void WheelCtrl::show() {
   m_armature->setVisible(true);
   if (m_scene) {
-    m_armature->setRotation(-CC_RADIANS_TO_DEGREES(m_scene->getGravityAngle()));
+    if (m_scene->gravityAngleRotatesWorld()) {
+      m_armature->setRotation(-CC_RADIANS_TO_DEGREES(-M_PI_2));
+    } else {
+      m_armature->setRotation(-CC_RADIANS_TO_DEGREES(m_scene->getGravityAngle()));
+    }
     if (m_pauseScene) {
       m_scene->pause(true);
     }
@@ -63,8 +67,12 @@ void WheelCtrl::setWorldLevelScene(WorldLevelScene* scene) {
 }
 
 void WheelCtrl::setTargetAngle(float angle) {
-  m_targetAngle = angle;
   m_armature->setRotation(CC_RADIANS_TO_DEGREES(-angle));
+  if (m_scene->gravityAngleRotatesWorld()) {
+    m_targetAngle = angle + m_scene->getGravityAngle() + M_PI_2;
+  } else {
+    m_targetAngle = angle;
+  }
 }
 
 void WheelCtrl::applyTargetAngle() {

@@ -264,6 +264,7 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
   Point screenPos = touch->getLocationInView();
   b2Vec2 worldPos = screenToWorld(screenPos);
   CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
+  //centerPoint(worldPos.x, worldPos.y);
 
   // Make a small box around the touched point to query for overlapping fixtures
   b2AABB aabb;
@@ -291,6 +292,8 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
               break;
             case ENTITY_TYPE_GRAVITRON:
               entity->select();
+              //centerBody(entity->getBody(), 0.2f);
+              follow(entity->getBody(), 0.2f);
               break;
           }
         } else {
@@ -312,6 +315,8 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
               break;
             case ENTITY_TYPE_GRAVITRON:
               entity->select();
+              //centerBody(entity->getBody(), 0.2f);
+              follow(entity->getBody(), 0.2f);
               break;
           }
         } else {

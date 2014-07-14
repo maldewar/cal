@@ -8,6 +8,7 @@ WorldLevelScene::WorldLevelScene() {
   m_paused = false;
   m_debug = true;
   m_gravityAngle = -M_PI_2;
+  m_gravityAngleRotatesWorld = true;
   m_ctrl = CTRL_NONE;
 }
 
@@ -82,6 +83,7 @@ void WorldLevelScene::toggleDebug() {
 }
 
 void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer) {
+  m_worldLevelLayer = worldLevelLayer;
   m_worldLevelLayers.push_back(worldLevelLayer);
   addChild(worldLevelLayer, 1);
   worldLevelLayer->enableDebugDraw(m_debug);
@@ -106,6 +108,9 @@ void WorldLevelScene::setGravityAngle(float angle) {
   m_gravityAngle = angle;
   float xGravity = cos(m_gravityAngle) * 6;
   float yGravity = sin(m_gravityAngle) * 6;
+  if (m_gravityAngleRotatesWorld) {
+    m_worldLevelLayer->rotate(-m_gravityAngle - M_PI_2, 0.5f);
+  }
   for (auto worldLevelLayer : m_worldLevelLayers) {
     worldLevelLayer->getWorld()->SetGravity(b2Vec2(xGravity, yGravity));
     for (b2Body* b = worldLevelLayer->getWorld()->GetBodyList(); b; b = b->GetNext()) {
@@ -123,6 +128,10 @@ void WorldLevelScene::selectCtrl(int ctrl, Entity* entity) {
   if (m_ctrl == CTRL_GRAVITRON) {
     m_worldLevelCtrlLayer->beginCtrlTouch(ctrl, entity);
   }
+}
+
+bool WorldLevelScene::gravityAngleRotatesWorld() {
+  return m_gravityAngleRotatesWorld;
 }
 
 bool WorldLevelScene::isDebugEnable() {
