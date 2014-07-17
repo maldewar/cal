@@ -17,6 +17,7 @@ int Unit::getType() {
 }
 
 void Unit::setBody(b2Body* body) {
+  BodyFactory::getInstance()->randomizeUnitBody(body);
   Entity::setBody(body);
   AIComponent::setBody(body);
 }
