@@ -33,6 +33,11 @@ protected:
   bool m_gravityAngleRotatesWorld;
   int m_ctrl;
 
+  int m_unitsInScene;
+  int m_unitsSaved;
+  int m_unitsLost;
+  int m_unitsRequired;
+
 public:
   WorldLevelScene(void);
   virtual ~WorldLevelScene(void);
@@ -49,6 +54,10 @@ public:
   virtual void selectCtrl(int ctrl, Entity* entity);
   virtual bool isDebugEnable();
   virtual void enableDebug(bool debug);
+  virtual void onExit() override;
+
+  void addUnit(int count);
+  void removeUnit(int count, bool isLost = true);
 };
 
 #endif /* __WORLD_LEVEL_SCENE__ */

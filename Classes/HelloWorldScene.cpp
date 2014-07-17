@@ -90,8 +90,15 @@ bool HelloWorld::init()
     //sprite->setPosition(Vec2(m_visibleSize.width/2 + origin.x, m_visibleSize.height/2 + origin.y));
     // add the sprite as a child to this layer
     //this->addChild(sprite, 0);
-    setUILayer();
+    //setUILayer();
     return true;
+}
+
+void HelloWorld::onEnter() {
+  Layer::onEnter();
+  setUILayer();
+  scheduleUpdate();
+  CCLOG("CALLING ON ENTER.");
 }
 
 void HelloWorld::startBtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
@@ -99,7 +106,7 @@ void HelloWorld::startBtnCallback(Ref* sender, ui::Widget::TouchEventType type) 
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
       //Director::getInstance()->replaceScene( WorldLevelLayer::scene() );
       //Director::sharedDirector()->pushScene(WorldLevelLayer::scene());
-      Director::getInstance()->pushScene(WorldLevelScene::create(""));
+      Director::getInstance()->replaceScene(WorldLevelScene::create(""));
       /*
       auto newScene = LevelScene::createScene();
       Director::getInstance()->setDepthTest(true);
@@ -248,7 +255,10 @@ void HelloWorld::setTouchEnabled(bool enabled) {
 void HelloWorld::pushState(State state) {
   CCLOG("Pushing state %d", state);
   if (!m_states.empty()) {
+    CCLOG("  m_states is NOT EMPTY.");
     playAnimationOut(m_states.top());
+  } else {
+    CCLOG("  m_states is EMPTY.");
   }
   if ( m_states.empty() || state != m_states.top()) {
     m_states.push(state);
@@ -273,6 +283,7 @@ void HelloWorld::popState() {
 }
 
 void HelloWorld::playAnimationIn(State state) {
+  CCLOG(" Calling playAnimationIn %d", state);
   switch (state) {
     case State::MainMenu:
       playStateAnimation("main_options_in");
@@ -301,14 +312,18 @@ void HelloWorld::playAnimationOut(State state) {
 }
 
 void HelloWorld::playStateAnimation(std::string name) {
-  m_currentAction = cocostudio::ActionManagerEx::getInstance()->getActionByName(HelloWorld::MAIN_MENU_JSON, name.c_str());/*
+  CCLOG("  loading animation file:%s action:%s", HelloWorld::MAIN_MENU_JSON, name.c_str());
+  m_currentAction = cocostudio::ActionManagerEx::getInstance()->getActionByName(HelloWorld::MAIN_MENU_JSON, name.c_str());
+  /*
   m_currentAction->play();
   if (m_currentAction->isPlaying())
     log("Animatiooooon is playing");
   else
     log("Animation is NOOOOOT playing");
   */
+  CCLOG("  playStateAnimation %s", name.c_str());
   m_currentAction->play(CallFunc::create(this, callfunc_selector(HelloWorld::finishStateAnimation)));
+  CCLOG("  currentAction set.");
   //cocostudio::ActionManagerEx::getInstance()->playActionByName(HelloWorld::MAIN_MENU_JSON, name.c_str());
   /*
   cocostudio::ActionManagerEx::getInstance()->playActionByName(HelloWorld::MAIN_MENU_JSON,

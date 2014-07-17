@@ -35,6 +35,7 @@ private:
 public:
   static cocos2d::Scene* createScene();
   virtual bool init();
+  virtual void onEnter();
   void pushState(State state);
   void popState();
   void startBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);

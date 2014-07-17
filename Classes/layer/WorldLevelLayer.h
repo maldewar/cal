@@ -10,6 +10,7 @@ class WorldLevelScene;
 class WorldLevelLayer : public BasicRUBELayer
 {
 protected:
+    bool m_isMain;
     WorldLevelScene* m_worldScene;
     cocos2d::Layer* m_unitLayer;
     cocos2d::Layer* m_areaLayer;
@@ -21,6 +22,7 @@ public:
     static WorldLevelLayer* create();
     virtual bool init();
     virtual std::string getFilename();
+    virtual void setMain(bool isMain);
     virtual cocos2d::Point initialWorldOffset();
     virtual float initialWorldScale();
     virtual void afterLoadProcessing(b2dJson* json);

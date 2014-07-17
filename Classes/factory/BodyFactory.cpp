@@ -65,6 +65,11 @@ b2Body* BodyFactory::getBody(std::string category) {
   return body;
 }
 
+void BodyFactory::randomizeUnitBody(b2Body* unitBody) {
+  b2Fixture* fixture = unitBody->GetFixtureList();
+  fixture->SetDensity(CCRANDOM_0_1() * 0.4f + 0.8f);
+}
+
 void BodyFactory::setWorld(b2World* world) {
   m_world = world;
 }

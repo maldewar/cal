@@ -1,6 +1,7 @@
 #include <math.h>
 #include "WorldLevelScene.h"
 #include "cocostudio/CocoStudio.h"
+#include "editor-support/cocostudio/CCActionManagerEx.h"
 
 WorldLevelScene::WorldLevelScene() {
   m_worldLevelUILayer = nullptr;
@@ -10,6 +11,11 @@ WorldLevelScene::WorldLevelScene() {
   m_gravityAngle = -M_PI_2;
   m_gravityAngleRotatesWorld = true;
   m_ctrl = CTRL_NONE;
+
+  m_unitsInScene = 0;
+  m_unitsSaved = 0;
+  m_unitsLost = 0;
+  m_unitsRequired = 0;
 }
 
 WorldLevelScene::~WorldLevelScene() {
@@ -83,7 +89,10 @@ void WorldLevelScene::toggleDebug() {
 }
 
 void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer) {
+  //Set as main
   m_worldLevelLayer = worldLevelLayer;
+  m_worldLevelLayer->setMain(true);
+
   m_worldLevelLayers.push_back(worldLevelLayer);
   addChild(worldLevelLayer, 1);
   worldLevelLayer->enableDebugDraw(m_debug);
@@ -143,4 +152,24 @@ void WorldLevelScene::enableDebug(bool debug) {
   for (auto worldLevelLayer : m_worldLevelLayers) {
     worldLevelLayer->enableDebugDraw(m_debug);
   }
+}
+
+void WorldLevelScene::onExit() {
+  Scene::onExit();
+  cocostudio::ActionManagerEx::destroyInstance();
+}
+
+void WorldLevelScene::addUnit(int count) {
+  m_unitsInScene += count;
+  CCLOG("New unit added to scene, total: %d", m_unitsInScene);
+}
+
+void WorldLevelScene::removeUnit(int count, bool isLost) {
+  if (isLost) {
+    m_unitsLost += count;
+  } else {
+    m_unitsSaved += count;
+  }
+  m_unitsInScene -= count;
+  CCLOG("Unit removed from scene, total: %d", m_unitsInScene);
 }

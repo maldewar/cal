@@ -16,6 +16,7 @@ using namespace std;
 using namespace cocos2d;
 
 WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
+  m_isMain = false;
   m_worldScene = nullptr;
   m_unitLayer = Layer::create();
   m_areaLayer = Layer::create();
@@ -44,6 +45,9 @@ string WorldLevelLayer::getFilename() {
     return "scene/calaverasTemplate.json";
 }
 
+void WorldLevelLayer::setMain(bool isMain) {
+  m_isMain = isMain;
+}
 
 // Override superclass to set different starting offset
 Point WorldLevelLayer::initialWorldOffset()
@@ -189,6 +193,9 @@ void WorldLevelLayer::addChild(Node* node) {
   if (entity) {
     if (entity->getType() == ENTITY_TYPE_UNIT) {
       m_unitLayer->addChild(node);
+      if (m_isMain) {
+        m_worldScene->addUnit(1);
+      }
       return;
     } else if (entity->getType() == ENTITY_TYPE_AREA) {
       m_areaLayer->addChild(node);

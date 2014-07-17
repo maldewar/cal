@@ -32,6 +32,7 @@ public:
   void pauseBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
   void finishStateAnimation();
 
+
 private:
   void setUILayer();
   void playAnimationIn(int state);

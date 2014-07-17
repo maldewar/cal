@@ -3,6 +3,7 @@
 #include "editor-support/cocostudio/CCActionManagerEx.h"
 #include "ui/UILayout.h"
 #include "../scene/WorldLevelScene.h"
+#include "../HelloWorldScene.h"
 
 USING_NS_CC;
 
@@ -29,7 +30,9 @@ void WorldLevelUILayer::settingsBtnCallback(Ref* sender, ui::Widget::TouchEventT
 void WorldLevelUILayer::returnBtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
-      Director::getInstance()->popScene();
+      //Director::getInstance()->popScene();
+      Scene* mainScene = HelloWorld::createScene();
+      Director::getInstance()->replaceScene(mainScene);
     }
   }
 }

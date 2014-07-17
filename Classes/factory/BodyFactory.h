@@ -25,6 +25,7 @@ public:
   virtual bool addBodyDef(std::string category, b2Body* body);
   virtual bool addBodyDef(std::string category, Json::Value json);
   virtual b2Body* getBody(std::string category);
+  virtual void randomizeUnitBody(b2Body* unitBody);
   void setWorld(b2World* world);
 
 protected:
