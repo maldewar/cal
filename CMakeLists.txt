@@ -63,12 +63,14 @@ set(GAME_SRC
   Classes/model/ctrl/WheelCtrl.cpp
   Classes/system/ContactSystem.cpp
   Classes/layer/UILayer.cpp
+  Classes/layer/MainMenuUILayer.cpp
   Classes/layer/BackgroundLayer.cpp
   Classes/layer/BasicRUBELayer.cpp
   Classes/layer/WorldLevelLayer.cpp
   Classes/layer/WorldLevelCtrlLayer.cpp
   Classes/layer/WorldLevelUILayer.cpp
   Classes/layer/WorldLevelDebugLayer.cpp
+  Classes/scene/MainMenuScene.cpp
   Classes/scene/WorldLevelScene.cpp
   Classes/manager/ConfigurationManager.cpp
   Classes/manager/UnitManager.cpp
