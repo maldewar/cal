@@ -19,6 +19,7 @@ class Unit : public Entity, public ContactComponent, public AIComponent
 {
 protected:
     cocostudio::Armature* m_armature;
+    bool m_isLost;
     cocos2d::Sprite* m_sprite;
     int m_animation;
 
@@ -50,6 +51,9 @@ public:
      * Initialization method.
      * @return True if the object is correctly initialized.
      */
+    bool isLost();
+    void setIsLost(bool isLost);
+    void remove(bool isLost);
     virtual bool init(void);
     /**
      * Update method.

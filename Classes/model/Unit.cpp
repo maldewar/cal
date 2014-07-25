@@ -4,6 +4,7 @@
 
 Unit::Unit() : Entity(), ContactComponent(), AIComponent() {
   m_armature = nullptr;
+  m_isLost = false;
   m_width = 0.15f;
   m_height = 0.15f;
   setSubstateStandDuration(0.67f);
@@ -40,6 +41,19 @@ Unit* Unit::create(bool managed, bool setBody) {
   }
   CC_SAFE_DELETE(unit);
   return nullptr;
+}
+
+bool Unit::isLost() {
+  return m_isLost;
+}
+
+void Unit::setIsLost(bool isLost) {
+  m_isLost = isLost;
+}
+
+void Unit::remove(bool isLost) {
+  this->setIsLost(isLost);
+  getWorldLevelLayer()->removeChild(this, true);
 }
 
 bool Unit::init(void) {

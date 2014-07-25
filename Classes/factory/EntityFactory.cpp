@@ -49,6 +49,13 @@ Entry* EntityFactory::getEntry(b2dJson* json, b2Body* body) {
   return entry;
 }
 
+Exit* EntityFactory::getExit(b2dJson* json, b2Body* body) {
+  Exit* exit = Exit::create();
+  exit->setBody(body);
+  exit->update(0);
+  return exit;
+}
+
 Area* EntityFactory::getArea(b2dJson* json, b2Body* body) {
   Area* area = Area::create();
   area->setBody(body);

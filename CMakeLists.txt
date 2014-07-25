@@ -17,7 +17,7 @@ else(DEBUG_MODE)
   set(CMAKE_BUILD_TYPE RELEASE)
 endif(DEBUG_MODE)
 
-set(CMAKE_C_FLAGS_DEBUG "-g -Wall -DCOCOS2D_DEBUG=1")
+set(CMAKE_C_FLAGS_DEBUG "-g -Wall -DCOCOS2D_DEBUG=1 -DEBUG=1")
 set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -51,16 +51,22 @@ set(GAME_SRC
   Classes/util/b2dJsonImage.cpp
   Classes/util/Box2DDebugDraw.cpp
   Classes/util/CMath.cpp
+  Classes/util/PathUtil.cpp
   Classes/component/ContactComponent.cpp
   Classes/component/AIComponent.cpp
   Classes/model/ImageNode.cpp
   Classes/model/ImageBody.cpp
   Classes/model/Entity.cpp
   Classes/model/Entry.cpp
+  Classes/model/Exit.cpp
   Classes/model/Unit.cpp
   Classes/model/Area.cpp
   Classes/model/Gravitron.cpp
   Classes/model/ctrl/WheelCtrl.cpp
+  Classes/model/LayerDef.cpp
+  Classes/model/WorldLayerDef.cpp
+  Classes/model/BgLayerDef.cpp
+  Classes/model/SceneDef.cpp
   Classes/system/ContactSystem.cpp
   Classes/layer/UILayer.cpp
   Classes/layer/MainMenuUILayer.cpp
@@ -76,6 +82,7 @@ set(GAME_SRC
   Classes/manager/UnitManager.cpp
   Classes/factory/BodyFactory.cpp
   Classes/factory/EntityFactory.cpp
+  Classes/factory/SceneFactory.cpp
 )
 
 set(COCOS2D_ROOT ${CMAKE_SOURCE_DIR}/cocos2d)

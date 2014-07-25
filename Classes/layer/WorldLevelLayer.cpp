@@ -5,7 +5,6 @@
 #include "../util/QueryCallbacks.h"
 #include "../model/ImageNode.h"
 #include "../model/ImageBody.h"
-#include "../model/Entity.h"
 #include "../model/Entry.h"
 #include "../model/Unit.h"
 #include "../factory/BodyFactory.h"
@@ -17,6 +16,7 @@ using namespace cocos2d;
 
 WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   m_isMain = false;
+  m_unitCount = 0;
   m_worldScene = nullptr;
   m_unitLayer = Layer::create();
   m_areaLayer = Layer::create();
@@ -26,9 +26,9 @@ WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   BasicRUBELayer::addChild(m_assetLayer, 1);
 }
 
-WorldLevelLayer* WorldLevelLayer::create() {
+WorldLevelLayer* WorldLevelLayer::create(std::string filename) {
   WorldLevelLayer* worldLevelLayer = new (std::nothrow) WorldLevelLayer();
-  if (worldLevelLayer && worldLevelLayer->init()) {
+  if (worldLevelLayer && worldLevelLayer->init(filename)) {
     worldLevelLayer->autorelease();
     return worldLevelLayer;
   }
@@ -36,17 +36,22 @@ WorldLevelLayer* WorldLevelLayer::create() {
   return nullptr;
 }
 
-bool WorldLevelLayer::init() {
+bool WorldLevelLayer::init(std::string filename) {
   m_manageTouch = true;
+  m_filename = filename;
   return BasicRUBELayer::init();
 }
 
 string WorldLevelLayer::getFilename() {
-    return "scene/calaverasTemplate.json";
+    return m_filename;
 }
 
 void WorldLevelLayer::setMain(bool isMain) {
   m_isMain = isMain;
+}
+
+int WorldLevelLayer::getUnitCount() {
+  return m_unitCount;
 }
 
 // Override superclass to set different starting offset
@@ -63,7 +68,7 @@ Point WorldLevelLayer::initialWorldOffset()
     // the current screen height instead of a fixed value, to get the same
     // result on different devices.
     // 
-    Size s = Director::sharedDirector()->getWinSize();
+    Size s = Director::getInstance()->getWinSize();
     return CCPointMake( s.width * (475 / 1024.0), s.height * (397 / 768.0) );
 }
 
@@ -71,7 +76,7 @@ Point WorldLevelLayer::initialWorldOffset()
 // Override superclass to set different starting scale
 float WorldLevelLayer::initialWorldScale()
 {
-    Size s = Director::sharedDirector()->getWinSize();
+    Size s = Director::getInstance()->getWinSize();
     //return s.height / 35; //screen will be 35 physics units high
     return s.height/6;
 }
@@ -93,7 +98,10 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
         if (category.compare("entry") == 0) {
           Entry* entry = EntityFactory::getInstance()->getEntry(json, b2Bodies[i]);
           addChild(entry);
-        } else if (category.compare("unit") == 0) {
+        } else if (category.compare("exit") == 0) {
+          Exit* exit = EntityFactory::getInstance()->getExit(json, b2Bodies[i]);
+          addChild(exit);
+        }else if (category.compare("unit") == 0) {
           Unit* unit = EntityFactory::getInstance()->getUnit(json, b2Bodies[i]);
           addChild(unit);
         } else if (category.compare("area") == 0) {
@@ -191,8 +199,10 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
 void WorldLevelLayer::addChild(Node* node) {
   Entity* entity = dynamic_cast<Entity*>(node);
   if (entity) {
+    entity->setWorldLevelLayer(this);
     if (entity->getType() == ENTITY_TYPE_UNIT) {
       m_unitLayer->addChild(node);
+      m_unitCount++;
       if (m_isMain) {
         m_worldScene->addUnit(1);
       }
@@ -201,9 +211,21 @@ void WorldLevelLayer::addChild(Node* node) {
       m_areaLayer->addChild(node);
       return;
     }
-    entity->setWorldLevelLayer(this);
   }
   m_assetLayer->addChild(node);
+}
+
+void WorldLevelLayer::removeChild(Node* node, bool cleanup) {
+  Entity* entity = dynamic_cast<Entity*>(node);
+  if (entity) {
+    m_deletedEntities.push_back(entity);
+    Unit* unit = dynamic_cast<Unit*>(entity);
+    if (unit) {
+      m_unitCount--;
+    }
+  } else {
+    m_assetLayer->removeChild(node, cleanup);
+  }
 }
 
 void WorldLevelLayer::setWorldLevelScene(WorldLevelScene* worldLevelScene) {
@@ -234,17 +256,32 @@ void WorldLevelLayer::clear()
 // move the images to match the physics body positions
 void WorldLevelLayer::update(float dt)
 {
-    //superclass will Step the physics world
-    BasicRUBELayer::update(dt);
-    //setImagePositionsFromPhysicsBodies();
+  if (m_deletedEntities.size() > 0) {
+    vector<Entity*>::iterator entityIt = m_deletedEntities.begin();
+    while (entityIt != m_deletedEntities.end()) {
+      removeBodyFromWorld((*entityIt)->getBody());
+      if ((*entityIt)->getType() == ENTITY_TYPE_UNIT) {
+        if (m_isMain) {
+          Unit* unit = dynamic_cast<Unit*>((*entityIt));
+          m_worldScene->removeUnit(1, unit->isLost());
+        }
+        m_unitLayer->removeChild((*entityIt), true);
+      } else if ((*entityIt)->getType() == ENTITY_TYPE_AREA) {
+        m_areaLayer->removeChild((*entityIt), true);
+      } else {
+        m_assetLayer->removeChild((*entityIt), true);
+      }
+      entityIt = m_deletedEntities.erase(entityIt);
+    }
+  }
+  BasicRUBELayer::update(dt);
 }
 
 // Remove one body and any images is had attached to it from the layer
 void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
 {
+  m_world->DestroyBody(body);
   /*
-    //destroy the body in the physics world
-    m_world->DestroyBody( body );
     
     //go through the image info array and remove all sprites that were attached to the body we just deleted
     vector<ImageInfo*> imagesToRemove;

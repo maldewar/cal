@@ -30,11 +30,39 @@ public:
     virtual void enterSensor(b2Body* body, Entity* sensorEntity = nullptr);
     virtual void exitSensor(b2Body* body, Entity* sensorEntity = nullptr);
     virtual bool inSensor();
+    /**
+     * Get if this entity has a sensor fixture.
+     * @return True if the entity has a sensor fixture.
+     */
     virtual bool isSensor();
+    /**
+     * Set this entity as having a sensor fixture.
+     * @param isSensor True if the entity has a sensor fixture.
+     */
     virtual void setIsSensor(bool isSensor);
+    /**
+     * Called on an entity when it enters a sensor.
+     * @param body Box2D body.
+     * @param sensorEntity sensor Entity.
+     */
     virtual void sensorStart(b2Body* body, Entity* sensorEntity = nullptr);
+    /**
+     * Called on an entity when it exits a sensor.
+     * @param body Box2D body.
+     * @param sensorEntity sensor Entity.
+     */
     virtual void sensorEnd(b2Body* body, Entity* sensorEntity = nullptr);
+    /**
+     * Called on a sensor entity when it receives a body or an entity.
+     * @param body Box2D body received by the sensor.
+     * @param receivedEntity If the body belongs to an entity is send as parameter.
+     */
     virtual void sensorReceive(b2Body* body, Entity* receivedEntity = nullptr);
+    /**
+     * Called on a sensor entity when it loses a body or an entity.
+     * @param body Box2D body losed by the sensor.
+     * @param lostEntity If the body belongs to an entity is send as parameter.
+     */
     virtual void sensorLose(b2Body* body, Entity* lostEntity = nullptr);
 };
 

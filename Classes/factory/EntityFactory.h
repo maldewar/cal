@@ -6,6 +6,7 @@
 #include "../util/b2dJson.h"
 #include "../model/Unit.h"
 #include "../model/Entry.h"
+#include "../model/Exit.h"
 #include "../model/Area.h"
 #include "../model/Gravitron.h"
 
@@ -23,6 +24,7 @@ public:
   virtual bool init();
   virtual Unit* getUnit(b2dJson* json, b2Body* body);
   virtual Entry* getEntry(b2dJson* json, b2Body* body);
+  virtual Exit* getExit(b2dJson* json, b2Body* body);
   virtual Area* getArea(b2dJson* json, b2Body* body);
   virtual Gravitron* getGravitron(b2dJson* json, b2Body* body);
 

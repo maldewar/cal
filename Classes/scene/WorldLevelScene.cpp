@@ -2,6 +2,8 @@
 #include "WorldLevelScene.h"
 #include "cocostudio/CocoStudio.h"
 #include "editor-support/cocostudio/CCActionManagerEx.h"
+#include "../util/PathUtil.h"
+#include "../factory/SceneFactory.h"
 
 WorldLevelScene::WorldLevelScene() {
   m_worldLevelUILayer = nullptr;
@@ -11,6 +13,7 @@ WorldLevelScene::WorldLevelScene() {
   m_gravityAngle = -M_PI_2;
   m_gravityAngleRotatesWorld = true;
   m_ctrl = CTRL_NONE;
+  m_sceneDef = nullptr;
 
   m_unitsInScene = 0;
   m_unitsSaved = 0;
@@ -18,12 +21,9 @@ WorldLevelScene::WorldLevelScene() {
   m_unitsRequired = 0;
 }
 
-WorldLevelScene::~WorldLevelScene() {
-}
-
 WorldLevelScene* WorldLevelScene::create(std::string filename) {
   WorldLevelScene* worldLevelScene = new (std::nothrow) WorldLevelScene();
-  if (worldLevelScene && worldLevelScene->init()) {
+  if (worldLevelScene && worldLevelScene->init(filename)) {
     worldLevelScene->autorelease();
     return worldLevelScene;
   }
@@ -31,39 +31,62 @@ WorldLevelScene* WorldLevelScene::create(std::string filename) {
   return nullptr;
 }
 
-bool WorldLevelScene::init(void) {
+WorldLevelScene* WorldLevelScene::create(int act, int level) {
+  std::string scenePath = PathUtil::getScene(act, level);
+  return WorldLevelScene::create(scenePath);
+}
+
+bool WorldLevelScene::init(std::string filename) {
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/entry/entry.pvr",
     "sprite/entry/entry.plist", "entry.ExportJson");
+  cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/exit/exit.pvr",
+          "sprite/exit/exit.plist", "exit.ExportJson");
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/unit/unit.pvr",
     "sprite/unit/unit.plist","unit.ExportJson");
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("sprite/gravitron/gravitron.pvr",
     "sprite/gravitron/gravitron.plist", "gravitron.ExportJson");
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("ui/ctrl/ctrl.pvr",
     "ui/ctrl/ctrl.plist", "wheelCtrl.ExportJson");
-  //Background Layer
-  BackgroundLayer* bgLayer = BackgroundLayer::create();
-  //addChild(bgLayer, 0);
 
-  //World Layer
-  WorldLevelLayer* layer = WorldLevelLayer::create();
-  layer->enableDebugDraw(false);
-  addWorldLevelLayer(layer);
+  std::string sceneFactoryError;
+  m_sceneDef = SceneFactory::getInstance()->getSceneDef(filename.c_str(), sceneFactoryError);
+  if (!sceneFactoryError.empty()) {
+    CCLOG("SceneFactory error %s", sceneFactoryError.c_str());
+    //TODO: kill scene.
+  }
+  int topIndex = -100;
+  for (auto layerDef : m_sceneDef->getLayerDefs()) {
+    CCLOG("LAYER DEF TYPE:%d INDEX:%d", layerDef->getType(), layerDef->getIndex());
+    if (layerDef->isEnabled()) {
+      if (layerDef->getType() == LAYER_TYPE_WORLD) {
+        WorldLayerDef* worldLayerDef = static_cast<WorldLayerDef*>(layerDef);
+        WorldLevelLayer* worldLayer = SceneFactory::getInstance()->buildWorldLevelLayer(worldLayerDef);
+        addWorldLevelLayer(worldLayer, worldLayerDef->getIndex());
+      } else if (layerDef->getType() == LAYER_TYPE_BG) {
+        BgLayerDef* bgLayerDef = static_cast<BgLayerDef*>(layerDef);
+        BackgroundLayer* bgLayer = SceneFactory::getInstance()->buildBackgroundLayer(bgLayerDef);
+        addChild(bgLayer, bgLayerDef->getIndex());
+      }
+      if (layerDef->getIndex() > topIndex)
+        topIndex = layerDef->getIndex();
+    }
+  }
 
   //Ctrl Layer
   m_worldLevelCtrlLayer = WorldLevelCtrlLayer::create(this);
-  addChild(m_worldLevelCtrlLayer, 3);
+  addChild(m_worldLevelCtrlLayer, topIndex + 1);
 
   //World UI Layer
   WorldLevelUILayer* uiLayer = WorldLevelUILayer::create();
   m_worldLevelUILayer = uiLayer;
   uiLayer->setScene(this);
-  addChild(uiLayer, 4);
+  addChild(uiLayer, topIndex + 2);
 
   //World Debug Layer
   if (m_debug) {
     m_worldLevelDebugLayer = WorldLevelDebugLayer::create();
     m_worldLevelDebugLayer->setScene(this);
-    addChild(m_worldLevelDebugLayer, 5);
+    addChild(m_worldLevelDebugLayer, topIndex + 3);
   }
 
   return true;
@@ -85,16 +108,15 @@ void WorldLevelScene::togglePause() {
 }
 
 void WorldLevelScene::toggleDebug() {
-  
 }
 
-void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer) {
+void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int index) {
   //Set as main
   m_worldLevelLayer = worldLevelLayer;
   m_worldLevelLayer->setMain(true);
-
+  m_unitsInScene = m_worldLevelLayer->getUnitCount();
   m_worldLevelLayers.push_back(worldLevelLayer);
-  addChild(worldLevelLayer, 1);
+  addChild(worldLevelLayer, index);
   worldLevelLayer->enableDebugDraw(m_debug);
   float xGravity = cos(m_gravityAngle) * 6;
   float yGravity = sin(m_gravityAngle) * 6;

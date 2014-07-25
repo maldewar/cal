@@ -35,7 +35,7 @@ void MainMenuUILayer::startBtnCallback(Ref* sender, ui::Widget::TouchEventType t
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
       //Director::getInstance()->replaceScene( WorldLevelLayer::scene() );
       //Director::sharedDirector()->pushScene(WorldLevelLayer::scene());
-      Director::getInstance()->replaceScene(WorldLevelScene::create(""));
+      Director::getInstance()->replaceScene(WorldLevelScene::create(0,1));
       /*
       auto newScene = LevelScene::createScene();
       Director::getInstance()->setDepthTest(true);

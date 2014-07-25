@@ -10,8 +10,8 @@ private:
   cocos2d::Size m_winSize;
 
 public:
-  CREATE_FUNC(BackgroundLayer);
-  virtual bool init();
+  static BackgroundLayer* create(int bgType);
+  virtual bool init(int bgType);
 
 };
 

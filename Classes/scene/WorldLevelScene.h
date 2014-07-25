@@ -10,11 +10,13 @@
 #include "../layer/WorldLevelUILayer.h"
 #include "../layer/WorldLevelDebugLayer.h"
 #include "../model/Entity.h"
+#include "../model/SceneDef.h"
 class WorldLevelLayer;
 class WorldLevelUILayer;
 class WorldLevelCtrlLayer;
 class WorldLevelDebugLayer;
 class Entity;
+class SceneDef;
 
 const int CTRL_NONE = 0;
 const int CTRL_GRAVITRON = 1;
@@ -27,6 +29,7 @@ protected:
   WorldLevelUILayer* m_worldLevelUILayer;
   WorldLevelCtrlLayer* m_worldLevelCtrlLayer;
   WorldLevelDebugLayer* m_worldLevelDebugLayer;
+  SceneDef* m_sceneDef;
   bool m_paused;
   bool m_debug;
   float m_gravityAngle;
@@ -40,13 +43,13 @@ protected:
 
 public:
   WorldLevelScene(void);
-  virtual ~WorldLevelScene(void);
+  static WorldLevelScene* create(int act, int level);
   static WorldLevelScene* create(std::string filename);
-  virtual bool init(void);
+  virtual bool init(std::string filename);
   virtual void pause(bool pause);
   virtual void togglePause();
   virtual void toggleDebug();
-  virtual void addWorldLevelLayer(WorldLevelLayer* worldLevelLayer);
+  virtual void addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int index);
   virtual void pauseChildrenRecursive(cocos2d::Node* node, bool pause);
   virtual void setGravityAngle(float angle);
   virtual float getGravityAngle();

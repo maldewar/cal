@@ -170,7 +170,7 @@ void Entry::update(float dt) {
     return;
   } else if (m_state == ENTRY_STATE_OPEN) {
     if (m_units != m_capacity && !m_transition) {
-      schedule(schedule_selector(Entry::spawnUnit), (float)m_interval/1000, m_capacity, 0);
+      schedule(schedule_selector(Entry::spawnUnit), (float)m_interval/1000, m_capacity - 1, 0);
       m_transition = true;
     } else {
       unscheduleUpdate();

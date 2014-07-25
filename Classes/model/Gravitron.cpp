@@ -2,7 +2,7 @@
 #include "Unit.h"
 #include "../util/CMath.h"
 
-Gravitron::Gravitron() : Entity() {
+Gravitron::Gravitron() : Entity(), ContactComponent() {
   m_state = GRAVITRON_STATE_ACTIVE;
   m_armature = nullptr;
   m_width = 0.15f;
