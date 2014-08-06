@@ -50,6 +50,8 @@ protected:
     b2World* m_world;
     // Used to draw debug data.
 	  Box2DDebugDraw* m_debugDraw;
+    // Navigation through the world scrolling through the screen.
+    bool m_navigationEnabled;
     // Used when dragging bodies around.
     b2MouseJoint* m_mouseJoint;
     // The other body for the mouse joint (static, no fixtures).
@@ -81,6 +83,13 @@ protected:
 
 protected:
   void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
+  /**
+   * Gets the offset point to set the layer position centered around a
+   * world coordinate.
+   * @param worldX X world coordinate.
+   * @param worldY Y world coordinate.
+   * @return Offset point in screen units.
+   */
   virtual cocos2d::Vec2 getCenteredPosition(float worldX, float worldY);
   virtual void setCenteredRotation(float rotation);
         
@@ -89,6 +98,8 @@ public:
     virtual ~BasicRUBELayer();
     static cocos2d::Scene* scene();
     virtual bool init();
+    virtual void onEnter();
+    virtual void onExit();
     CREATE_FUNC(BasicRUBELayer);
     virtual b2World* getWorld();
     void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
@@ -113,19 +124,52 @@ public:
     virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
     virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
     virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onBodyTouched(b2Body* body, b2Fixture* fixture);
     // Return the first fixture found under the touch location.
     b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
     // Return false from this function to prevent punch zoom and pan.
     virtual bool allowPinchZoom();
     virtual bool enableDebugDraw(bool enable);
-
+    /**
+     * Center the view of the layer to this point.
+     * @param x X world coordinate.
+     * @param y Y world coordinate.
+     * @param time Seconds to transition to the target.
+     */
     virtual void centerPoint(float x, float y, float time = 0.0f);
+    /**
+     * Centers the view to the center of a body.
+     * @param body Box2D body.
+     * @param time Seconds to transition to the target.
+     */
     virtual void centerBody(b2Body* body, float time = 0.0f);
+    /**
+     * Transition of the view from an origin to a target point.
+     * @param origin Initial point in world coordinates.
+     * @param target Target point in world coordinates.
+     * @param time Seconds to transition to the target.
+     */
     virtual void transition(cocos2d::Vec2 origin, cocos2d::Vec2 target, float time);
+    /**
+     * Cancel any ongoing transition.
+     */
     virtual void cancelTransition();
-    virtual void follow(b2Body* body, float transitionTime = 0);
+    /**
+     * Maintains the view centered around a body.
+     * @param body Box2D body to follow.
+     * @param time Seconds to transition to the target.
+     */
+    virtual void follow(b2Body* body, float time = 0);
+    /**
+     * Cancel any ongoing follow up to a body.
+     */
     virtual void cancelFollow();
+    /**
+     * Rotates a layer around the center of the view.
+     */
     virtual void rotate(float angle, float transitionTime = 0);
+    virtual bool isNavigationEnabled();
+    virtual void setNavigationEnabled(bool navigationEnabled);
 
 };
 

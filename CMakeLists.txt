@@ -67,9 +67,13 @@ set(GAME_SRC
   Classes/model/WorldLayerDef.cpp
   Classes/model/BgLayerDef.cpp
   Classes/model/SceneDef.cpp
+  Classes/model/Level.cpp
   Classes/system/ContactSystem.cpp
   Classes/layer/UILayer.cpp
+  Classes/layer/BasicUILayer.cpp
   Classes/layer/MainMenuUILayer.cpp
+  Classes/layer/ActMenuLayer.cpp
+  Classes/layer/LevelMenuLayer.cpp
   Classes/layer/BackgroundLayer.cpp
   Classes/layer/BasicRUBELayer.cpp
   Classes/layer/WorldLevelLayer.cpp
@@ -77,7 +81,10 @@ set(GAME_SRC
   Classes/layer/WorldLevelUILayer.cpp
   Classes/layer/WorldLevelDebugLayer.cpp
   Classes/scene/MainMenuScene.cpp
+  Classes/scene/ActMenuScene.cpp
+  Classes/scene/LevelMenuScene.cpp
   Classes/scene/WorldLevelScene.cpp
+  Classes/manager/StorageManager.cpp
   Classes/manager/ConfigurationManager.cpp
   Classes/manager/UnitManager.cpp
   Classes/factory/BodyFactory.cpp

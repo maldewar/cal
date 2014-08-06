@@ -5,7 +5,8 @@
 //#include "cocostudio/CocoStudio.h"
 //#include "extensions/coco-ext.h"
 
-#include "HelloWorldScene.h"
+#include "scene/MainMenuScene.h"
+#include "manager/StorageManager.h"
 #include "LevelScene.h"
 #define COCOS2D_DEBUG 1
 
@@ -32,7 +33,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
         glview = GLView::create("Calaveras");
-        glview->setFrameSize(640, 480);
+        //glview->setFrameSize(640, 480);
+        glview->setFrameSize(480, 270);
+        //glview->setFrameSize(960, 540);
         director->setOpenGLView(glview);
     }
 
@@ -84,8 +87,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     glview->setDesignResolutionSize(m_designResolutionSize.width, m_designResolutionSize.height, ResolutionPolicy::NO_BORDER);
 #endif
 
+    // Initi Storage
+    StorageManager::getInstance();
+
     // create a scene. it's an autorelease object
-    auto scene = HelloWorld::createScene();
+    auto scene = MainMenuScene::create();
 
     // run
     director->runWithScene(scene);

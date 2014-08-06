@@ -1,5 +1,5 @@
-#ifndef __WORLD_LEVEL_UI_LAYER_H__
-#define __WORLD_LEVEL_UI_LAYER_H__
+#ifndef __BASIC_UI_LAYER_H__
+#define __BASIC_UI_LAYER_H__
 
 #include <string>
 
@@ -7,10 +7,11 @@
 #include "ui/UICheckBox.h"
 #include "UILayer.h"
 
-class WorldLevelUILayer : public UILayer
+class BasicUILayer : public UILayer
 {
 protected:
-  static char* GAME_MENU_JSON;
+  static char* BASIC_UI_JSON;
+  int m_sceneType;
   int m_animCount;
   cocostudio::ActionObject* m_currentAction;
   cocos2d::ui::Button* m_settingsBtn;
@@ -18,20 +19,18 @@ protected:
   cocos2d::ui::CheckBox* m_pauseChk;
 
 public:
-  enum State {
-    GameMenu,
-    PauseMenu,
-    ReturnMenu
+  enum SceneType {
+    Act,
+    Level,
+    Cinematic
   };
 
 public:
-  CREATE_FUNC(WorldLevelUILayer);
-  virtual bool init();
+  static BasicUILayer* create(int sceneType = 0);
+  virtual bool init(int sceneType);
   virtual void onEnter();
-  void settingsBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+  virtual void onExit();
   void returnBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void pauseBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void finishStateAnimation();
 
 
 private:
@@ -41,4 +40,4 @@ private:
   void playStateAnimation(std::string name);
 };
 
-#endif // __WORLD_LEVEL_UI_LAYER_H__
+#endif // __BASIC_UI_LAYER_H__

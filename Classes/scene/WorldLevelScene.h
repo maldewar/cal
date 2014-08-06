@@ -54,6 +54,8 @@ public:
   virtual void setGravityAngle(float angle);
   virtual float getGravityAngle();
   virtual bool gravityAngleRotatesWorld();
+  virtual void setUnitsRequired(int unitsRequired);
+  virtual int getUnitsRequired();
   virtual void selectCtrl(int ctrl, Entity* entity);
   virtual bool isDebugEnable();
   virtual void enableDebug(bool debug);

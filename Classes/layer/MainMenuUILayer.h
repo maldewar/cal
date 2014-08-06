@@ -33,9 +33,12 @@ private:
   cocos2d::ui::CheckBox* m_soundChk;
 
 public:
-  CREATE_FUNC(MainMenuUILayer);
+  MainMenuUILayer();
+  virtual ~MainMenuUILayer();
+  static MainMenuUILayer* create();
   virtual bool init();
   virtual void onEnter();
+  virtual void onExit();
   void pushState(State state);
   void popState();
   void startBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);

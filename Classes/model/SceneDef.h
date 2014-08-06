@@ -10,6 +10,7 @@ class SceneDef
 protected:
   std::string m_id;
   std::string m_title;
+  int m_unitsRequired;
   std::vector<LayerDef*> m_layerDefs;
 
 public:
@@ -21,20 +22,12 @@ public:
      * Class destructor.
      */
     virtual ~SceneDef(void);
-    /**
-     * Returns an instance of this class.
-     * @return SceneDef instance.
-     */
-    static SceneDef* create();
-    /**
-     * Initialization method.
-     * @return True if the object is correctly initialized.
-     */
-    virtual bool init();
     virtual std::string getId();
     virtual void setId(std::string id);
     virtual std::string getTitle();
     virtual void setTitle(std::string title);
+    virtual int getUnitsRequired();
+    virtual void setUnitsRequired(int unitsRequired);
     virtual std::vector<LayerDef*> getLayerDefs();
     virtual void addLayerDef(LayerDef* layerDef);
 };

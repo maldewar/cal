@@ -20,7 +20,7 @@ protected:
   cocos2d::Layer* m_unitLayer;
   cocos2d::Layer* m_areaLayer;
   cocos2d::Layer* m_assetLayer;
-  bool m_manageTouch;
+  bool m_controlGrabbed;
 
 public:
   WorldLevelLayer();
@@ -39,9 +39,9 @@ public:
   virtual void clear();
   virtual void update(float dt);
   void removeBodyFromWorld(b2Body* body);
-  virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+  virtual void onBodyTouched(b2Body* body, b2Fixture* fixture);
 
 };
 

@@ -18,6 +18,7 @@ WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   m_isMain = false;
   m_unitCount = 0;
   m_worldScene = nullptr;
+  m_controlGrabbed = false;
   m_unitLayer = Layer::create();
   m_areaLayer = Layer::create();
   m_assetLayer = Layer::create();
@@ -37,9 +38,12 @@ WorldLevelLayer* WorldLevelLayer::create(std::string filename) {
 }
 
 bool WorldLevelLayer::init(std::string filename) {
-  m_manageTouch = true;
   m_filename = filename;
-  return BasicRUBELayer::init();
+  if (BasicRUBELayer::init()) {
+    setTouchEnabled(false);
+    return true;
+  }
+  return false;
 }
 
 string WorldLevelLayer::getFilename() {
@@ -48,6 +52,7 @@ string WorldLevelLayer::getFilename() {
 
 void WorldLevelLayer::setMain(bool isMain) {
   m_isMain = isMain;
+  setTouchEnabled(m_isMain);
 }
 
 int WorldLevelLayer::getUnitCount() {
@@ -68,8 +73,11 @@ Point WorldLevelLayer::initialWorldOffset()
     // the current screen height instead of a fixed value, to get the same
     // result on different devices.
     // 
-    Size s = Director::getInstance()->getWinSize();
-    return CCPointMake( s.width * (475 / 1024.0), s.height * (397 / 768.0) );
+    //Size s = Director::getInstance()->getWinSize();
+    //return cocos2d::Vec2(0,0);
+    //return CCPointMake( s.width * (475 / 1024.0), s.height * (397 / 768.0) );
+    // TODO: use cameras
+    return getCenteredPosition(0, 0);
 }
 
 
@@ -236,7 +244,6 @@ WorldLevelScene* WorldLevelLayer::getWorldLevelScene() {
   return m_worldScene;
 }
 
-
 // This method should undo anything that was done by afterLoadProcessing, and make sure
 // to call the superclass method so it can do the same
 void WorldLevelLayer::clear()
@@ -299,151 +306,62 @@ void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
   */
 }
 
-void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
-  if (!m_manageTouch) {
-    BasicRUBELayer::onTouchesBegan(touches, unused_event);
-    return;
-  }
-  Touch *touch = touches[0];
-  Point screenPos = touch->getLocationInView();
-  b2Vec2 worldPos = screenToWorld(screenPos);
-  CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
-  //centerPoint(worldPos.x, worldPos.y);
-
-  // Make a small box around the touched point to query for overlapping fixtures
-  b2AABB aabb;
-  b2Vec2 d(0.001f, 0.001f);
-  aabb.lowerBound = worldPos - d;
-  aabb.upperBound = worldPos + d;
-
-  // Query the world for overlapping fixtures (the TouchDownQueryCallback simply
-  // looks for any fixture that contains the touched point)
-  TouchDownQueryCallback callback(worldPos);
-  m_world->QueryAABB(&callback, aabb);
-
-  // Check if we found something, and it was a dynamic body (can't drag static bodies)
-  if (callback.m_fixture)
-  {
-    switch(callback.m_fixture->GetBody()->GetType()) {
-      case b2_staticBody:
-        void* bodyUserData;
-        bodyUserData  = callback.m_fixture->GetBody()->GetUserData();
-        if (bodyUserData) {
-          Entity* entity = (Entity*)bodyUserData;
-          switch(entity->getType()) {
-            case ENTITY_TYPE_AREA:
-              CCLOG("Area touched.");
-              break;
-            case ENTITY_TYPE_GRAVITRON:
-              entity->select();
-              //centerBody(entity->getBody(), 0.2f);
-              follow(entity->getBody(), 0.2f);
-              break;
-          }
-        } else {
-          CCLOG("Static body touched.");
-        }
-        break;
-        break;
-      case b2_kinematicBody:
-        CCLOG("Kinematic body touched.");
-        break;
-      case b2_dynamicBody:
-        void* dynamicBodyUserData;
-        dynamicBodyUserData = callback.m_fixture->GetBody()->GetUserData();
-        if (dynamicBodyUserData) {
-          Entity* entity = (Entity*)dynamicBodyUserData;
-          switch(entity->getType()) {
-            case ENTITY_TYPE_UNIT:
-              CCLOG("Unit touched.");
-              break;
-            case ENTITY_TYPE_GRAVITRON:
-              entity->select();
-              //centerBody(entity->getBody(), 0.2f);
-              follow(entity->getBody(), 0.2f);
-              break;
-          }
-        } else {
-          CCLOG("Dynamic body touched.");
-        }
-        break;
-    }
-    /*
-    // The touched point was over a dynamic body, so make a mouse joint
-    b2Body* body = callback.m_fixture->GetBody();
-    b2MouseJointDef md;
-    md.bodyA = m_mouseJointGroundBody;
-    md.bodyB = body;
-    md.target = worldPos;
-    md.maxForce = 2500.0f * body->GetMass();
-    m_mouseJoint = (b2MouseJoint*)m_world->CreateJoint(&md);
-    body->SetAwake(true);
-    m_mouseJointTouch = touch;
-    */
-  } else {
-    CCLOG("World touched.");
-  }
-}
-
 void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
-  if (!m_manageTouch) {
+  if (!m_controlGrabbed) {
     BasicRUBELayer::onTouchesMoved(touches, unused_event);
-    return;
-  }
-  if ( touches.size() > 1 ) {
-    // At least two touches are moving at the same time
-    if ( ! allowPinchZoom() )
-      return;
-
-    // Take the first two touches and use their movement to pan and zoom the scene.
-    Touch *touch0 = touches[0];
-    Touch *touch1 = touches[1];
-    Point screenPos0 = touch0->getLocationInView();
-    Point screenPos1 = touch1->getLocationInView();
-    Point previousScreenPos0 = touch0->getPreviousLocationInView();
-    Point previousScreenPos1 = touch1->getPreviousLocationInView();
-
-    Point layerOffset = getPosition();
-    float layerScale = getScale();
-
-    // Panning
-    // The midpoint is the point exactly between the two touches. The scene
-    // should move by the same distance that the midpoint just moved.
-    Point previousMidpoint = ccpMidpoint(previousScreenPos0, previousScreenPos1);
-    Point currentMidpoint = ccpMidpoint(screenPos0, screenPos1);
-    Point moved = ccpSub(currentMidpoint, previousMidpoint);
-    moved.y *= -1;
-    layerOffset = ccpAdd(layerOffset, moved);
-
-    // Zooming
-    // The scale should change by the same ratio as the previous and current
-    // distance between the two touches. Unfortunately simply setting the scale
-    // has the side-effect of moving the view center. We want to keep the midpoint
-    // of the touches unchanged by scaling, so we need to look at what it was
-    // before we scale...
-    b2Vec2 worldCenterBeforeScaling = screenToWorld(currentMidpoint);
-
-    // ... then perform the scale change...
-    float previousSeparation = ccpDistance(previousScreenPos0, previousScreenPos1);
-    float currentSeparation = ccpDistance(screenPos0, screenPos1);
-    if ( previousSeparation > 10 ) { //just in case, prevent divide by zero
-      layerScale *= currentSeparation / previousSeparation;
-      setScale(layerScale);
-    }
-
-    // ... now check how that affected the midpoint, and cancel out the change:
-    Point screenCenterAfterScaling = worldToScreen(worldCenterBeforeScaling);
-    Point movedCausedByScaling = ccpSub(screenCenterAfterScaling, currentMidpoint);
-    movedCausedByScaling.y *= -1;
-    layerOffset = ccpSub(layerOffset, movedCausedByScaling);
-
-    setPosition(layerOffset);
   }
 }
 
 void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
-  if (!m_manageTouch) {
+  if (!m_navigationEnabled) {
     BasicRUBELayer::onTouchesEnded(touches, unused_event);
     return;
+  }
+}
+
+void WorldLevelLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
+  switch(body->GetType()) {
+    case b2_staticBody:
+      void* bodyUserData;
+      bodyUserData  = body->GetUserData();
+      if (bodyUserData) {
+        Entity* entity = (Entity*)bodyUserData;
+        switch(entity->getType()) {
+          case ENTITY_TYPE_AREA:
+            CCLOG("Area touched.");
+            break;
+          case ENTITY_TYPE_GRAVITRON:
+            entity->select();
+            //centerBody(entity->getBody(), 0.2f);
+            follow(entity->getBody(), 0.2f);
+            break;
+        }
+      } else {
+        CCLOG("Static body touched.");
+      }
+      break;
+      break;
+    case b2_kinematicBody:
+      CCLOG("Kinematic body touched.");
+      break;
+    case b2_dynamicBody:
+      void* dynamicBodyUserData;
+      dynamicBodyUserData = body->GetUserData();
+      if (dynamicBodyUserData) {
+        Entity* entity = (Entity*)dynamicBodyUserData;
+        switch(entity->getType()) {
+          case ENTITY_TYPE_UNIT:
+            CCLOG("Unit touched.");
+            break;
+          case ENTITY_TYPE_GRAVITRON:
+            entity->select();
+            //centerBody(entity->getBody(), 0.2f);
+            follow(entity->getBody(), 0.2f);
+            break;
+        }
+      } else {
+        CCLOG("Dynamic body touched.");
+      }
+      break;
   }
 }

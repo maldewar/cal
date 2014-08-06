@@ -33,26 +33,23 @@ SceneDef* SceneFactory::getSceneDef(const char* filename, std::string& errorMsg)
   if (!filename)
     return nullptr;
 
-  std::ifstream ifs;
   std::string fullpath = cocos2d::FileUtils::sharedFileUtils()->fullPathForFilename(filename);
-  ifs.open(fullpath.c_str(), std::ios::in);
-  if (!ifs) {
-    errorMsg = std::string("Could not open file '") + std::string(filename) + std::string("' for reading.");
-    return nullptr;
-  }
-
   Json::Value root;
   Json::Reader reader;
-  if (!reader.parse(ifs, root)) {
+  ssize_t fileSize = 0;
+  unsigned char* fileData = cocos2d::FileUtils::sharedFileUtils()->getFileData(fullpath, "r", &fileSize);
+  std::string jsonContent;
+  jsonContent.assign(reinterpret_cast<const char*>(fileData), fileSize);
+
+  if (!reader.parse(jsonContent, root)) {
     errorMsg = std::string("Failed to parse '") + std::string(filename) + std::string(" : ") + reader.getFormatedErrorMessages();
-    ifs.close();
     return nullptr;
   }
-  ifs.close();
 
   SceneDef* sceneDef = new SceneDef();
   sceneDef->setId(root.get("id", "").asString());
   sceneDef->setTitle(root.get("title", "").asString());
+  sceneDef->setUnitsRequired(root.get("unitsRequired", 0).asInt());
   const Json::Value jarrLayerDefs = root["layers"];
   for (Json::ValueIterator itr = jarrLayerDefs.begin(); itr != jarrLayerDefs.end(); itr++) {
     const Json::Value jLayerDef = *itr;

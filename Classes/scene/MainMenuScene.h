@@ -16,6 +16,7 @@ public:
   virtual ~MainMenuScene(void);
   static MainMenuScene* create();
   virtual bool init(void);
+  virtual void onEnter() override;
   virtual void onExit() override;
 };
 

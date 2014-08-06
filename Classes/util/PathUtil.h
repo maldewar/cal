@@ -5,8 +5,9 @@
 
 class PathUtil
 {
-    public:
-      static std::string getScene(int act, int level);
+public:
+  static std::string getScene(int act, int level);
+  static std::string getAct(int act);
 };
 
 #endif

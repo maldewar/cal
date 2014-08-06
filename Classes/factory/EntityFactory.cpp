@@ -69,3 +69,12 @@ Gravitron* EntityFactory::getGravitron(b2dJson* json, b2Body* body) {
   gravitron->update(0);
   return gravitron;
 }
+
+Level* EntityFactory::getLevel(b2dJson* json, b2Body* body) {
+  std::string armature = json->getCustomString(body, "armature", "");
+  Level* level = Level::create(armature);
+  level->setBody(body);
+  level->setLevel(json->getCustomInt(body, "level", 0));
+  level->update(0);
+  return level;
+}

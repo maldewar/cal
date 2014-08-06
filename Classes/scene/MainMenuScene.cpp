@@ -21,13 +21,23 @@ MainMenuScene* MainMenuScene::create() {
 }
 
 bool MainMenuScene::init(void) {
+  CCLOG("CALLING MAIN MENU SCENE INIT.");
   MainMenuUILayer* mainMenuUILayer = MainMenuUILayer::create();
   addChild(mainMenuUILayer, 0);
   return true;
 }
 
+void MainMenuScene::onEnter() {
+  CCLOG("MainMenuScene::onEnter");
+  Scene::onEnter();
+}
+
 void MainMenuScene::onExit() {
-  Scene::onExit();
+  CCLOG("MainMenuScene::onExit");
+  //Scene::onExit();
   //Node::onExit();
-  //cocostudio::ActionManagerEx::destroyInstance();
+  //stopAllActions();
+  //unscheduleAllSelectors();
+  //removeFromParentAndCleanup(true);
+  Scene::onExit();
 }

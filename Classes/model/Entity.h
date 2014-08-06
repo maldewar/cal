@@ -15,6 +15,7 @@ const int ENTITY_TYPE_EXIT  = 4;
 const int ENTITY_TYPE_GRAVITRON = 5;
 const int ENTITY_TYPE_IMAGE = 6;
 const int ENTITY_TYPE_IMAGE_BODY = 7;
+const int ENTITY_TYPE_LEVEL = 8;
 
 class Entity : public cocos2d::Node
 {

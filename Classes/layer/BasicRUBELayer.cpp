@@ -17,6 +17,7 @@ BasicRUBELayer::BasicRUBELayer()
 {
     m_world = NULL;
     m_debugDraw = NULL;
+    m_navigationEnabled = true;
     m_mouseJoint = NULL;
     m_mouseJointGroundBody = NULL;
     m_mouseJointTouch = NULL;
@@ -36,8 +37,6 @@ BasicRUBELayer::BasicRUBELayer()
 
 BasicRUBELayer::~BasicRUBELayer()
 {
-    unscheduleUpdate();
-    clear();
 }
 
 Scene* BasicRUBELayer::scene()
@@ -57,16 +56,29 @@ bool BasicRUBELayer::init()
     setAnchorPoint( Vec2(0,0) );
     
     // set the starting scale and offset values from the subclass
-    setPosition( initialWorldOffset() );
+    //setPosition( initialWorldOffset() );
+    centerPoint(0,0);
     setScale( initialWorldScale() );
     
     // load the world from RUBE .json file (this will also call afterLoadProcessing)
     loadWorld();
     
-    scheduleUpdate();
     setKeypadEnabled(true);
     
     return true;
+}
+
+void BasicRUBELayer::onEnter() {
+  CCLOG("BasicRUBELayer::onEnter");
+  Layer::onEnter();
+  scheduleUpdate();
+}
+
+void BasicRUBELayer::onExit() {
+  CCLOG("BasicRUBELayer::onExit");
+  unscheduleUpdate();
+  clear();
+  Layer::onExit();
 }
 
 b2World* BasicRUBELayer::getWorld() {
@@ -179,8 +191,7 @@ void BasicRUBELayer::afterLoadProcessing(b2dJson* json)
 
 // This method should undo anything that was done by the loadWorld and afterLoadProcessing
 // methods, and return to a state where loadWorld can safely be called again.
-void BasicRUBELayer::clear()
-{
+void BasicRUBELayer::clear() {
     if ( m_world ) {
         log("Deleting Box2D world");
         delete m_world;
@@ -238,15 +249,14 @@ void BasicRUBELayer::update(float dt)
         }
       }
     }
-    }
   }
+}
 
 
-  // Standard Cocos2d method
-  void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
-  {
-    Layer::draw(renderer, transform, flags);
-    m_customCommand.init(_globalZOrder + 1);
+// Standard Cocos2d method
+void BasicRUBELayer::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) {
+  Layer::draw(renderer, transform, flags);
+  m_customCommand.init(_globalZOrder + 1);
   m_customCommand.func = CC_CALLBACK_0(BasicRUBELayer::onDraw, this, transform, flags);
   renderer->addCommand(&m_customCommand);
 }
@@ -318,109 +328,75 @@ cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
 
 
 // Standard Cocos2d method. Here we make a mouse joint to drag dynamic bodies around.
-void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event)
-{
-    // Only make one mouse joint at a time!
-    if ( m_mouseJoint )
-        return;
-    
+void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
+  if (touches.size() == 1) {
     Touch *touch = touches[0];
     Point screenPos = touch->getLocationInView();
     b2Vec2 worldPos = screenToWorld(screenPos);
-    //CCLOG("Touches began at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
-    
+
     // Make a small box around the touched point to query for overlapping fixtures
     b2AABB aabb;
     b2Vec2 d(0.001f, 0.001f);
     aabb.lowerBound = worldPos - d;
     aabb.upperBound = worldPos + d;
-    
+
     // Query the world for overlapping fixtures (the TouchDownQueryCallback simply
     // looks for any fixture that contains the touched point)
     TouchDownQueryCallback callback(worldPos);
     m_world->QueryAABB(&callback, aabb);
-    
+
     // Check if we found something, and it was a dynamic body (can't drag static bodies)
-    if (callback.m_fixture && callback.m_fixture->GetBody()->GetType() == b2_dynamicBody)
-    {
-        // The touched point was over a dynamic body, so make a mouse joint
-        b2Body* body = callback.m_fixture->GetBody();
-        b2MouseJointDef md;
-        md.bodyA = m_mouseJointGroundBody;
-        md.bodyB = body;
-        md.target = worldPos;
-        md.maxForce = 2500.0f * body->GetMass();
-        m_mouseJoint = (b2MouseJoint*)m_world->CreateJoint(&md);
-        body->SetAwake(true);
-        m_mouseJointTouch = touch;
+    if (callback.m_fixture) {
+      onBodyTouched(callback.m_fixture->GetBody(), callback.m_fixture);
     }
+  }
 }
 
 
 // Standard Cocos2d method
-void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event)
-{
-    if ( touches.size() > 1 ) {
-        // At least two touches are moving at the same time
-        if ( ! allowPinchZoom() )
-            return;
-        
-        // Take the first two touches and use their movement to pan and zoom the scene.
-        Touch *touch0 = touches[0];
-        Touch *touch1 = touches[1];
-        Point screenPos0 = touch0->getLocationInView();
-        Point screenPos1 = touch1->getLocationInView();
-        Point previousScreenPos0 = touch0->getPreviousLocationInView();
-        Point previousScreenPos1 = touch1->getPreviousLocationInView();
-        
-        Point layerOffset = getPosition();
-        float layerScale = getScale();
-        
-        // Panning
-        // The midpoint is the point exactly between the two touches. The scene
-        // should move by the same distance that the midpoint just moved.
-        Point previousMidpoint = ccpMidpoint(previousScreenPos0, previousScreenPos1);
-        Point currentMidpoint = ccpMidpoint(screenPos0, screenPos1);
-        Point moved = ccpSub(currentMidpoint, previousMidpoint);
-        moved.y *= -1;
-        layerOffset = ccpAdd(layerOffset, moved);
-
-        // Zooming
-        // The scale should change by the same ratio as the previous and current
-        // distance between the two touches. Unfortunately simply setting the scale
-        // has the side-effect of moving the view center. We want to keep the midpoint
-        // of the touches unchanged by scaling, so we need to look at what it was
-        // before we scale...
-        b2Vec2 worldCenterBeforeScaling = screenToWorld(currentMidpoint);
-        
-        // ... then perform the scale change...
-        float previousSeparation = ccpDistance(previousScreenPos0, previousScreenPos1);
-        float currentSeparation = ccpDistance(screenPos0, screenPos1);
-        if ( previousSeparation > 10 ) { //just in case, prevent divide by zero
-            layerScale *= currentSeparation / previousSeparation;
-            setScale(layerScale);
-        }
-
-        // ... now check how that affected the midpoint, and cancel out the change:
-        Point screenCenterAfterScaling = worldToScreen(worldCenterBeforeScaling);
-        Point movedCausedByScaling = ccpSub(screenCenterAfterScaling, currentMidpoint);
-        movedCausedByScaling.y *= -1;
-        layerOffset = ccpSub(layerOffset, movedCausedByScaling);       
-        
-        setPosition(layerOffset);
+void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
+  if (m_navigationEnabled && !m_following) {
+    if (touches.size() > 1 && allowPinchZoom()) {
+      // Zoom
+      Touch* touch0 = touches[0];
+      Touch* touch1 = touches[1];
+      Vec2 currentScreenPos0 = touch0->getLocationInView();
+      Vec2 currentScreenPos1 = touch1->getLocationInView();
+      Vec2 previousScreenPos0 = touch0->getPreviousLocationInView();
+      Vec2 previousScreenPos1 = touch1->getPreviousLocationInView();
+      Vec2 layerOffset = getPosition();
+      float layerScale = getScale();
+      Vec2 currentMidpoint = ((currentScreenPos1 - currentScreenPos0) / 2) + currentScreenPos0;
+      Vec2 previousMidpoint = ((previousScreenPos1 - previousScreenPos0) / 2) + previousScreenPos0;
+      Vec2 moved = currentMidpoint - previousMidpoint;
+      moved.y *= -1;
+      layerOffset = layerOffset + moved;
+      b2Vec2 worldCenterBeforeScaling = screenToWorld(currentMidpoint);
+      float previousSeparation = previousScreenPos0.distance(previousScreenPos1);
+      float currentSeparation = currentScreenPos0.distance(currentScreenPos1);
+      if ( previousSeparation > 10 ) { //just in case, prevent divide by zero
+        layerScale *= currentSeparation / previousSeparation;
+        setScale(layerScale);
+      }
+      // ... now check how that affected the midpoint, and cancel out the change:
+      Vec2 screenCenterAfterScaling = worldToScreen(worldCenterBeforeScaling); //TODO: implement worldToScreen
+      Vec2 movedCausedByScaling = screenCenterAfterScaling - currentMidpoint;
+      movedCausedByScaling.y *= -1;
+      layerOffset = layerOffset - movedCausedByScaling;
+      setPosition(layerOffset);
+    } else {
+      // Panning
+      Touch* touch = touches[0];
+      Vec2 currentScreenPos = touch->getLocationInView();
+      Vec2 previousScreenPos = touch->getPreviousLocationInView();
+      Vec2 layerOffset = getPosition();
+      Vec2 moved = currentScreenPos - previousScreenPos;
+      moved.y *= -1;
+      layerOffset = layerOffset + moved;
+      setPosition(layerOffset);
     }
-    else if ( m_mouseJoint ) {
-        // Only one touch is moving. If it is the touch that started the mouse joint
-        // move the target position of the mouse joint to the new touch position
-        Touch *touch = touches[0];
-        if ( touch == m_mouseJointTouch ) {
-            Point screenPos = touch->getLocationInView();
-            b2Vec2 worldPos = screenToWorld(screenPos);
-            m_mouseJoint->SetTarget(worldPos);
-        }
-    }
+  }
 }
-
 
 // Standard Cocos2d method
 void BasicRUBELayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event)
@@ -490,6 +466,9 @@ void BasicRUBELayer::onTouchesCancelled(const std::vector<cocos2d::Touch*>& touc
     onTouchesEnded(touches, event);
 }
 
+void BasicRUBELayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
+}
+
 b2Fixture* BasicRUBELayer::getTouchedFixture(Touch* touch)
 {
     Point screenPos = touch->getLocationInView();
@@ -540,12 +519,12 @@ void BasicRUBELayer::cancelTransition() {
   m_transitioning = false;
 }
 
-void BasicRUBELayer::follow(b2Body* body, float transitionTime) {
+void BasicRUBELayer::follow(b2Body* body, float time) {
   m_worldCenter.x = body->GetPosition().x;
   m_worldCenter.y = body->GetPosition().y;
   m_following = true;
   m_followingBody = body;
-  m_transitionDuration = transitionTime;
+  m_transitionDuration = time;
   m_transitionLapse = 0;
   m_transitionOrigin = getPosition();
 }
@@ -560,7 +539,6 @@ cocos2d::Vec2 BasicRUBELayer::getCenteredPosition(float worldX, float worldY) {
   float scale = getScale();
   Vec2 center = Vec2(960 - (worldX * angleCos - worldY * angleSin) * scale,
                      540 - (worldY * angleCos + worldX * angleSin) * scale);
-  //CCLOG("World x:%F y=%f Offset x=%f y=%f angle=%f sin=%f cos=%f scale:%f", m_worldCenter.x, m_worldCenter.y, center.x, center.y, m_rotation, angleSin, angleCos, scale);
   return center;
 }
 
@@ -582,4 +560,12 @@ void BasicRUBELayer::setCenteredRotation(float rotation) {
   setRotation(CC_RADIANS_TO_DEGREES(-rotation));
   Vec2 position = getCenteredPosition(m_worldCenter.x, m_worldCenter.y);
   setPosition(position);
+}
+
+bool BasicRUBELayer::isNavigationEnabled() {
+  return m_navigationEnabled;
+}
+
+void BasicRUBELayer::setNavigationEnabled(bool navigationEnabled) {
+  m_navigationEnabled = navigationEnabled;
 }

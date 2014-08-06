@@ -1,5 +1,6 @@
 #include "MainMenuUILayer.h"
 #include "../scene/WorldLevelScene.h"
+#include "../scene/ActMenuScene.h"
 #include "editor-support/cocostudio/CCSGUIReader.h"
 #include "editor-support/cocostudio/CCActionManagerEx.h"
 #include "ui/UILayout.h"
@@ -9,25 +10,55 @@ USING_NS_CC;
 
 char* MainMenuUILayer::MAIN_MENU_JSON = "MainMenu.json";
 
+MainMenuUILayer::MainMenuUILayer() {
+}
+
+MainMenuUILayer::~MainMenuUILayer() {
+}
+
+MainMenuUILayer* MainMenuUILayer::create() {
+  MainMenuUILayer* mainMenuUILayer = new (std::nothrow) MainMenuUILayer();
+  if (mainMenuUILayer && mainMenuUILayer->init()) {
+    mainMenuUILayer->autorelease();
+    return mainMenuUILayer;
+  }
+  CC_SAFE_DELETE(mainMenuUILayer);
+  return nullptr;
+}
+
 // on "init" you need to initialize your instance
 bool MainMenuUILayer::init()
 {
-    if ( !Layer::init() )
-    {
-        return false;
-    }
-    m_visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    m_winSize = Director::getInstance()->getWinSize();
-    m_animCount = 0;
-    m_currentAction = nullptr;
-    setUILayer();
-    return true;
+  if ( !Layer::init() )
+  {
+      return false;
+  }
+  m_visibleSize = Director::getInstance()->getVisibleSize();
+  Vec2 origin = Director::getInstance()->getVisibleOrigin();
+  m_winSize = Director::getInstance()->getWinSize();
+  m_animCount = 0;
+  m_currentAction = nullptr;
+  //setUILayer();
+  return true;
 }
 
 void MainMenuUILayer::onEnter() {
+  CCLOG("MainMenuUILayer::onEnter");
   Layer::onEnter();
-  //setUILayer();
+  setUILayer();
+  scheduleUpdate();
+}
+
+void MainMenuUILayer::onExit() {
+  CCLOG("MainMenuUILayer::onExit");
+  unscheduleUpdate();
+  stopAllActions();
+  m_currentAction->stop(); // TODO: stop all actions, not just the last one
+  unscheduleAllSelectors();
+  cocostudio::ActionManagerEx::getInstance()->releaseActions();
+  cocostudio::ActionManagerEx::destroyInstance();
+  cocostudio::GUIReader::destroyInstance();
+  Layer::onExit();
 }
 
 void MainMenuUILayer::startBtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
@@ -35,7 +66,8 @@ void MainMenuUILayer::startBtnCallback(Ref* sender, ui::Widget::TouchEventType t
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
       //Director::getInstance()->replaceScene( WorldLevelLayer::scene() );
       //Director::sharedDirector()->pushScene(WorldLevelLayer::scene());
-      Director::getInstance()->replaceScene(WorldLevelScene::create(0,1));
+      //Director::getInstance()->replaceScene(WorldLevelScene::create(0,1));
+      Director::getInstance()->replaceScene(ActMenuScene::create());
       /*
       auto newScene = LevelScene::createScene();
       Director::getInstance()->setDepthTest(true);
@@ -67,11 +99,13 @@ void MainMenuUILayer::returnBtnCallback(Ref* sender, ui::Widget::TouchEventType 
 }
 
 void MainMenuUILayer::setUILayer() {
+  CCLOG("MainMenuUILayer::setUILayer 1");
   Layer* uiLayer = Layer::create();
   this->addChild(uiLayer, 3);
 
   ui::Layout* uiLayout = static_cast<ui::Layout*>(cocostudio::GUIReader::getInstance()->widgetFromJsonFile(MainMenuUILayer::MAIN_MENU_JSON));
   uiLayer->addChild(uiLayout);
+  CCLOG("MainMenuUILayer::setUILayer 2");
 
   //Containers
   ui::Layout* borderButtons = static_cast<ui::Layout*>(uiLayout->getChildByName("border_buttons"));
@@ -85,6 +119,7 @@ void MainMenuUILayer::setUILayer() {
   double visibleWidthRatio = m_visibleSize.width / m_winSize.width;
   borderButtons->setSizePercent(Size(visibleWidthRatio, 1));
   returnButton->setSizePercent(Size(visibleWidthRatio, 1));
+  CCLOG("MainMenuUILayer::setUILayer 3");
 
   m_startBtn = static_cast<ui::Button*>(mainOptions->getChildByName("btn_start"));
   m_continueBtn = static_cast<ui::Button*>(mainOptions->getChildByName("btn_continue"));
@@ -93,11 +128,13 @@ void MainMenuUILayer::setUILayer() {
   m_returnBtn = static_cast<ui::Button*>(_btnReturn->getChildByName("btn_return"));
   m_musicChk = static_cast<ui::CheckBox*>(borderButtons->getChildByName("btn_music"));
   m_soundChk = static_cast<ui::CheckBox*>(borderButtons->getChildByName("btn_sound"));
+  CCLOG("MainMenuUILayer::setUILayer 4");
 
   m_startBtn->addTouchEventListener(CC_CALLBACK_2(MainMenuUILayer::startBtnCallback, this));
   m_continueBtn->addTouchEventListener(CC_CALLBACK_2(MainMenuUILayer::continueBtnCallback, this));
   m_settingsBtn->addTouchEventListener(CC_CALLBACK_2(MainMenuUILayer::settingsBtnCallback, this));
   m_returnBtn->addTouchEventListener(CC_CALLBACK_2(MainMenuUILayer::returnBtnCallback, this));
+  CCLOG("MainMenuUILayer::setUILayer 5");
 
   pushState(State::MainMenu);
 

@@ -3,34 +3,10 @@
 SceneDef::SceneDef() {
   m_id = "";
   m_title = "";
+  m_unitsRequired = 0;
 }
 
 SceneDef::~SceneDef() {
-}
-
-SceneDef* SceneDef::create()
-{
-  SceneDef *sceneDef = new (std::nothrow) SceneDef();
-  if (sceneDef && sceneDef->init())
-  {
-    return sceneDef;
-  }
-  return nullptr;
-}
-
-bool SceneDef::init()
-{
-  /**
-  m_armature = cocostudio::Armature::create("sceneDef");
-  if (m_armature) {
-    addChild(m_armature);
-    setScale(PX_TO_M);
-    setIsSensor(true);
-    scheduleUpdate();
-    return true;
-  }
-  */
-  return false;
 }
 
 std::string SceneDef::getId() {
@@ -47,6 +23,14 @@ std::string SceneDef::getTitle() {
 
 void SceneDef::setTitle(std::string title) {
   m_title = title;
+}
+
+int SceneDef::getUnitsRequired() {
+  return m_unitsRequired;
+}
+
+void SceneDef::setUnitsRequired(int unitsRequired) {
+  m_unitsRequired = unitsRequired;
 }
 
 std::vector<LayerDef*> SceneDef::getLayerDefs() {

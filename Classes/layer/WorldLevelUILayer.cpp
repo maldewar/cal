@@ -3,7 +3,7 @@
 #include "editor-support/cocostudio/CCActionManagerEx.h"
 #include "ui/UILayout.h"
 #include "../scene/WorldLevelScene.h"
-#include "../HelloWorldScene.h"
+#include "../scene/MainMenuScene.h"
 
 USING_NS_CC;
 
@@ -15,8 +15,12 @@ bool WorldLevelUILayer::init()
   if ( !UILayer::init() ) {
     return false;
   }
-  setUILayer();
   return true;
+}
+
+void WorldLevelUILayer::onEnter() {
+  UILayer::onEnter();
+  setUILayer();
 }
 
 void WorldLevelUILayer::settingsBtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
@@ -31,7 +35,9 @@ void WorldLevelUILayer::returnBtnCallback(Ref* sender, ui::Widget::TouchEventTyp
   if (type == ui::Widget::TouchEventType::ENDED) {
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
       //Director::getInstance()->popScene();
-      Scene* mainScene = HelloWorld::createScene();
+      CCLOG("CREATING MAIN MENU SCENE.");
+      Scene* mainScene = MainMenuScene::create();
+      CCLOG("MAIN MENU SCENE CREATED.");
       Director::getInstance()->replaceScene(mainScene);
     }
   }

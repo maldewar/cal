@@ -165,6 +165,14 @@ bool WorldLevelScene::gravityAngleRotatesWorld() {
   return m_gravityAngleRotatesWorld;
 }
 
+void WorldLevelScene::setUnitsRequired(int unitsRequired) {
+  m_unitsRequired = unitsRequired;
+}
+
+int WorldLevelScene::getUnitsRequired() {
+  return m_unitsRequired;
+}
+
 bool WorldLevelScene::isDebugEnable() {
   return m_debug;
 }

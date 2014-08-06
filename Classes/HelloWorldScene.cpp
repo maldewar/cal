@@ -106,7 +106,7 @@ void HelloWorld::startBtnCallback(Ref* sender, ui::Widget::TouchEventType type) 
     if (m_currentAction != nullptr && !m_currentAction->isPlaying()) {
       //Director::getInstance()->replaceScene( WorldLevelLayer::scene() );
       //Director::sharedDirector()->pushScene(WorldLevelLayer::scene());
-      Director::getInstance()->replaceScene(WorldLevelScene::create(""));
+      Director::getInstance()->replaceScene(WorldLevelScene::create(0,0));
       /*
       auto newScene = LevelScene::createScene();
       Director::getInstance()->setDepthTest(true);
