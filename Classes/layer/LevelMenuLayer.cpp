@@ -133,7 +133,7 @@ void LevelMenuLayer::removeBodyFromWorld(b2Body* body) {
   m_world->DestroyBody(body);
 }
 
-void LevelMenuLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
+void LevelMenuLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
   if (fixture->IsSensor()) {
     void* userData;
     userData = body->GetUserData();
@@ -144,4 +144,7 @@ void LevelMenuLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
       }
     }
   }
+}
+
+void LevelMenuLayer::onWorldTouchBegan(b2Vec2& position) {
 }

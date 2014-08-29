@@ -41,23 +41,25 @@ public:
    * Class constructor.
    */
   AIComponent(void);
-  virtual ~AIComponent(void);
+  ~AIComponent(void);
+  void setAfoot();
+  void setLoose();
+  bool isAfoot();
+  bool isLoose();
+  void setSubstateStandDuration(float duration);
   virtual void setBody(b2Body* body);
-  virtual void setAfoot();
-  virtual void setLoose();
-  virtual bool isAfoot();
-  virtual bool isLoose();
   virtual void update(float dt);
   virtual void onStateChange(int state, int substate);
   virtual void onSubstateChange(int substate);
   virtual void onDirectionChange(bool isRight);
-  void setSubstateStandDuration(float duration);
 
 protected:
   virtual void setState(int state);
   virtual void setSubstate(int substate);
   virtual void setTween(float duration, int nextSubstate);
   virtual void cancelTween();
+  virtual void resetPlan();
+  virtual void makePlan(int targetType);
 };
 
 #endif // __AI_COMPONENT_H__

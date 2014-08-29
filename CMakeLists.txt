@@ -44,7 +44,6 @@ endif()
 set(GAME_SRC
   proj.linux/main.cpp
   Classes/AppDelegate.cpp
-  Classes/HelloWorldScene.cpp
   Classes/LevelScene.cpp
   Classes/util/jsoncpp.cpp
   Classes/util/b2dJson.cpp
@@ -52,6 +51,8 @@ set(GAME_SRC
   Classes/util/Box2DDebugDraw.cpp
   Classes/util/CMath.cpp
   Classes/util/PathUtil.cpp
+  Classes/util/IdUtil.cpp
+  Classes/engine/RayCastTool.cpp
   Classes/component/ContactComponent.cpp
   Classes/component/AIComponent.cpp
   Classes/model/ImageNode.cpp
@@ -78,8 +79,10 @@ set(GAME_SRC
   Classes/layer/BasicRUBELayer.cpp
   Classes/layer/WorldLevelLayer.cpp
   Classes/layer/WorldLevelCtrlLayer.cpp
+  Classes/layer/GravityCtrlLayer.cpp
   Classes/layer/WorldLevelUILayer.cpp
   Classes/layer/WorldLevelDebugLayer.cpp
+  Classes/layer/WorldLevelStatisticsLayer.cpp
   Classes/scene/MainMenuScene.cpp
   Classes/scene/ActMenuScene.cpp
   Classes/scene/LevelMenuScene.cpp

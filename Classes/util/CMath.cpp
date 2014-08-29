@@ -17,18 +17,15 @@ void CMath::SetFactor(int screenWidth, int screenHeight) {
     m_mToPxRatio = round(m_mToPx * m_maxZoomFactor);
 };
 
-/*
-Vector2* CMath::GetPointAt(float x, float y, float distance, float angle) {
+cocos2d::Vec2* CMath::GetPointAt(float x, float y, float distance, float angle) {
     x += distance * cos(angle);
     y += distance * sin(angle);
-    Vector2* v = new Vector2(x, y);
-    return v;
+    return new cocos2d::Vec2(x, y);
 };
 
-Vector2* CMath::GetPointAt(Vector2* base, float distance, float angle) {
+cocos2d::Vec2* CMath::GetPointAt(cocos2d::Vec2* base, float distance, float angle) {
     return GetPointAt(base->x, base->y, distance, angle);
 };
-*/
 
 float CMath::Random(float a, float b) {
     float random = ((float) rand()) / (float) RAND_MAX;

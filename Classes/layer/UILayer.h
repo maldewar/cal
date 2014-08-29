@@ -36,7 +36,7 @@ public:
   /**
    * Removes the top most state in the stack.
    */
-  virtual void popState();
+  virtual void popState(int howMany = 1);
   /**
    * Gets the top most stack in the stack.
    */

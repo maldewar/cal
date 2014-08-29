@@ -21,7 +21,8 @@ public:
   virtual float initialWorldScale();
   virtual void afterLoadProcessing(b2dJson* json);
   void removeBodyFromWorld(b2Body* body);
-  virtual void onBodyTouched(b2Body* body, b2Fixture* fixture);
+  virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
+  virtual void onWorldTouchBegan(b2Vec2& position);
 
 };
 

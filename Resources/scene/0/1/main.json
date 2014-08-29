@@ -67,7 +67,7 @@
 			[
 				
 				{
-					"int" : 30,
+					"int" : 3,
 					"name" : "capacity"
 				},
 				
@@ -153,7 +153,7 @@
 				
 				{
 					"density" : 1,
-					"friction" : 1,
+					"friction" : 0.1,
 					"name" : "fixture1",
 					"polygon" : 
 					{

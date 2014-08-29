@@ -88,6 +88,17 @@ void AIComponent::update(float dt) {
       cancelTween();
     }
   }
+  if (m_state == AI_STATE_AFOOT && m_substate == AI_SUBSTATE_STILL) {
+    b2Vec2 vel = m_body->GetLinearVelocity();
+    float desiredVel = 0.09f;
+    /*
+    float velChange = desiredVel - vel.x;
+    float force = m_body->GetMass() * velChange / (1/60.0); //f = mv/t
+    m_body->ApplyForce( b2Vec2(force,0), m_body->GetWorldCenter(), true);*/
+    float velChange = desiredVel - vel.x;
+    float impulse = m_body->GetMass() * velChange; //disregard time factor
+    m_body->ApplyLinearImpulse( b2Vec2(impulse,0), m_body->GetWorldCenter(), true);
+  }
   m_lastPosition->x = m_body->GetPosition().x;
   m_lastPosition->y = m_body->GetPosition().y;
 }
@@ -125,6 +136,7 @@ void AIComponent::setSubstate(int substate) {
       setTween(m_substate_stand_duration, AI_SUBSTATE_STILL);
       break;
     case AI_SUBSTATE_STILL:
+      resetPlan();
       cancelTween();
       break;
     case AI_SUBSTATE_WALK:
@@ -158,4 +170,10 @@ void AIComponent::onDirectionChange(bool isRight) {
 
 void AIComponent::setSubstateStandDuration(float duration) {
   m_substate_stand_duration = duration;
+}
+
+void AIComponent::resetPlan() {
+}
+
+void AIComponent::makePlan(int targetType) {
 }

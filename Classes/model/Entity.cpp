@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 Entity::Entity() {
+  m_id = "";
   m_worldLayer = nullptr;
   m_body = nullptr;
   m_width = 0;
@@ -8,6 +9,14 @@ Entity::Entity() {
 }
 
 Entity::~Entity() {
+}
+
+void Entity::setId(std::string id) {
+  m_id = id;
+}
+
+std::string Entity::getId() {
+  return m_id;
 }
 
 int Entity::getType() {

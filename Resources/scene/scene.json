@@ -1,0 +1,16 @@
+{
+  "version": "0.1",
+  "id": "scene_0_1",
+  "title": "[scene_0_1_title]",
+  "layers": {
+    "layer_0": {
+      "id": "layer_0",
+      "type": "world",
+      "distance": 0,
+      "isMain": true,
+      "path": "main.json",
+      "zIndex": 0
+      }
+    }
+  }
+}

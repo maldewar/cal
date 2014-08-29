@@ -3,10 +3,8 @@
 
 #include <string>
 #include "UILayer.h"
-#include "../model/Entity.h"
-#include "../model/ctrl/WheelCtrl.h"
+//#include "../model/Entity.h"
 class Entity;
-class WheelCtrl;
 
 class WorldLevelCtrlLayer : public UILayer
 {
@@ -18,25 +16,24 @@ public:
   };
 
 public:
-  static WorldLevelCtrlLayer* create(WorldLevelScene* scene);
   virtual bool init(WorldLevelScene* scene);
   virtual void update(float dt);
-  virtual void beginCtrlTouch(int ctrl, Entity* entity);
-  virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+  void beginCtrlTouch(Entity* entity);
+  void endCtrlTouch();
+  void cancelCtrlTouch();
+  Entity* getCtrlEntity();
   virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
 
-private:
+  virtual void onBeginCtrlTouch();
+  virtual void onCancelCtrlTouch();
+  virtual void onEndCtrlTouch();
+
+protected:
   cocos2d::ui::Layout* m_opacityLayout;
-  WheelCtrl* m_wheelCtrl;
   cocos2d::Vec2* m_center;
+  Entity* m_entity;
   float m_touchTime;
   float m_showingTime;
-  int m_ctrl;
-
-private:
-  void playAnimationIn(int state);
-  void playAnimationOut(int state);
-  void playStateAnimation(std::string name);
 };
 
 #endif // __WORLD_LEVEL_CTRL_LAYER_H__

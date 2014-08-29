@@ -2,8 +2,8 @@
     #define _CMATH_H_
 
 #include <string>
-//#include "../Model/Vector2.h"
-//#include "Log.h"
+#include <Box2D/Box2D.h>
+#include "cocos2d.h"
 /**
  * Constant for degrees to radians convertion.
  */
@@ -78,8 +78,8 @@ class CMath {
         static inline float GetDistance(float x1, float y1, float x2, float y2) {
             return sqrt(GetDistance2(x1, y1, x2, y2));
         };
-        //static Vector2* GetPointAt(float x, float y, float distance, float angle);
-        //static Vector2* GetPointAt(Vector2* base, float distance, float angle);
+        static cocos2d::Vec2* GetPointAt(float x, float y, float distance, float angle);
+        static cocos2d::Vec2* GetPointAt(cocos2d::Vec2* base, float distance, float angle);
         static float Random(float a, float b);
         static inline float GetAbsoluteAngle(float angle) {
             if (angle >= 0 && angle <= M_PI_2)

@@ -37,10 +37,12 @@ void UILayer::pushState(int state) {
   }
 }
 
-void UILayer::popState() {
+void UILayer::popState(int howMany) {
   if (!m_states.empty()) {
     playAnimationOut(m_states.top());
-    m_states.pop();
+    for(int i = 0; i < howMany; i++) {
+      m_states.pop();
+    }
     if (!m_states.empty()) {
       m_state = m_states.top();
       playAnimationIn(m_states.top());

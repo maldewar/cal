@@ -1,0 +1,24 @@
+{
+  "version": "0.1",
+  "id": "scene_0_1",
+  "title": "[scene_0_1_title]",
+  "unitsRequired": 10,
+  "layers": {
+    "layer_bg": {
+      "id":"layer_bg",
+      "type": "bg",
+      "enabled": false,
+      "distance": 0,
+      "zIndex": -1,
+      "bgType": 1
+    },
+    "layer_0": {
+      "id": "layer_0",
+      "type": "world",
+      "distance": 0,
+      "isMain": true,
+      "path": "scene/0/1/main.json",
+      "zIndex": 0
+    }
+  }
+}

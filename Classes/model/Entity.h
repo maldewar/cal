@@ -1,6 +1,7 @@
 #ifndef __ENTITY_NODE_H__
 #define __ENTITY_NODE_H__
 
+#include <string>
 #include "cocos2d.h"
 #include <Box2D/Box2D.h>
 #include "2d/CCNode.h"
@@ -20,10 +21,11 @@ const int ENTITY_TYPE_LEVEL = 8;
 class Entity : public cocos2d::Node
 {
 protected:
-    WorldLevelLayer* m_worldLayer;
-    b2Body* m_body;
-    float m_width;
-    float m_height;
+  std::string m_id;
+  WorldLevelLayer* m_worldLayer;
+  b2Body* m_body;
+  float m_width;
+  float m_height;
 
 public:
     /**
@@ -34,6 +36,8 @@ public:
      * Class destructor.
      */
     virtual ~Entity(void);
+    virtual void setId(std::string id);
+    virtual std::string getId();
     /**
      * Get the identifier for the subclass.
      * @return Type identifier for the object.

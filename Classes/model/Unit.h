@@ -62,9 +62,11 @@ public:
     virtual void update(float dt);
     virtual void contactStart(b2Body* body, Entity* contactEntity = nullptr);
     virtual void contactEnd(b2Body* body, Entity* contactEntity = nullptr);
+
     virtual void onStateChange(int state, int substate);
     virtual void onSubstateChange(int substate);
     virtual void onDirectionChange(bool isRight);
+
     virtual void setAnimation(int animation);
 };
 

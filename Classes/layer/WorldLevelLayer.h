@@ -6,8 +6,10 @@
 #include "cocostudio/CocoStudio.h"
 #include "../scene/WorldLevelScene.h"
 #include "../model/Entity.h"
+#include "../engine/RayCastTool.h"
 
 class WorldLevelScene;
+class RayCastTool;
 
 class WorldLevelLayer : public BasicRUBELayer
 {
@@ -20,6 +22,7 @@ protected:
   cocos2d::Layer* m_unitLayer;
   cocos2d::Layer* m_areaLayer;
   cocos2d::Layer* m_assetLayer;
+  RayCastTool* m_rayCastTool;
   bool m_controlGrabbed;
 
 public:
@@ -41,7 +44,11 @@ public:
   void removeBodyFromWorld(b2Body* body);
   virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-  virtual void onBodyTouched(b2Body* body, b2Fixture* fixture);
+  virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
+  virtual void onWorldTouchBegan(b2Vec2& position);
+
+protected:
+  virtual void onDraw(const cocos2d::Mat4 &transform, uint32_t flags) override;
 
 };
 

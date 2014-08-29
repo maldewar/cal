@@ -33,6 +33,9 @@ BasicRUBELayer::BasicRUBELayer()
     m_transitionTarget = Vec2(0,0);
     m_following = false;
     m_followingBody = nullptr;
+
+    m_bodyTouchBegan = false;
+    m_worldTouchBegan = false;
 }
 
 BasicRUBELayer::~BasicRUBELayer()
@@ -275,7 +278,7 @@ void BasicRUBELayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
       
       
       m_world->DrawDebugData();
-      
+
       // Draw mouse joint line
       if ( m_mouseJoint ) {
           b2Vec2 p1 = m_mouseJoint->GetAnchorB();
@@ -347,7 +350,11 @@ void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
 
     // Check if we found something, and it was a dynamic body (can't drag static bodies)
     if (callback.m_fixture) {
-      onBodyTouched(callback.m_fixture->GetBody(), callback.m_fixture);
+      m_bodyTouchBegan = true;
+      onBodyTouchBegan(callback.m_fixture->GetBody(), callback.m_fixture);
+    } else {
+      m_worldTouchBegan = true;
+      onWorldTouchBegan(worldPos);
     }
   }
 }
@@ -405,6 +412,14 @@ void BasicRUBELayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches,
     Point screenPos = touch->getLocationInView();
     b2Vec2 worldPos = screenToWorld(screenPos);
     CCLOG("Touches ended at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
+    if (m_bodyTouchBegan) {
+      m_bodyTouchBegan = false;
+      onBodyTouchEnded();
+    }
+    if (m_worldTouchBegan) {
+      m_worldTouchBegan = false;
+      onWorldTouchEnded();
+    }
     // Check if one of the touches is the one that started the mouse joint.
     // If so we need to destroy the mouse joint and reset some variables.
     if ( m_mouseJoint ) {
@@ -466,7 +481,16 @@ void BasicRUBELayer::onTouchesCancelled(const std::vector<cocos2d::Touch*>& touc
     onTouchesEnded(touches, event);
 }
 
-void BasicRUBELayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
+void BasicRUBELayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
+}
+
+void BasicRUBELayer::onWorldTouchBegan(b2Vec2& position) {
+}
+
+void BasicRUBELayer::onBodyTouchEnded() {
+}
+
+void BasicRUBELayer::onWorldTouchEnded() {
 }
 
 b2Fixture* BasicRUBELayer::getTouchedFixture(Touch* touch)

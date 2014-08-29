@@ -19,6 +19,8 @@ WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   m_unitCount = 0;
   m_worldScene = nullptr;
   m_controlGrabbed = false;
+  m_rayCastTool = new RayCastTool(10.0f);
+  m_rayCastTool->SetFilter(ENTITY_TYPE_AREA);
   m_unitLayer = Layer::create();
   m_areaLayer = Layer::create();
   m_assetLayer = Layer::create();
@@ -309,6 +311,11 @@ void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
 void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
   if (!m_controlGrabbed) {
     BasicRUBELayer::onTouchesMoved(touches, unused_event);
+    Touch* touch = touches[0];
+    Point screenPos = touch->getLocationInView();
+    b2Vec2 worldPos = screenToWorld(screenPos);
+    CCLOG("Doing Raycast");
+    m_rayCastTool->RayCast(m_world, worldPos.x, worldPos.y, getWorldLevelScene()->getGravityAngle());
   }
 }
 
@@ -319,7 +326,7 @@ void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches
   }
 }
 
-void WorldLevelLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
+void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
   switch(body->GetType()) {
     case b2_staticBody:
       void* bodyUserData;
@@ -332,7 +339,6 @@ void WorldLevelLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
             break;
           case ENTITY_TYPE_GRAVITRON:
             entity->select();
-            //centerBody(entity->getBody(), 0.2f);
             follow(entity->getBody(), 0.2f);
             break;
         }
@@ -351,11 +357,10 @@ void WorldLevelLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
         Entity* entity = (Entity*)dynamicBodyUserData;
         switch(entity->getType()) {
           case ENTITY_TYPE_UNIT:
-            CCLOG("Unit touched.");
+            entity->select();
             break;
           case ENTITY_TYPE_GRAVITRON:
             entity->select();
-            //centerBody(entity->getBody(), 0.2f);
             follow(entity->getBody(), 0.2f);
             break;
         }
@@ -364,4 +369,21 @@ void WorldLevelLayer::onBodyTouched(b2Body* body, b2Fixture* fixture) {
       }
       break;
   }
+}
+
+void WorldLevelLayer::onWorldTouchBegan(b2Vec2& position) {
+}
+
+void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
+  //BasicRUBELayer::onDraw(transform, flags);
+  //ccDrawLine(cocos2d::Vec2(0, 0), cocos2d::Vec2(1, 1));
+  CCLOG("Raycast from %f,%f to %f,%f", m_rayCastTool->GetStart()->x, m_rayCastTool->GetStart()->y, m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
+
+  Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+  Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
+  ccDrawColor4F(255, 255, 255, 1);
+  ccDrawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
+  Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+
+  BasicRUBELayer::onDraw(transform, flags);
 }

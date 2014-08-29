@@ -1,4 +1,5 @@
 #include "Area.h"
+#include "../util/IdUtil.h"
 
 Area::Area() : Entity() {
 }
@@ -23,6 +24,7 @@ Area* Area::create() {
 
 bool Area::init(void) {
   scheduleUpdate();
+  setId(IdUtil::getInstance()->getId("area"));
   return true;
 }
 

@@ -65,6 +65,8 @@ protected:
     float m_rotation;
     float m_rotationOrigin;
     float m_rotationTarget;
+    bool m_bodyTouchBegan;
+    bool m_worldTouchBegan;
 
     bool m_transitioning;
     float m_transitionDuration;
@@ -82,7 +84,7 @@ protected:
     b2ParticleSystem* _particleSystem;
 
 protected:
-  void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
+  virtual void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
   /**
    * Gets the offset point to set the layer position centered around a
    * world coordinate.
@@ -124,7 +126,10 @@ public:
     virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
     virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
     virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    virtual void onBodyTouched(b2Body* body, b2Fixture* fixture);
+    virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
+    virtual void onWorldTouchBegan(b2Vec2& position);
+    virtual void onBodyTouchEnded();
+    virtual void onWorldTouchEnded();
     // Return the first fixture found under the touch location.
     b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
     // Return false from this function to prevent punch zoom and pan.

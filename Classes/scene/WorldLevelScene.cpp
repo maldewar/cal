@@ -6,7 +6,10 @@
 #include "../factory/SceneFactory.h"
 
 WorldLevelScene::WorldLevelScene() {
+  m_worldLevelLayer = nullptr;
   m_worldLevelUILayer = nullptr;
+  m_gravityCtrlLayer = nullptr;
+  m_worldLevelStatisticsLayer = nullptr;
   m_worldLevelDebugLayer = nullptr;
   m_paused = false;
   m_debug = true;
@@ -54,6 +57,7 @@ bool WorldLevelScene::init(std::string filename) {
     CCLOG("SceneFactory error %s", sceneFactoryError.c_str());
     //TODO: kill scene.
   }
+  m_unitsRequired = m_sceneDef->getUnitsRequired();
   int topIndex = -100;
   for (auto layerDef : m_sceneDef->getLayerDefs()) {
     CCLOG("LAYER DEF TYPE:%d INDEX:%d", layerDef->getType(), layerDef->getIndex());
@@ -73,20 +77,24 @@ bool WorldLevelScene::init(std::string filename) {
   }
 
   //Ctrl Layer
-  m_worldLevelCtrlLayer = WorldLevelCtrlLayer::create(this);
-  addChild(m_worldLevelCtrlLayer, topIndex + 1);
+  m_gravityCtrlLayer = GravityCtrlLayer::create(this);
+  addChild(m_gravityCtrlLayer, topIndex + 1);
 
   //World UI Layer
-  WorldLevelUILayer* uiLayer = WorldLevelUILayer::create();
-  m_worldLevelUILayer = uiLayer;
-  uiLayer->setScene(this);
-  addChild(uiLayer, topIndex + 2);
+  m_worldLevelUILayer = WorldLevelUILayer::create();
+  m_worldLevelUILayer->setScene(this);
+  addChild(m_worldLevelUILayer, topIndex + 2);
+
+  //Statistics Layer
+  m_worldLevelStatisticsLayer = WorldLevelStatisticsLayer::create();
+  m_worldLevelStatisticsLayer->setVisible(false);
+  addChild(m_worldLevelStatisticsLayer, topIndex + 3);
 
   //World Debug Layer
   if (m_debug) {
     m_worldLevelDebugLayer = WorldLevelDebugLayer::create();
     m_worldLevelDebugLayer->setScene(this);
-    addChild(m_worldLevelDebugLayer, topIndex + 3);
+    addChild(m_worldLevelDebugLayer, topIndex + 4);
   }
 
   return true;
@@ -157,20 +165,13 @@ float WorldLevelScene::getGravityAngle() {
 void WorldLevelScene::selectCtrl(int ctrl, Entity* entity) {
   m_ctrl = ctrl;
   if (m_ctrl == CTRL_GRAVITRON) {
-    m_worldLevelCtrlLayer->beginCtrlTouch(ctrl, entity);
+    m_gravityCtrlLayer->beginCtrlTouch(entity);
+  } else if (m_ctrl == CTRL_SELECT) {
   }
 }
 
 bool WorldLevelScene::gravityAngleRotatesWorld() {
   return m_gravityAngleRotatesWorld;
-}
-
-void WorldLevelScene::setUnitsRequired(int unitsRequired) {
-  m_unitsRequired = unitsRequired;
-}
-
-int WorldLevelScene::getUnitsRequired() {
-  return m_unitsRequired;
 }
 
 bool WorldLevelScene::isDebugEnable() {
@@ -199,6 +200,10 @@ void WorldLevelScene::removeUnit(int count, bool isLost) {
     m_unitsLost += count;
   } else {
     m_unitsSaved += count;
+    if (m_unitsSaved >= m_unitsRequired) {
+      m_worldLevelStatisticsLayer->setVisible(true);
+      CCLOG("LEVEL COMPLETE!!!");
+    }
   }
   m_unitsInScene -= count;
   CCLOG("Unit removed from scene, total: %d", m_unitsInScene);

@@ -1,0 +1,203 @@
+
+{
+	"allowSleep" : true,
+	"autoClearForces" : true,
+	"body" : 
+	[
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "level"
+				},
+				
+				{
+					"name" : "armature",
+					"string" : ""
+				},
+				
+				{
+					"name" : "category",
+					"string" : "level"
+				},
+				
+				{
+					"name" : "title",
+					"string" : ""
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"circle" : 
+					{
+						"center" : 0,
+						"radius" : 0.2
+					},
+					"name" : "body_sensor",
+					"sensor" : true
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "level",
+			"position" : 
+			{
+				"x" : -0.4631032943725586,
+				"y" : 0.434997558593750
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 1,
+					"name" : "level"
+				},
+				
+				{
+					"name" : "armature",
+					"string" : ""
+				},
+				
+				{
+					"name" : "category",
+					"string" : "level"
+				},
+				
+				{
+					"name" : "title",
+					"string" : "Fist Level"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"circle" : 
+					{
+						"center" : 0,
+						"radius" : 0.2
+					},
+					"name" : "body_sensor",
+					"sensor" : true
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "level",
+			"position" : 
+			{
+				"x" : -2.056499719619751,
+				"y" : 0.01321578025817871
+			},
+			"type" : 0
+		}
+	],
+	"collisionbitplanes" : 
+	{
+		"names" : 
+		[
+			"bitplane1",
+			"bitplane2",
+			"bitplane3",
+			"bitplane4",
+			"bitplane5",
+			"bitplane6",
+			"bitplane7",
+			"bitplane8",
+			"bitplane9",
+			"bitplane10",
+			"bitplane11",
+			"bitplane12",
+			"bitplane13",
+			"bitplane14",
+			"bitplane15",
+			"bitplane16",
+			"bitplane17",
+			"bitplane18",
+			"bitplane19",
+			"bitplane20",
+			"bitplane21",
+			"bitplane22",
+			"bitplane23",
+			"bitplane24",
+			"bitplane25",
+			"bitplane26",
+			"bitplane27",
+			"bitplane28",
+			"bitplane29",
+			"bitplane30",
+			"bitplane31",
+			"bitplane32"
+		]
+	},
+	"continuousPhysics" : true,
+	"gravity" : 
+	{
+		"x" : 0,
+		"y" : -10
+	},
+	"image" : 
+	[
+		
+		{
+			"aspectScale" : 1,
+			"body" : -1,
+			"center" : 
+			{
+				"x" : -0.9986801147460938,
+				"y" : 1.673923969268799
+			},
+			"corners" : 
+			{
+				"x" : 
+				[
+					-1.164156317710876,
+					-0.8332039117813110,
+					-0.8332039117813110,
+					-1.164156317710876
+				],
+				"y" : 
+				[
+					1.322733521461487,
+					1.322733521461487,
+					2.02511453628540,
+					2.02511453628540
+				]
+			},
+			"file" : "act/act1/act1_catrina.pvr",
+			"filter" : 1,
+			"glDrawElements" : [ 0, 1, 2, 2, 3, 0 ],
+			"glTexCoordPointer" : [ 0.0, 0.0, 1, 0.0, 1, 1, 0.0, 1 ],
+			"glVertexPointer" : 
+			[
+				-1.164156317710876,
+				1.322733521461487,
+				-0.8332039117813110,
+				1.322733521461487,
+				-0.8332039117813110,
+				2.02511453628540,
+				-1.164156317710876,
+				2.02511453628540
+			],
+			"name" : "image0",
+			"opacity" : 0.5,
+			"scale" : 0.7023809552192688
+		}
+	],
+	"positionIterations" : 3,
+	"stepsPerSecond" : 60.0,
+	"subStepping" : false,
+	"velocityIterations" : 8,
+	"warmStarting" : true
+}
