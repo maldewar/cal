@@ -314,7 +314,6 @@ void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches
     Touch* touch = touches[0];
     Point screenPos = touch->getLocationInView();
     b2Vec2 worldPos = screenToWorld(screenPos);
-    CCLOG("Doing Raycast");
     m_rayCastTool->RayCast(m_world, worldPos.x, worldPos.y, getWorldLevelScene()->getGravityAngle());
   }
 }
@@ -339,7 +338,6 @@ void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
             break;
           case ENTITY_TYPE_GRAVITRON:
             entity->select();
-            follow(entity->getBody(), 0.2f);
             break;
         }
       } else {
@@ -361,7 +359,6 @@ void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
             break;
           case ENTITY_TYPE_GRAVITRON:
             entity->select();
-            follow(entity->getBody(), 0.2f);
             break;
         }
       } else {
@@ -377,8 +374,6 @@ void WorldLevelLayer::onWorldTouchBegan(b2Vec2& position) {
 void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
   //BasicRUBELayer::onDraw(transform, flags);
   //ccDrawLine(cocos2d::Vec2(0, 0), cocos2d::Vec2(1, 1));
-  CCLOG("Raycast from %f,%f to %f,%f", m_rayCastTool->GetStart()->x, m_rayCastTool->GetStart()->y, m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
-
   Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
   Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
   ccDrawColor4F(255, 255, 255, 1);

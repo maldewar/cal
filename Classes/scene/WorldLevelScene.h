@@ -54,7 +54,6 @@ public:
   virtual void togglePause();
   virtual void toggleDebug();
   virtual void addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int index);
-  virtual void pauseChildrenRecursive(cocos2d::Node* node, bool pause);
   virtual void setGravityAngle(float angle);
   virtual float getGravityAngle();
   virtual bool gravityAngleRotatesWorld();
@@ -62,6 +61,11 @@ public:
   virtual bool isDebugEnable();
   virtual void enableDebug(bool debug);
   virtual void onExit() override;
+  virtual WorldLevelLayer* getWorldLevelLayer();
+
+  virtual void onBeginCtrl(WorldLevelCtrlLayer* ctrlLayer);
+  virtual void onCancelCtrl(WorldLevelCtrlLayer* ctrlLayer);
+  virtual void onEndCtrl(WorldLevelCtrlLayer* ctrlLayer);
 
   void addUnit(int count);
   void removeUnit(int count, bool isLost = true);

@@ -103,11 +103,7 @@ bool WorldLevelScene::init(std::string filename) {
 void WorldLevelScene::pause(bool pause) {
   m_paused = pause;
   for (auto layer : m_worldLevelLayers) {
-    if (m_paused) {
-      pauseChildrenRecursive(layer, true);
-    } else {
-      pauseChildrenRecursive(layer, false);
-    }
+    layer->pause(m_paused);
   }
 }
 
@@ -130,17 +126,6 @@ void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int i
   float yGravity = sin(m_gravityAngle) * 6;
   worldLevelLayer->getWorld()->SetGravity(b2Vec2(xGravity, yGravity));
   worldLevelLayer->setWorldLevelScene(this);
-}
-
-void WorldLevelScene::pauseChildrenRecursive(cocos2d::Node* node, bool pause) {
-  if (pause) {
-    node->pauseSchedulerAndActions();
-  } else {
-    node->resumeSchedulerAndActions();
-  }
-  for (auto child : node->getChildren()) {
-    pauseChildrenRecursive(child, pause);
-  }
 }
 
 void WorldLevelScene::setGravityAngle(float angle) {
@@ -190,6 +175,10 @@ void WorldLevelScene::onExit() {
   cocostudio::ActionManagerEx::destroyInstance();
 }
 
+WorldLevelLayer* WorldLevelScene::getWorldLevelLayer() {
+  return m_worldLevelLayer;
+}
+
 void WorldLevelScene::addUnit(int count) {
   m_unitsInScene += count;
   CCLOG("New unit added to scene, total: %d", m_unitsInScene);
@@ -207,4 +196,40 @@ void WorldLevelScene::removeUnit(int count, bool isLost) {
   }
   m_unitsInScene -= count;
   CCLOG("Unit removed from scene, total: %d", m_unitsInScene);
+}
+
+void WorldLevelScene::onBeginCtrl(WorldLevelCtrlLayer* ctrlLayer) {
+  if (ctrlLayer->isPausingCtrl()) {
+    pause(true);
+  }
+  if (ctrlLayer->isLockingCtrl()) {
+    m_worldLevelLayer->setTouchEnabled(false);
+  }
+  if (ctrlLayer->isFollowingCtrl()) {
+    m_worldLevelLayer->follow(ctrlLayer->getEntity()->getBody(), 0.2f);
+  }
+}
+
+void WorldLevelScene::onCancelCtrl(WorldLevelCtrlLayer* ctrlLayer) {
+  if (ctrlLayer->isPausingCtrl()) {
+    pause(false);
+  }
+  if (ctrlLayer->isLockingCtrl()) {
+    m_worldLevelLayer->setTouchEnabled(true);
+  }
+  if (ctrlLayer->isFollowingCtrl()) {
+    m_worldLevelLayer->cancelFollow();
+  }
+}
+
+void WorldLevelScene::onEndCtrl(WorldLevelCtrlLayer* ctrlLayer) {
+  if (ctrlLayer->isPausingCtrl()) {
+    pause(false);
+  }
+  if (ctrlLayer->isLockingCtrl()) {
+    m_worldLevelLayer->setTouchEnabled(true);
+  }
+  if (ctrlLayer->isFollowingCtrl()) {
+    m_worldLevelLayer->cancelFollow();
+  }
 }
