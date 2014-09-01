@@ -77,6 +77,7 @@ protected:
 
     bool m_following;
     b2Body* m_followingBody;
+    bool m_paused;
 
     bool m_debugDrawEnabled;
     cocos2d::CustomCommand m_customCommand;
@@ -94,6 +95,7 @@ protected:
    */
   virtual cocos2d::Vec2 getCenteredPosition(float worldX, float worldY);
   virtual void setCenteredRotation(float rotation);
+  virtual void pauseChildrenRecursive(cocos2d::Node* node, bool pause);
         
 public:
     BasicRUBELayer();
@@ -175,6 +177,8 @@ public:
     virtual void rotate(float angle, float transitionTime = 0);
     virtual bool isNavigationEnabled();
     virtual void setNavigationEnabled(bool navigationEnabled);
+    virtual void pause(bool pause);
+    virtual bool isPaused();
 
 };
 

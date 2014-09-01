@@ -24,6 +24,9 @@ bool GravityCtrlLayer::init(WorldLevelScene* scene) {
   m_wheelCtrl = WheelCtrl::create(m_scene);
   m_wheelCtrl->setPosition(Vec2(m_winSize.width / 2, m_winSize.height / 2));
   addChild(m_wheelCtrl);
+  m_showingTime = 0.34f;
+  m_isFollowingCtrl = true;
+  m_isPausingCtrl = true;
   return true;
 }
 
@@ -62,6 +65,7 @@ void GravityCtrlLayer::onBeginCtrlTouch() {
 }
 
 void GravityCtrlLayer::onEndCtrlTouch() {
+  m_wheelCtrl->applyTargetAngle();
   m_wheelCtrl->hide();
 }
 

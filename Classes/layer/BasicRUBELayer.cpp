@@ -33,6 +33,7 @@ BasicRUBELayer::BasicRUBELayer()
     m_transitionTarget = Vec2(0,0);
     m_following = false;
     m_followingBody = nullptr;
+    m_paused = false;
 
     m_bodyTouchBegan = false;
     m_worldTouchBegan = false;
@@ -212,9 +213,11 @@ void BasicRUBELayer::clear() {
 // Standard Cocos2d method, just step the physics world with fixed time step length
 void BasicRUBELayer::update(float dt)
 {
-  if ( m_world )
-    m_world->Step(1/60.0, 8, 3);
-  CCLayer::update(dt);
+  if (!m_paused) {
+    if ( m_world )
+      m_world->Step(1/60.0, 8, 3);
+    CCLayer::update(dt);
+  }
 
   if (m_rotating) {
     m_transitionLapse += dt;
@@ -312,6 +315,11 @@ b2Vec2 BasicRUBELayer::screenToWorld(cocos2d::Point screenPos)
     float angleSin = sin(m_rotation);
     float angleCos = cos(m_rotation);
     
+    /*
+     * Rotation Matrix for counterclockwise angles
+     * | cosA  sinA | |x|
+     * | -sinA cosA | |y|
+     */
     b2Vec2 worldPoint = b2Vec2((screenPos.x * angleCos + screenPos.y * angleSin) / scale,
                                (screenPos.y * angleCos - screenPos.x * angleSin) / scale);
     return worldPoint;
@@ -324,7 +332,24 @@ cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
     // TODO
     worldPos *= getScale();
     Point layerOffset = getPosition();
-    Point p = CCPointMake(worldPos.x + layerOffset.x, worldPos.y + layerOffset.y);
+    Point p = Point(worldPos.x + layerOffset.x, worldPos.y + layerOffset.y);
+    
+    //
+    /*
+     * Rotation Matrix for counterclockwise angles, transposed to inverve
+     * | cosA -sinA | |x|
+     * | sinA  cosA | |y|
+     */
+    /*
+    float scale = getScale();
+    float angleSin = sin(m_rotation);
+    float angleCos = cos(m_rotation);
+    worldPos.x *= scale;
+    worldPos.y *= scale;
+    Point p = Point((worldPos.x * angleCos - worldPos.y * angleSin) + layerOffset.x,
+                    (worldPos.y * angleCos + worldPos.x * angleSin) + layerOffset.y);
+                    */
+
     p.y = Director::sharedDirector()->getWinSize().height - p.y;
     return p;
 }
@@ -389,7 +414,7 @@ void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
       Vec2 screenCenterAfterScaling = worldToScreen(worldCenterBeforeScaling); //TODO: implement worldToScreen
       Vec2 movedCausedByScaling = screenCenterAfterScaling - currentMidpoint;
       movedCausedByScaling.y *= -1;
-      layerOffset = layerOffset - movedCausedByScaling;
+      layerOffset = layerOffset;// - movedCausedByScaling; //TODO: get movement affected by rotation
       setPosition(layerOffset);
     } else {
       // Panning
@@ -571,7 +596,6 @@ void BasicRUBELayer::rotate(float angle, float transitionTime) {
     m_rotating = true;
     m_rotationOrigin = CC_DEGREES_TO_RADIANS(-getRotation());
     m_rotationTarget = angle;
-    CCLOG("ORIGIN:%f TARGET:%f", m_rotationOrigin, m_rotationTarget);
     m_transitionLapse = 0;
     m_transitionDuration = transitionTime;
   } else {
@@ -592,4 +616,26 @@ bool BasicRUBELayer::isNavigationEnabled() {
 
 void BasicRUBELayer::setNavigationEnabled(bool navigationEnabled) {
   m_navigationEnabled = navigationEnabled;
+}
+
+void BasicRUBELayer::pause(bool pause) {
+  m_paused = pause;
+  for (auto child : getChildren()) {
+    pauseChildrenRecursive(child, m_paused);
+  }
+}
+
+bool BasicRUBELayer::isPaused() {
+  return m_paused;
+}
+
+void BasicRUBELayer::pauseChildrenRecursive(cocos2d::Node* node, bool pause) {
+  if (pause) {
+    node->pauseSchedulerAndActions();
+  } else {
+    node->resumeSchedulerAndActions();
+  }
+  for (auto child : node->getChildren()) {
+    pauseChildrenRecursive(child, pause);
+  }
 }
