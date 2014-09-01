@@ -9,6 +9,7 @@ WorldLevelScene::WorldLevelScene() {
   m_worldLevelLayer = nullptr;
   m_worldLevelUILayer = nullptr;
   m_gravityCtrlLayer = nullptr;
+  m_selectCtrlLayer = nullptr;
   m_worldLevelStatisticsLayer = nullptr;
   m_worldLevelDebugLayer = nullptr;
   m_paused = false;
@@ -76,25 +77,29 @@ bool WorldLevelScene::init(std::string filename) {
     }
   }
 
-  //Ctrl Layer
+  //Gravity Ctrl Layer
   m_gravityCtrlLayer = GravityCtrlLayer::create(this);
   addChild(m_gravityCtrlLayer, topIndex + 1);
+
+  //Select Ctrl Layer
+  m_selectCtrlLayer = SelectCtrlLayer::create(this);
+  addChild(m_gravityCtrlLayer, topIndex +2);
 
   //World UI Layer
   m_worldLevelUILayer = WorldLevelUILayer::create();
   m_worldLevelUILayer->setScene(this);
-  addChild(m_worldLevelUILayer, topIndex + 2);
+  addChild(m_worldLevelUILayer, topIndex + 3);
 
   //Statistics Layer
   m_worldLevelStatisticsLayer = WorldLevelStatisticsLayer::create();
   m_worldLevelStatisticsLayer->setVisible(false);
-  addChild(m_worldLevelStatisticsLayer, topIndex + 3);
+  addChild(m_worldLevelStatisticsLayer, topIndex + 4);
 
   //World Debug Layer
   if (m_debug) {
     m_worldLevelDebugLayer = WorldLevelDebugLayer::create();
     m_worldLevelDebugLayer->setScene(this);
-    addChild(m_worldLevelDebugLayer, topIndex + 4);
+    addChild(m_worldLevelDebugLayer, topIndex + 5);
   }
 
   return true;

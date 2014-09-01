@@ -336,7 +336,7 @@ cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
     
     //
     /*
-     * Rotation Matrix for counterclockwise angles, transposed to inverve
+     * Rotation Matrix for counterclockwise angles, transposed to inverse
      * | cosA -sinA | |x|
      * | sinA  cosA | |y|
      */

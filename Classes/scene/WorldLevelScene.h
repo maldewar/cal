@@ -7,6 +7,7 @@
 #include "../layer/BackgroundLayer.h"
 #include "../layer/WorldLevelLayer.h"
 #include "../layer/GravityCtrlLayer.h"
+#include "../layer/SelectCtrlLayer.h"
 #include "../layer/WorldLevelUILayer.h"
 #include "../layer/WorldLevelDebugLayer.h"
 #include "../layer/WorldLevelStatisticsLayer.h"
@@ -15,6 +16,7 @@
 class WorldLevelLayer;
 class WorldLevelUILayer;
 class GravityCtrlLayer;
+class SelectCtrlLayer;
 class WorldLevelStatisticsLayer;
 class WorldLevelDebugLayer;
 class Entity;
@@ -31,6 +33,7 @@ protected:
   WorldLevelLayer* m_worldLevelLayer;
   WorldLevelUILayer* m_worldLevelUILayer;
   GravityCtrlLayer* m_gravityCtrlLayer;
+  SelectCtrlLayer* m_selectCtrlLayer;
   WorldLevelStatisticsLayer* m_worldLevelStatisticsLayer;
   WorldLevelDebugLayer* m_worldLevelDebugLayer;
   SceneDef* m_sceneDef;

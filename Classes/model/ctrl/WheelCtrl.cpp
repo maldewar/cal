@@ -76,6 +76,5 @@ void WheelCtrl::setTargetAngle(float angle) {
 }
 
 void WheelCtrl::applyTargetAngle() {
-  CCLOG("Applying angle %f", m_targetAngle);
   m_scene->setGravityAngle(m_targetAngle);
 }
