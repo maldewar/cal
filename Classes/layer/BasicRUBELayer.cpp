@@ -27,6 +27,8 @@ BasicRUBELayer::BasicRUBELayer()
 
     m_rotating = false;
     m_rotation = 0.0f;
+    m_cosRotation = 1;
+    m_sinRotation = 0;
     m_transitioning = false;
     m_transitionTemp = Vec2(0,0);
     m_transitionOrigin = Vec2(0,0);
@@ -83,6 +85,13 @@ void BasicRUBELayer::onExit() {
   unscheduleUpdate();
   clear();
   Layer::onExit();
+}
+
+void BasicRUBELayer::setRotation(float degrees) {
+  Layer::setRotation(degrees);
+  m_rotation = CC_DEGREES_TO_RADIANS(-degrees);
+  m_cosRotation = cos(m_rotation);
+  m_sinRotation = sin(m_rotation);
 }
 
 b2World* BasicRUBELayer::getWorld() {
@@ -222,14 +231,10 @@ void BasicRUBELayer::update(float dt)
   if (m_rotating) {
     m_transitionLapse += dt;
     if (m_transitionLapse > m_transitionDuration) {
-      m_rotation = m_rotationTarget;
       m_rotating = false;
-      //setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
-      setCenteredRotation(m_rotation);
+      setCenteredRotation(m_rotationTarget);
     } else {
-      m_rotation = ((m_rotationTarget - m_rotationOrigin) * (m_transitionLapse / m_transitionDuration)) + m_rotationOrigin;
-      //setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
-      setCenteredRotation(m_rotation);
+      setCenteredRotation(((m_rotationTarget - m_rotationOrigin) * (m_transitionLapse / m_transitionDuration)) + m_rotationOrigin);
     }
   } else {
     if (m_following) {
@@ -305,23 +310,20 @@ void BasicRUBELayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
 // Converts a position in screen pixels to a location in the physics world
 b2Vec2 BasicRUBELayer::screenToWorld(cocos2d::Point screenPos)
 {
-    screenPos.y = Director::sharedDirector()->getWinSize().height - screenPos.y;
+    screenPos.y = Director::getInstance()->getWinSize().height - screenPos.y;
     
     Point layerOffset = getPosition();
     screenPos.x -= layerOffset.x;
     screenPos.y -= layerOffset.y;
     
     float scale = getScale();
-    float angleSin = sin(m_rotation);
-    float angleCos = cos(m_rotation);
-    
     /*
      * Rotation Matrix for counterclockwise angles
      * | cosA  sinA | |x|
      * | -sinA cosA | |y|
      */
-    b2Vec2 worldPoint = b2Vec2((screenPos.x * angleCos + screenPos.y * angleSin) / scale,
-                               (screenPos.y * angleCos - screenPos.x * angleSin) / scale);
+    b2Vec2 worldPoint = b2Vec2((screenPos.x * m_cosRotation + screenPos.y * m_sinRotation) / scale,
+                               (screenPos.y * m_cosRotation - screenPos.x * m_sinRotation) / scale);
     return worldPoint;
 }
 
@@ -330,27 +332,16 @@ b2Vec2 BasicRUBELayer::screenToWorld(cocos2d::Point screenPos)
 cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
 {
     // TODO
-    worldPos *= getScale();
     Point layerOffset = getPosition();
-    Point p = Point(worldPos.x + layerOffset.x, worldPos.y + layerOffset.y);
-    
-    //
+    worldPos *= getScale();
     /*
      * Rotation Matrix for counterclockwise angles, transposed to inverse
      * | cosA -sinA | |x|
      * | sinA  cosA | |y|
      */
-    /*
-    float scale = getScale();
-    float angleSin = sin(m_rotation);
-    float angleCos = cos(m_rotation);
-    worldPos.x *= scale;
-    worldPos.y *= scale;
-    Point p = Point((worldPos.x * angleCos - worldPos.y * angleSin) + layerOffset.x,
-                    (worldPos.y * angleCos + worldPos.x * angleSin) + layerOffset.y);
-                    */
-
-    p.y = Director::sharedDirector()->getWinSize().height - p.y;
+    Point p = Point((worldPos.x * m_cosRotation - worldPos.y * m_sinRotation) + layerOffset.x,
+                    (worldPos.y * m_cosRotation + worldPos.x * m_sinRotation) + layerOffset.y);
+    p.y = Director::getInstance()->getWinSize().height - p.y;
     return p;
 }
 
@@ -415,6 +406,7 @@ void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
       Vec2 movedCausedByScaling = screenCenterAfterScaling - currentMidpoint;
       movedCausedByScaling.y *= -1;
       layerOffset = layerOffset;// - movedCausedByScaling; //TODO: get movement affected by rotation
+      layerOffset = layerOffset - movedCausedByScaling;
       setPosition(layerOffset);
     } else {
       // Panning
@@ -599,8 +591,7 @@ void BasicRUBELayer::rotate(float angle, float transitionTime) {
     m_transitionLapse = 0;
     m_transitionDuration = transitionTime;
   } else {
-    m_rotation = angle;
-    setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
+    setRotation(CC_RADIANS_TO_DEGREES(-angle));
   }
 }
 

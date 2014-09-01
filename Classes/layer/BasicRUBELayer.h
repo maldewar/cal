@@ -65,6 +65,8 @@ protected:
     float m_rotation;
     float m_rotationOrigin;
     float m_rotationTarget;
+    float m_cosRotation;
+    float m_sinRotation;
     bool m_bodyTouchBegan;
     bool m_worldTouchBegan;
 
@@ -104,6 +106,7 @@ public:
     virtual bool init();
     virtual void onEnter();
     virtual void onExit();
+    virtual void setRotation(float degrees) override;
     CREATE_FUNC(BasicRUBELayer);
     virtual b2World* getWorld();
     void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
