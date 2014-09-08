@@ -1,0 +1,11 @@
+
+{
+  "events" : 
+  [
+    
+    {
+      "scripts" : [ "/opt/rube-lin64-1.6.0/scripts/calaverasResizeImage.rs" ],
+      "trigger" : "IMAGES_DROPPED"
+    }
+  ]
+}

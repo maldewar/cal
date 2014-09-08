@@ -1,0 +1,17 @@
+{
+	"children": [
+		{
+			"type": "menu",
+			"name": "&Level",
+			"children": [
+        {
+          "type": "action",
+          "name": "&Add Level",
+          "file": "addLevel",
+          "desc": "add Level"
+        }
+			]
+		}
+	]
+}
+

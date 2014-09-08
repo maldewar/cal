@@ -1,0 +1,41 @@
+{
+	"children": [
+		{
+			"type": "menu",
+			"name": "&Calaveras",
+			"children": [
+        {
+          "type": "action",
+          "name": "&Add Unit",
+          "file": "addUnit",
+          "desc": "add Unit"
+        },
+				{
+					"type": "action",
+					"name": "&Add Area",
+					"file": "addArea",
+					"desc": "add Area"
+				},
+        {
+          "type": "action",
+          "name": "&Add Entry",
+          "file": "addEntry",
+          "desc": "add Entry"
+        },
+        {
+          "type": "action",
+          "name": "&Add Exit",
+          "file": "addExit",
+          "desc": "add Exit"
+        },
+        {
+          "type": "action",
+          "name": "&Add Gravitron",
+          "file": "addGravitron",
+          "desc": "add Gravitron"
+        }
+			]
+		}
+	]
+}
+
