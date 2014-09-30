@@ -308,10 +308,18 @@ void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
   */
 }
 
+void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
+  BasicRUBELayer::onTouchesBegan(touches, event);
+  if (touches.size() == 1) {
+    m_worldScene->setTouch(touches[0]);
+  }
+}
+
 void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
   if (!m_controlGrabbed) {
     BasicRUBELayer::onTouchesMoved(touches, unused_event);
     Touch* touch = touches[0];
+    m_worldScene->setTouch(touch);
     Point screenPos = touch->getLocationInView();
     b2Vec2 worldPos = screenToWorld(screenPos);
     m_rayCastTool->RayCast(m_world, worldPos.x, worldPos.y, getWorldLevelScene()->getGravityAngle());
@@ -319,6 +327,7 @@ void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches
 }
 
 void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
+  m_worldScene->setTouch(nullptr);
   if (!m_navigationEnabled) {
     BasicRUBELayer::onTouchesEnded(touches, unused_event);
     return;

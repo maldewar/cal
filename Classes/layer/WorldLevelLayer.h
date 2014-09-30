@@ -42,6 +42,7 @@ public:
   virtual void clear();
   virtual void update(float dt);
   void removeBodyFromWorld(b2Body* body);
+  virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event);
   virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
