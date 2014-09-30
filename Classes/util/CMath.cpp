@@ -11,30 +11,30 @@ int CMath::m_mToPxRatio = 1;
 CMath::CMath() {
 };
 
-void CMath::SetFactor(int screenWidth, int screenHeight) {
+void CMath::setFactor(int screenWidth, int screenHeight) {
     m_mToPx = screenWidth / m_cameraTargetWidthM;
     m_pxToM = 1 / m_mToPx;
     m_mToPxRatio = round(m_mToPx * m_maxZoomFactor);
 };
 
-cocos2d::Vec2* CMath::GetPointAt(float x, float y, float distance, float angle) {
+cocos2d::Vec2* CMath::getPointAt(float x, float y, float distance, float angle) {
     x += distance * cos(angle);
     y += distance * sin(angle);
     return new cocos2d::Vec2(x, y);
 };
 
-cocos2d::Vec2* CMath::GetPointAt(cocos2d::Vec2* base, float distance, float angle) {
-    return GetPointAt(base->x, base->y, distance, angle);
+cocos2d::Vec2* CMath::getPointAt(cocos2d::Vec2* base, float distance, float angle) {
+    return getPointAt(base->x, base->y, distance, angle);
 };
 
-float CMath::Random(float a, float b) {
+float CMath::random(float a, float b) {
     float random = ((float) rand()) / (float) RAND_MAX;
     float diff = b - a;
     float r = random * diff;
     return (a + r);
 };
 
-float CMath::GetAngleOffset(float base, float offset) {
+float CMath::getAngleOffset(float base, float offset) {
     float angle = fmod(base + offset, M_PI * 2);
     if (angle > M_PI)
         angle -= 2 * M_PI;
@@ -43,7 +43,7 @@ float CMath::GetAngleOffset(float base, float offset) {
     return angle;
 };
 
-bool CMath::LinesIntersect(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+bool CMath::linesIntersect(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
     return ((relativeCCW(x1, y1, x2, y2, x3, y3) *
         relativeCCW(x1, y1, x2, y2, x4, y4) <= 0)
         && (relativeCCW(x3, y3, x4, y4, x1, y1) *
