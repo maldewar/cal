@@ -9,6 +9,7 @@
 #include "BasicRUBELayer.h"
 #include "../util/b2dJson.h"
 #include "../util/QueryCallbacks.h"
+#include "../util/CMath.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -75,21 +76,21 @@ bool BasicRUBELayer::init()
 }
 
 void BasicRUBELayer::onEnter() {
-  CCLOG("BasicRUBELayer::onEnter");
   Layer::onEnter();
   scheduleUpdate();
 }
 
 void BasicRUBELayer::onExit() {
-  CCLOG("BasicRUBELayer::onExit");
   unscheduleUpdate();
   clear();
   Layer::onExit();
 }
 
 void BasicRUBELayer::setRotation(float degrees) {
-  Layer::setRotation(degrees);
-  m_rotation = CC_DEGREES_TO_RADIANS(-degrees);
+  m_rotation = CMath::wrapPosNegPI(CC_DEGREES_TO_RADIANS(-degrees));
+  Layer::setRotation(CC_RADIANS_TO_DEGREES(-m_rotation));
+  //CCLOG("setRotation %f", degrees);
+  //CCLOG("WRAPPED AT %f", m_rotation);
   m_cosRotation = cos(m_rotation);
   m_sinRotation = sin(m_rotation);
 }
@@ -100,10 +101,10 @@ b2World* BasicRUBELayer::getWorld() {
 
 void BasicRUBELayer::onKeyReleased(EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
 {
-    /*
-    if ( keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE )
-        goBack();
-    */
+  /*
+  if ( keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE )
+    goBack();
+  */
 }
 
 // Override this in subclasses to specify which .json file to load
@@ -586,8 +587,17 @@ cocos2d::Vec2 BasicRUBELayer::getCenteredPosition(float worldX, float worldY) {
 void BasicRUBELayer::rotate(float angle, float transitionTime) {
   if (transitionTime > 0) {
     m_rotating = true;
-    m_rotationOrigin = CC_DEGREES_TO_RADIANS(-getRotation());
-    m_rotationTarget = angle;
+    m_rotationOrigin = CMath::wrapPosNegPI(CC_DEGREES_TO_RADIANS(-getRotation()));
+    m_rotationTarget = CMath::wrapPosNegPI(angle);
+    if (m_rotationOrigin > 0 && m_rotationTarget < 0) {
+      if (m_rotationOrigin + -m_rotationTarget > M_PI) {
+        m_rotationTarget += M_PI * 2;
+      }
+    } else if (m_rotationTarget > 0 && m_rotationOrigin < 0) {
+      if (m_rotationTarget + -m_rotationOrigin > M_PI) {
+        m_rotationOrigin += M_PI * 2;
+      }
+    }
     m_transitionLapse = 0;
     m_transitionDuration = transitionTime;
   } else {
