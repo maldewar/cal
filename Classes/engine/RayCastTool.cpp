@@ -21,7 +21,7 @@ void RayCastTool::RayCast(b2World* world, float x, float y, float gravityAngle, 
   m_start->Set(x, y);
   m_startTemp->x = x;
   m_startTemp->y = y;
-  m_endTemp = CMath::GetPointAt(m_startTemp, distance, gravityAngle);
+  m_endTemp = CMath::getPointAt(m_startTemp, distance, gravityAngle);
   m_end->Set(m_endTemp->x, m_endTemp->y);
   m_objectType = 0;
   world->RayCast(this, *m_start, *m_end);
@@ -29,7 +29,7 @@ void RayCastTool::RayCast(b2World* world, float x, float y, float gravityAngle, 
 
 float32 RayCastTool::ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float32 fraction) {
   m_entity = static_cast<Entity*>(fixture->GetBody()->GetUserData());
-  if ((m_objectType > 0 && m_entity->getType() != m_objectTypeFilter) || fraction < 0.00001)
+  if ((m_objectTypeFilter > 0 && m_entity->getType() != m_objectTypeFilter) || fraction < 0.00001)
     return -1;
   m_hasContact = true;
   m_objectType = m_entity->getType();

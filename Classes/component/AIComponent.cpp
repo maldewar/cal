@@ -71,8 +71,8 @@ void AIComponent::update(float dt) {
   }
   // TODO: get angle from gravity
   if (m_touchGround && (m_lastPosition->x != m_body->GetPosition().x || m_lastPosition->y != m_body->GetPosition().y)) {
-    float angle = CMath::GetAngleOffset(CMath::GetAngle(m_lastPosition->x, m_lastPosition->y, m_body->GetPosition().x, m_body->GetPosition().y), M_PI_2);
-    float distance = CMath::GetDistance(m_lastPosition->x, m_lastPosition->y, m_body->GetPosition().x, m_body->GetPosition().y);
+    float angle = CMath::getAngleOffset(CMath::getAngle(m_lastPosition->x, m_lastPosition->y, m_body->GetPosition().x, m_body->GetPosition().y), M_PI_2);
+    float distance = CMath::getDistance(m_lastPosition->x, m_lastPosition->y, m_body->GetPosition().x, m_body->GetPosition().y);
     if (distance > 0.001f) {
       if (m_rightDirection && angle < 0) {
         onDirectionChange(false);
