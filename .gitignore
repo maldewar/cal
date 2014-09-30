@@ -5,7 +5,10 @@ Resources/small/
 Resources/medium/
 Resources/large/
 Resources/design/
-proj.android/
+proj.android/bin/
+proj.android/gen/
+proj.android/assets/
+proj.android/obj/
 proj.ios_mac/
 proj.linux/
 proj.wp8-xaml/
