@@ -80,6 +80,7 @@ set(GAME_SRC
   Classes/layer/WorldLevelLayer.cpp
   Classes/layer/WorldLevelCtrlLayer.cpp
   Classes/layer/GravityCtrlLayer.cpp
+  Classes/layer/SelectCtrlLayer.cpp
   Classes/layer/WorldLevelUILayer.cpp
   Classes/layer/WorldLevelDebugLayer.cpp
   Classes/layer/WorldLevelStatisticsLayer.cpp
