@@ -51,6 +51,10 @@ bool WorldLevelScene::init(std::string filename) {
     "sprite/gravitron/gravitron.plist", "gravitron.ExportJson");
   cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("ui/ctrl/ctrl.pvr",
     "ui/ctrl/ctrl.plist", "wheelCtrl.ExportJson");
+  /*
+  cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo("ui/ctrl/ctrl.pvr",
+    "ui/ctrl/ctrl.plist", "wheelCtrl.ExportJson");
+    */
 
   std::string sceneFactoryError;
   m_sceneDef = SceneFactory::getInstance()->getSceneDef(filename.c_str(), sceneFactoryError);
@@ -61,7 +65,6 @@ bool WorldLevelScene::init(std::string filename) {
   m_unitsRequired = m_sceneDef->getUnitsRequired();
   int topIndex = -100;
   for (auto layerDef : m_sceneDef->getLayerDefs()) {
-    CCLOG("LAYER DEF TYPE:%d INDEX:%d", layerDef->getType(), layerDef->getIndex());
     if (layerDef->isEnabled()) {
       if (layerDef->getType() == LAYER_TYPE_WORLD) {
         WorldLayerDef* worldLayerDef = static_cast<WorldLayerDef*>(layerDef);
@@ -83,7 +86,7 @@ bool WorldLevelScene::init(std::string filename) {
 
   //Select Ctrl Layer
   m_selectCtrlLayer = SelectCtrlLayer::create(this);
-  addChild(m_gravityCtrlLayer, topIndex +2);
+  addChild(m_selectCtrlLayer, topIndex + 2);
 
   //World UI Layer
   m_worldLevelUILayer = WorldLevelUILayer::create();
@@ -157,6 +160,7 @@ void WorldLevelScene::selectCtrl(int ctrl, Entity* entity) {
   if (m_ctrl == CTRL_GRAVITRON) {
     m_gravityCtrlLayer->beginCtrlTouch(entity);
   } else if (m_ctrl == CTRL_SELECT) {
+    m_selectCtrlLayer->beginCtrlTouch(entity);
   }
 }
 
@@ -184,6 +188,20 @@ WorldLevelLayer* WorldLevelScene::getWorldLevelLayer() {
   return m_worldLevelLayer;
 }
 
+b2Vec2 WorldLevelScene::screenToWorld(cocos2d::Point screenPos) {
+  if (m_worldLevelLayer) {
+    return m_worldLevelLayer->screenToWorld(screenPos);
+  }
+  return b2Vec2(0, 0);
+}
+
+cocos2d::Point WorldLevelScene::worldToScreen(b2Vec2 worldPos) {
+  if (m_worldLevelLayer) {
+    return m_worldLevelLayer->worldToScreen(worldPos);
+  }
+  return cocos2d::Point(0, 0);
+}
+
 void WorldLevelScene::addUnit(int count) {
   m_unitsInScene += count;
   CCLOG("New unit added to scene, total: %d", m_unitsInScene);
@@ -201,6 +219,14 @@ void WorldLevelScene::removeUnit(int count, bool isLost) {
   }
   m_unitsInScene -= count;
   CCLOG("Unit removed from scene, total: %d", m_unitsInScene);
+}
+
+cocos2d::Touch* WorldLevelScene::getTouch() {
+  return m_touch;
+}
+
+void WorldLevelScene::setTouch(cocos2d::Touch* touch) {
+  m_touch = touch;
 }
 
 void WorldLevelScene::onBeginCtrl(WorldLevelCtrlLayer* ctrlLayer) {

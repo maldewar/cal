@@ -47,6 +47,7 @@ protected:
   int m_unitsSaved;
   int m_unitsLost;
   int m_unitsRequired;
+  cocos2d::Touch* m_touch;
 
 public:
   WorldLevelScene(void);
@@ -65,6 +66,10 @@ public:
   virtual void enableDebug(bool debug);
   virtual void onExit() override;
   virtual WorldLevelLayer* getWorldLevelLayer();
+  // Converts a position in screen pixels to a location in the physics world.
+  virtual b2Vec2 screenToWorld(cocos2d::Point screenPos);
+  // Converts a location in the physics world to a position in screen pixels.
+  virtual cocos2d::Point worldToScreen(b2Vec2 worldPos);
 
   virtual void onBeginCtrl(WorldLevelCtrlLayer* ctrlLayer);
   virtual void onCancelCtrl(WorldLevelCtrlLayer* ctrlLayer);
@@ -72,6 +77,9 @@ public:
 
   void addUnit(int count);
   void removeUnit(int count, bool isLost = true);
+
+  cocos2d::Touch* getTouch();
+  void setTouch(cocos2d::Touch* touch);
 };
 
 #endif /* __WORLD_LEVEL_SCENE__ */
