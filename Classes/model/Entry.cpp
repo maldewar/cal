@@ -183,7 +183,7 @@ void Entry::spawnUnit(float dt) {
   Unit* newUnit = Unit::create(true, true);
   newUnit->getBody()->SetTransform(getBody()->GetPosition(), 0);
   newUnit->getBody()->ApplyLinearImpulse( getRandomForce(), newUnit->getBody()->GetWorldCenter(), true);
-  float angularImpulse = CMath::Random(m_forceMinAngularImpulse, m_forceMaxAngularImpulse);
+  float angularImpulse = CMath::random(m_forceMinAngularImpulse, m_forceMaxAngularImpulse);
   angularImpulse = m_forceMinAngularImpulse - m_forceMaxAngularImpulse/2 + angularImpulse;
   newUnit->getBody()->ApplyAngularImpulse(angularImpulse, true);
   newUnit->update(0);
@@ -197,9 +197,9 @@ b2Vec2 Entry::getRandomForce() {
     b2Vec2 force;
     float angle = getBody()->GetAngle() - M_PI_2;
     if (m_forceMaxAngle > 0 || m_forceMaxDistance > 0) {
-        float randomAngle = CMath::Random(0.0f, m_forceMaxAngle);
+        float randomAngle = CMath::random(0.0f, m_forceMaxAngle);
         angle = angle - m_forceMaxAngle/2 + randomAngle;
-        float randomDistance = CMath::Random(m_forceMinDistance, m_forceMaxDistance);
+        float randomDistance = CMath::random(m_forceMinDistance, m_forceMaxDistance);
         force.x = cos(angle) * randomDistance;
         force.y = sin(angle) * randomDistance;
     } else {

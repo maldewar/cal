@@ -73,6 +73,10 @@ void Unit::update(float dt) {
   AIComponent::update(dt);
 }
 
+void Unit::select() {
+  getWorldLevelLayer()->getWorldLevelScene()->selectCtrl(CTRL_SELECT, this);
+}
+
 void Unit::contactStart(b2Body* body, Entity* contactEntity) {
   if (hasContact() && !isAfoot())
     setAfoot();

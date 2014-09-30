@@ -60,6 +60,7 @@ public:
      * @return Seconds passed since last update.
      */
     virtual void update(float dt);
+    virtual void select();
     virtual void contactStart(b2Body* body, Entity* contactEntity = nullptr);
     virtual void contactEnd(b2Body* body, Entity* contactEntity = nullptr);
 
