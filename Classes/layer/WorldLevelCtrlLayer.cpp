@@ -21,7 +21,11 @@ bool WorldLevelCtrlLayer::init(WorldLevelScene* scene) {
 
   m_center = new Vec2(m_winSize.width/2, m_winSize.height/2);
   m_touchTime = 0;
+  m_afterHidingTime = 0;
+  m_cooldownTime = 0;
+  m_lastTriggerTime = 0;
   m_showingTime = 0;
+  m_hidingTime = 0;
   m_isFadeToBlackCtrl = true;
   m_isLockingCtrl = true;
   m_isFollowingCtrl = false;
@@ -39,20 +43,32 @@ void WorldLevelCtrlLayer::update(float dt) {
     if (m_touchTime < m_showingTime) {
       m_touchTime += dt;
     } else {
-      pushState(State::Waiting);
+      replaceState(State::Active);
     }
+  }
+  if (getState() == State::Hiding) {
+    if (m_afterHidingTime < m_hidingTime) {
+      m_hidingTime += dt;
+    } else {
+      replaceState(State::Inactive);
+    }
+  }
+  if (m_cooldownTime > 0 && m_lastTriggerTime < m_cooldownTime) {
+    m_lastTriggerTime += dt;
   }
 }
 
 void WorldLevelCtrlLayer::beginCtrlTouch(Entity* entity) {
-  pushState(State::Showing);
-  m_touchTime = 0;
-  m_entity = entity;
-  onBeginCtrlTouch();
-  if (m_isFadeToBlackCtrl) {
-    m_opacityLayout->setVisible(true);
+  if (m_cooldownTime == 0 || m_lastTriggerTime > m_cooldownTime) {
+    replaceState(State::Showing);
+    m_touchTime = 0;
+    m_entity = entity;
+    onBeginCtrlTouch();
+    if (m_isFadeToBlackCtrl) {
+      m_opacityLayout->setVisible(true);
+    }
+    m_scene->onBeginCtrl(this);
   }
-  m_scene->onBeginCtrl(this);
 }
 
 void WorldLevelCtrlLayer::endCtrlTouch() {
@@ -61,6 +77,7 @@ void WorldLevelCtrlLayer::endCtrlTouch() {
     m_opacityLayout->setVisible(false);
   }
   m_scene->onEndCtrl(this);
+  m_lastTriggerTime = 0;
 }
 
 void WorldLevelCtrlLayer::cancelCtrlTouch() {
@@ -73,11 +90,12 @@ void WorldLevelCtrlLayer::cancelCtrlTouch() {
 
 void WorldLevelCtrlLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
   if (getState() == State::Showing && m_touchTime < m_showingTime) {
-    popState();
+    replaceState(State::Inactive);
     m_scene->onCancelCtrl(this);
     cancelCtrlTouch();
-  } else if(getState() == State::Waiting) {
-    popState(2);
+  } else if(getState() == State::Active) {
+    replaceState(State::Hiding);
+    m_afterHidingTime = 0;
     m_scene->onEndCtrl(this);
     endCtrlTouch();
   }

@@ -20,55 +20,66 @@ bool SelectCtrlLayer::init(WorldLevelScene* scene) {
   if ( !WorldLevelCtrlLayer::init(scene) ) {
     return false;
   }
-  // Wheel ctrl
-  m_wheelCtrl = WheelCtrl::create(m_scene);
-  m_wheelCtrl->setPosition(Vec2(m_winSize.width / 2, m_winSize.height / 2));
-  addChild(m_wheelCtrl);
-  //m_showingTime = 0.34f;
+  m_selectCtrl = WheelCtrl::create(m_scene, WHEEL_CTRL_TYPE_SELECT);
+  m_cursorCtrl = WheelCtrl::create(m_scene, WHEEL_CTRL_TYPE_CURSOR);
+  addChild(m_selectCtrl);
+  addChild(m_cursorCtrl);
+  m_showingTime = 0.34f;
+  m_cooldownTime = 0.5f;
   m_isFollowingCtrl = false;
-  m_isPausingCtrl = false;
+  m_isPausingCtrl = true;
+  m_isFadeToBlackCtrl = false;
   return true;
 }
 
 void SelectCtrlLayer::update(float dt) {
   WorldLevelCtrlLayer::update(dt);
+  if (m_state == State::Active) {
+    m_selectCtrl->setRotation(m_selectCtrl->getRotation() + 0.7f);
+    m_cursorCtrl->setRotation(m_cursorCtrl->getRotation() + 2.0f);
+  }
 }
 
 void SelectCtrlLayer::playAnimationIn(int state) {
-  switch (state) {
-    case State::Showing:
-      m_opacityLayout->setVisible(true);
-      break;
-  }
 }
 
 void SelectCtrlLayer::playAnimationOut(int state) {
   switch (state) {
     case State::Showing:
-      m_opacityLayout->setVisible(false);
-      m_wheelCtrl->hide();
+      m_selectCtrl->setRotation(0);
+      m_cursorCtrl->setRotation(0);
+      m_selectCtrl->hide();
+      m_cursorCtrl->hide();
       break;
   }
 }
 
-void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
-  if (getState() == State::Waiting) {
-    Touch* touch = touches[0];
-    Point screenPos = touch->getLocationInView();
-    float angle = CMath::GetAngle(m_center->x, m_center->y, screenPos.x, 1080 - screenPos.y);
-    m_wheelCtrl->setTargetAngle(angle);
-  }
+void SelectCtrlLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event){
+  Touch* touch = touches[0];
+  Point screenPos = touch->getLocation();
+  m_cursorCtrl->setPosition(screenPos);
+}
+
+void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event){
+  Touch* touch = touches[0];
+  Point screenPos = touch->getLocation();
+  m_cursorCtrl->setPosition(screenPos);
 }
 
 void SelectCtrlLayer::onBeginCtrlTouch() {
-  m_wheelCtrl->show();
+  m_selectCtrl->show();
+  m_cursorCtrl->show();
+  Point p = m_scene->worldToScreen(m_entity->getBody()->GetPosition());
+  p.y = Director::getInstance()->getWinSize().height - p.y;
+  m_selectCtrl->setPosition(p);
 }
 
 void SelectCtrlLayer::onEndCtrlTouch() {
-  m_wheelCtrl->applyTargetAngle();
-  m_wheelCtrl->hide();
+  m_selectCtrl->hide();
+  m_cursorCtrl->hide();
 }
 
 void SelectCtrlLayer::onCancelCtrlTouch() {
-  m_wheelCtrl->hide();
+  m_selectCtrl->hide();
+  m_cursorCtrl->hide();
 }

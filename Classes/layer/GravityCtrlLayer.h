@@ -19,10 +19,13 @@ public:
 
 private:
   WheelCtrl* m_wheelCtrl;
+  float m_ratioToCancel;
+  bool m_isCancelled;
 
 private:
   void playAnimationIn(int state);
   void playAnimationOut(int state);
+  bool checkIsCancelled(cocos2d::Point& screenPosition);
 };
 
 #endif // __GRAVITY_CTRL_LAYER_H__

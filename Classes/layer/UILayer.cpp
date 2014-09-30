@@ -37,6 +37,11 @@ void UILayer::pushState(int state) {
   }
 }
 
+void UILayer::replaceState(int state) {
+  //TODO: actually replace
+  pushState(state);
+}
+
 void UILayer::popState(int howMany) {
   if (!m_states.empty()) {
     playAnimationOut(m_states.top());

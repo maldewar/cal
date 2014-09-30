@@ -11,7 +11,8 @@ public:
   enum State {
     Inactive,
     Showing,
-    Waiting
+    Hiding,
+    Active
   };
 
 public:
@@ -74,7 +75,11 @@ protected:
   cocos2d::Vec2* m_center;
   Entity* m_entity;
   float m_touchTime;
+  float m_cooldownTime;
+  float m_lastTriggerTime;
   float m_showingTime;
+  float m_hidingTime;
+  float m_afterHidingTime;
   bool m_isFadeToBlackCtrl;
   bool m_isLockingCtrl;
   bool m_isFollowingCtrl;

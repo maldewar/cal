@@ -12,13 +12,15 @@ public:
   static SelectCtrlLayer* create(WorldLevelScene* scene);
   virtual bool init(WorldLevelScene* scene);
   virtual void update(float dt);
+  virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
   virtual void onBeginCtrlTouch();
   virtual void onEndCtrlTouch();
   virtual void onCancelCtrlTouch();
 
 private:
-  WheelCtrl* m_wheelCtrl;
+  WheelCtrl* m_selectCtrl;
+  WheelCtrl* m_cursorCtrl;
 
 private:
   void playAnimationIn(int state);
