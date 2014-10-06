@@ -2,18 +2,18 @@
 #include "../util/CMath.h"
 
 RayCastTool::RayCastTool(float rayLength) : b2RayCastCallback() {
-    m_rayLength        = rayLength;
-    m_start            = new b2Vec2();
-    m_startTemp        = new cocos2d::Vec2();
-    m_end              = new b2Vec2();
-    m_endTemp          = new cocos2d::Vec2();
-    m_objectType       = 0;
-    m_objectTypeFilter = 0;
-    m_entity           = nullptr;
+  m_rayLength        = rayLength;
+  m_start            = new b2Vec2();
+  m_startTemp        = new cocos2d::Vec2();
+  m_end              = new b2Vec2();
+  m_endTemp          = new cocos2d::Vec2();
+  m_objectType       = 0;
+  m_objectTypeFilter = 0;
+  m_entity           = nullptr;
 };
 
 void RayCastTool::RayCast(b2World* world, float x, float y, float gravityAngle) {
-    RayCast(world, x, y, gravityAngle, m_rayLength);
+  RayCast(world, x, y, gravityAngle, m_rayLength);
 };
 
 void RayCastTool::RayCast(b2World* world, float x, float y, float gravityAngle, float distance) {
@@ -53,12 +53,20 @@ void RayCastTool::ClearFilter() {
 };
 
 cocos2d::Vec2* RayCastTool::GetStart() {
-    return m_startTemp;
+  return m_startTemp;
 };
+
+b2Vec2* RayCastTool::GetWorldStart() {
+  return m_start;
+}
 
 cocos2d::Vec2* RayCastTool::GetEnd() {
     return m_endTemp;
 };
+
+b2Vec2* RayCastTool::GetWorldEnd() {
+  return m_end;
+}
 
 int RayCastTool::GetObjectType() {
     return m_objectType;

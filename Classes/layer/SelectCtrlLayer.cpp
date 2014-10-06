@@ -22,6 +22,8 @@ bool SelectCtrlLayer::init(WorldLevelScene* scene) {
   }
   m_selectCtrl = WheelCtrl::create(m_scene, WHEEL_CTRL_TYPE_SELECT);
   m_cursorCtrl = WheelCtrl::create(m_scene, WHEEL_CTRL_TYPE_CURSOR);
+  m_rayCastTool = new RayCastTool(10.0f);
+  m_rayCastTool->SetFilter(ENTITY_TYPE_AREA);
   addChild(m_selectCtrl);
   addChild(m_cursorCtrl);
   m_showingTime = 0.34f;
@@ -58,19 +60,26 @@ void SelectCtrlLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
   Touch* touch = touches[0];
   Point screenPos = touch->getLocation();
   m_cursorCtrl->setPosition(screenPos);
+  b2Vec2 worldPos = m_scene->screenToWorld(screenPos);
+  m_rayCastTool->RayCast(m_scene->getWorldLevelLayer()->getWorld(),
+                         worldPos.x, worldPos.y,
+                         m_scene->getGravityAngle());
 }
 
 void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event){
   Touch* touch = touches[0];
   Point screenPos = touch->getLocation();
   m_cursorCtrl->setPosition(screenPos);
+  b2Vec2 worldPos = m_scene->screenToWorld(screenPos);
+  m_rayCastTool->RayCast(m_scene->getWorldLevelLayer()->getWorld(),
+                         worldPos.x, worldPos.y,
+                         m_scene->getGravityAngle());
 }
 
 void SelectCtrlLayer::onBeginCtrlTouch() {
   m_selectCtrl->show();
   m_cursorCtrl->show();
   Point p = m_scene->worldToScreen(m_entity->getBody()->GetPosition());
-  p.y = Director::getInstance()->getWinSize().height - p.y;
   m_selectCtrl->setPosition(p);
 }
 
@@ -82,4 +91,24 @@ void SelectCtrlLayer::onEndCtrlTouch() {
 void SelectCtrlLayer::onCancelCtrlTouch() {
   m_selectCtrl->hide();
   m_cursorCtrl->hide();
+}
+
+void SelectCtrlLayer::draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) {
+  //m_customCommand.init(_globalZOrder + 4);
+  //m_customCommand.init(1000);
+  m_customCommand.func = CC_CALLBACK_0(SelectCtrlLayer::onDraw, this, transform, flags);
+  renderer->addCommand(&m_customCommand);
+  WorldLevelCtrlLayer::draw(renderer, transform, flags);
+}
+
+void SelectCtrlLayer::onDraw( const cocos2d::Mat4 &transform, uint32_t flags) {
+  //Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+  //Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
+  ccDrawColor4F(255, 255, 255, 1);
+  //ccDrawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
+  DrawPrimitives::drawLine(m_scene->worldToScreen(*m_rayCastTool->GetWorldStart()),
+                           m_scene->worldToScreen(*m_rayCastTool->GetWorldEnd()));
+  //CCLOG("Start: %f,%f End: %f,%f", m_rayCastTool->GetStart()->x, m_rayCastTool->GetStart()->y, m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
+  //Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+  //WorldLevelCtrlLayer::onDraw(transform, flags);
 }

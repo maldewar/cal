@@ -311,8 +311,6 @@ void BasicRUBELayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
 // Converts a position in screen pixels to a location in the physics world
 b2Vec2 BasicRUBELayer::screenToWorld(cocos2d::Point screenPos)
 {
-    screenPos.y = Director::getInstance()->getWinSize().height - screenPos.y;
-    
     Point layerOffset = getPosition();
     screenPos.x -= layerOffset.x;
     screenPos.y -= layerOffset.y;
@@ -332,7 +330,6 @@ b2Vec2 BasicRUBELayer::screenToWorld(cocos2d::Point screenPos)
 // Converts a location in the physics world to a position in screen pixels
 cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
 {
-    // TODO
     Point layerOffset = getPosition();
     worldPos *= getScale();
     /*
@@ -342,7 +339,7 @@ cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
      */
     Point p = Point((worldPos.x * m_cosRotation - worldPos.y * m_sinRotation) + layerOffset.x,
                     (worldPos.y * m_cosRotation + worldPos.x * m_sinRotation) + layerOffset.y);
-    p.y = Director::getInstance()->getWinSize().height - p.y;
+
     return p;
 }
 
@@ -351,7 +348,7 @@ cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
 void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
   if (touches.size() == 1) {
     Touch *touch = touches[0];
-    Point screenPos = touch->getLocationInView();
+    Point screenPos = touch->getLocation();
     b2Vec2 worldPos = screenToWorld(screenPos);
 
     // Make a small box around the touched point to query for overlapping fixtures
@@ -384,16 +381,15 @@ void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
       // Zoom
       Touch* touch0 = touches[0];
       Touch* touch1 = touches[1];
-      Vec2 currentScreenPos0 = touch0->getLocationInView();
-      Vec2 currentScreenPos1 = touch1->getLocationInView();
-      Vec2 previousScreenPos0 = touch0->getPreviousLocationInView();
-      Vec2 previousScreenPos1 = touch1->getPreviousLocationInView();
+      Vec2 currentScreenPos0 = touch0->getLocation();
+      Vec2 currentScreenPos1 = touch1->getLocation();
+      Vec2 previousScreenPos0 = touch0->getPreviousLocation();
+      Vec2 previousScreenPos1 = touch1->getPreviousLocation();
       Vec2 layerOffset = getPosition();
       float layerScale = getScale();
       Vec2 currentMidpoint = ((currentScreenPos1 - currentScreenPos0) / 2) + currentScreenPos0;
       Vec2 previousMidpoint = ((previousScreenPos1 - previousScreenPos0) / 2) + previousScreenPos0;
       Vec2 moved = currentMidpoint - previousMidpoint;
-      moved.y *= -1;
       layerOffset = layerOffset + moved;
       b2Vec2 worldCenterBeforeScaling = screenToWorld(currentMidpoint);
       float previousSeparation = previousScreenPos0.distance(previousScreenPos1);
@@ -405,18 +401,16 @@ void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
       // ... now check how that affected the midpoint, and cancel out the change:
       Vec2 screenCenterAfterScaling = worldToScreen(worldCenterBeforeScaling); //TODO: implement worldToScreen
       Vec2 movedCausedByScaling = screenCenterAfterScaling - currentMidpoint;
-      movedCausedByScaling.y *= -1;
       layerOffset = layerOffset;// - movedCausedByScaling; //TODO: get movement affected by rotation
       layerOffset = layerOffset - movedCausedByScaling;
       setPosition(layerOffset);
     } else {
       // Panning
       Touch* touch = touches[0];
-      Vec2 currentScreenPos = touch->getLocationInView();
-      Vec2 previousScreenPos = touch->getPreviousLocationInView();
+      Vec2 currentScreenPos = touch->getLocation();
+      Vec2 previousScreenPos = touch->getPreviousLocation();
       Vec2 layerOffset = getPosition();
       Vec2 moved = currentScreenPos - previousScreenPos;
-      moved.y *= -1;
       layerOffset = layerOffset + moved;
       setPosition(layerOffset);
     }
@@ -427,7 +421,7 @@ void BasicRUBELayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
 void BasicRUBELayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event)
 {
     Touch *touch = touches[0];
-    Point screenPos = touch->getLocationInView();
+    Point screenPos = touch->getLocation();
     b2Vec2 worldPos = screenToWorld(screenPos);
     CCLOG("Touches ended at wx:%f wy:%f sx:%f sy:%f", worldPos.x, worldPos.y, screenPos.x, screenPos.y);
     if (m_bodyTouchBegan) {
@@ -513,7 +507,7 @@ void BasicRUBELayer::onWorldTouchEnded() {
 
 b2Fixture* BasicRUBELayer::getTouchedFixture(Touch* touch)
 {
-    Point screenPos = touch->getLocationInView();
+    Point screenPos = touch->getLocation();
     b2Vec2 worldPos = screenToWorld(screenPos);
     
     // Make a small box around the touched point to query for overlapping fixtures

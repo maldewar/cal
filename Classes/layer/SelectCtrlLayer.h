@@ -4,7 +4,9 @@
 #include <string>
 #include "WorldLevelCtrlLayer.h"
 #include "../model/ctrl/WheelCtrl.h"
+#include "../engine/RayCastTool.h"
 class WheelCtrl;
+class RayCastTool;
 
 class SelectCtrlLayer : public WorldLevelCtrlLayer
 {
@@ -17,10 +19,16 @@ public:
   virtual void onBeginCtrlTouch();
   virtual void onEndCtrlTouch();
   virtual void onCancelCtrlTouch();
+  virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) override;
+
+protected:
+  virtual void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
 
 private:
   WheelCtrl* m_selectCtrl;
   WheelCtrl* m_cursorCtrl;
+  RayCastTool* m_rayCastTool;
+  cocos2d::CustomCommand m_customCommand;
 
 private:
   void playAnimationIn(int state);
