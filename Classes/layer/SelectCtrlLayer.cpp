@@ -94,21 +94,13 @@ void SelectCtrlLayer::onCancelCtrlTouch() {
 }
 
 void SelectCtrlLayer::draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) {
-  //m_customCommand.init(_globalZOrder + 4);
-  //m_customCommand.init(1000);
   m_customCommand.func = CC_CALLBACK_0(SelectCtrlLayer::onDraw, this, transform, flags);
   renderer->addCommand(&m_customCommand);
   WorldLevelCtrlLayer::draw(renderer, transform, flags);
 }
 
 void SelectCtrlLayer::onDraw( const cocos2d::Mat4 &transform, uint32_t flags) {
-  //Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
-  //Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
-  ccDrawColor4F(255, 255, 255, 1);
-  //ccDrawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
+  DrawPrimitives::setDrawColor4F(255, 255, 255, 1);
   DrawPrimitives::drawLine(m_scene->worldToScreen(*m_rayCastTool->GetWorldStart()),
                            m_scene->worldToScreen(*m_rayCastTool->GetWorldEnd()));
-  //CCLOG("Start: %f,%f End: %f,%f", m_rayCastTool->GetStart()->x, m_rayCastTool->GetStart()->y, m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
-  //Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
-  //WorldLevelCtrlLayer::onDraw(transform, flags);
 }

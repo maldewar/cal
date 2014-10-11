@@ -28,7 +28,7 @@ private:
   WheelCtrl* m_selectCtrl;
   WheelCtrl* m_cursorCtrl;
   RayCastTool* m_rayCastTool;
-  cocos2d::CustomCommand m_customCommand;
+  cocos2d::CustomCommand m_customCommand; // for raycast line rendering.
 
 private:
   void playAnimationIn(int state);

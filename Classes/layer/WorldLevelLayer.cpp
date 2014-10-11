@@ -148,7 +148,7 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
         float sizeRatio = size.height / 840.0f;
         float spriteScale = image->scale / sizeRatio;
         imageNode->getSprite()->setScale(spriteScale);
-        Point pos = CCPointMake(image->center.x, image->center.y);
+        Point pos = Point(image->center.x, image->center.y);
         b2Vec2 localPos( pos.x, pos.y );
         pos.x = localPos.x;
         pos.y = localPos.y;
@@ -382,12 +382,10 @@ void WorldLevelLayer::onWorldTouchBegan(b2Vec2& position) {
 }
 
 void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
-  //BasicRUBELayer::onDraw(transform, flags);
-  //ccDrawLine(cocos2d::Vec2(0, 0), cocos2d::Vec2(1, 1));
   Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
   Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
-  ccDrawColor4F(255, 255, 255, 1);
-  ccDrawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
+  DrawPrimitives::setDrawColor4F(255, 255, 255, 1);
+  DrawPrimitives::drawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
   Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 
   BasicRUBELayer::onDraw(transform, flags);

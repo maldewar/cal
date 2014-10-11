@@ -123,7 +123,7 @@ Point BasicRUBELayer::initialWorldOffset()
     
     //place (0,0) of physics world at center of bottom edge of screen
     Size s = Director::sharedDirector()->getWinSize();
-    return CCPointMake( s.width/2, 0 );
+    return Point( s.width/2, 0 );
 }
 
 

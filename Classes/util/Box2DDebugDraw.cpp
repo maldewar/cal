@@ -31,8 +31,8 @@ void Box2DDebugDraw::DrawPolygon(const b2Vec2* aVertices, int32 aVertexCount, co
     for (int i = 0; i < DEBUG_DRAW_MAX_VERTICES && i < aVertexCount; i++ )
         mVertices[i].setPoint( mRatio * aVertices[i].x, mRatio * aVertices[i].y );
     
-    ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
-    ccDrawPoly((CCPoint*)aVertices, aVertexCount, true);
+    DrawPrimitives::setDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
+    DrawPrimitives::drawPoly((Point*)aVertices, aVertexCount, true);
 }
 
 
@@ -42,17 +42,17 @@ void Box2DDebugDraw::DrawSolidPolygon(const b2Vec2* aVertices, int32 aVertexCoun
         mVertices[i].setPoint( mRatio * aVertices[i].x, mRatio * aVertices[i].y );
     
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    ccDrawSolidPoly(mVertices, aVertexCount, ccc4f(aColor.r, aColor.g, aColor.b, 0.25));
+    DrawPrimitives::drawSolidPoly(mVertices, aVertexCount, Color4F(aColor.r, aColor.g, aColor.b, 0.25));
     
-    ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
-    ccDrawPoly(mVertices, aVertexCount, true);
+    DrawPrimitives::setDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
+    DrawPrimitives::drawPoly(mVertices, aVertexCount, true);
 }
 
 
 void Box2DDebugDraw::DrawCircle(const b2Vec2& aCenter, float32 aRadius, const b2Color& aColor)
 {
-    ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
-    ccDrawCircle( CCPointMake(mRatio * aCenter.x, mRatio * aCenter.y), aRadius, 0, DEBUG_DRAW_CIRCLE_SEGMENTS, false);
+    DrawPrimitives::setDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
+    DrawPrimitives::drawCircle(Point(mRatio * aCenter.x, mRatio * aCenter.y), aRadius, 0, DEBUG_DRAW_CIRCLE_SEGMENTS, false, 1, 1);
 }
 
 
@@ -69,13 +69,13 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& aCenter, float32 aRadius, con
         
         mVertices[i].setPoint( j, k );
     }
-    ccDrawSolidPoly(mVertices, DEBUG_DRAW_CIRCLE_SEGMENTS, ccc4f(aColor.r, aColor.g, aColor.b, 0.25));
+    DrawPrimitives::drawSolidPoly(mVertices, DEBUG_DRAW_CIRCLE_SEGMENTS, Color4F(aColor.r, aColor.g, aColor.b, 0.25));
     
-    ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
-    ccDrawCircle( CCPointMake(mRatio * aCenter.x, mRatio * aCenter.y), aRadius, 0, DEBUG_DRAW_CIRCLE_SEGMENTS, false);
+    DrawPrimitives::setDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
+    DrawPrimitives::drawCircle(Point(mRatio * aCenter.x, mRatio * aCenter.y), aRadius, 0, DEBUG_DRAW_CIRCLE_SEGMENTS, false);
     
     b2Vec2 p = aCenter + aRadius * aAxis;
-    ccDrawLine(ccp(aCenter.x, aCenter.y), ccp(p.x, p.y));
+    DrawPrimitives::drawLine(Point(aCenter.x, aCenter.y), Point(p.x, p.y));
 }
 
 
@@ -125,8 +125,8 @@ void Box2DDebugDraw::DrawParticles(const b2Vec2 *centers_old, float32 radius, co
 
 void Box2DDebugDraw::DrawSegment(const b2Vec2& aP1, const b2Vec2& aP2, const b2Color& aColor)
 {
-    ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
-    ccDrawLine(ccp(aP1.x, aP1.y), ccp(aP2.x, aP2.y));
+  DrawPrimitives::setDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
+  DrawPrimitives::drawLine(ccp(aP1.x, aP1.y), ccp(aP2.x, aP2.y));
 }
 
 
@@ -145,8 +145,8 @@ void Box2DDebugDraw::DrawTransform(const b2Transform& aXf)
 
 void Box2DDebugDraw::DrawPoint(const b2Vec2& aP, float32 aSize, const b2Color& aColor)
 {
-    ccDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
-	ccDrawPoint( CCPointMake(mRatio * aP.x, mRatio * aP.y) );
+  DrawPrimitives::setDrawColor4F(aColor.r, aColor.g, aColor.b, 1);
+  DrawPrimitives::drawPoint( Point(mRatio * aP.x, mRatio * aP.y) );
 }
 
 
@@ -161,6 +161,6 @@ void Box2DDebugDraw::DrawAABB(b2AABB* aAabb, const b2Color& aColor)
 	mVertices[1].setPoint( aAabb->upperBound.x * mRatio, aAabb->lowerBound.y * mRatio );
 	mVertices[2].setPoint( aAabb->upperBound.x * mRatio, aAabb->upperBound.y * mRatio );
 	mVertices[3].setPoint( aAabb->lowerBound.x * mRatio, aAabb->upperBound.y * mRatio );
-	ccDrawPoly((CCPoint*)mVertices, 8, true);
+  DrawPrimitives::drawPoly((Point*)mVertices, 8, true);
 }
 

@@ -33,7 +33,7 @@ private:
 	static const int DEBUG_DRAW_MAX_VERTICES = 64;
 	static const int DEBUG_DRAW_CIRCLE_SEGMENTS = 16;
 	float mRatio;
-	cocos2d::CCPoint mVertices[DEBUG_DRAW_MAX_VERTICES];
+	cocos2d::Point mVertices[DEBUG_DRAW_MAX_VERTICES];
 
 };
 
