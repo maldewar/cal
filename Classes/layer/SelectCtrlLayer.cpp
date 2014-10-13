@@ -3,6 +3,7 @@
 #include "editor-support/cocostudio/CCActionManagerEx.h"
 #include "../scene/WorldLevelScene.h"
 #include "../util/CMath.h"
+#include "../model/Unit.h"
 
 USING_NS_CC;
 
@@ -31,6 +32,8 @@ bool SelectCtrlLayer::init(WorldLevelScene* scene) {
   m_isFollowingCtrl = false;
   m_isPausingCtrl = true;
   m_isFadeToBlackCtrl = false;
+  m_worldTargetPoint = new b2Vec2(0, 0);
+  m_units.clear();
   return true;
 }
 
@@ -76,7 +79,11 @@ void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches
                          m_scene->getGravityAngle());
 }
 
-void SelectCtrlLayer::onBeginCtrlTouch() {
+void SelectCtrlLayer::onBeginCtrlTouch(Entity* entity) {
+  m_units.clear();
+  if (entity->getType() == ENTITY_TYPE_UNIT) {
+    m_units.push_back( (Unit*)entity);
+  }
   m_selectCtrl->show();
   m_cursorCtrl->show();
   Point p = m_scene->worldToScreen(m_entity->getBody()->GetPosition());
@@ -86,6 +93,8 @@ void SelectCtrlLayer::onBeginCtrlTouch() {
 void SelectCtrlLayer::onEndCtrlTouch() {
   m_selectCtrl->hide();
   m_cursorCtrl->hide();
+  m_worldTargetPoint->Set(m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
+  CCLOG("Setting destiny point. at %f, %f", m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
 }
 
 void SelectCtrlLayer::onCancelCtrlTouch() {
