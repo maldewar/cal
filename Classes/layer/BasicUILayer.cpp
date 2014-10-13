@@ -29,14 +29,12 @@ bool BasicUILayer::init(int sceneType)
 }
 
 void BasicUILayer::onEnter() {
-  CCLOG("BasicUILayer::onEnter");
   UILayer::onEnter();
   setUILayer();
   scheduleUpdate();
 }
 
 void BasicUILayer::onExit() {
-  CCLOG("BasicUILayer::onExit");
   unscheduleUpdate();
   stopAllActions();
   m_currentAction->stop(); // TODO, stop all actions, not just the last one

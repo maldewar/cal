@@ -54,7 +54,6 @@ void WheelCtrl::show(bool ease) {
       m_scene->pause(true);
     }
   }
-  CCLOG("WheelCtrl::show type:%d", m_type);
   switch (m_type) {
     case WHEEL_CTRL_TYPE_SELECT:
       if (ease)
@@ -80,11 +79,6 @@ void WheelCtrl::show(bool ease) {
         else
           m_armature->getAnimation()->playWithIndex(WHEEL_CTRL_ANIM_CIRCLE);
       }
-  }
-  if (isVisible()) {
-    CCLOG("WheelCtrl::show is visible");
-  } else {
-    CCLOG("WheelCtrl::show this is not visible");
   }
 }
 

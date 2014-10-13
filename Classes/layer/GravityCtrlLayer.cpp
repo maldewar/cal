@@ -67,20 +67,9 @@ void GravityCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touche
   }
 }
 
-void GravityCtrlLayer::onBeginCtrlTouch() {
+void GravityCtrlLayer::onBeginCtrlTouch(Entity* entity) {
   replaceState(State::Active);
   m_wheelCtrl->show();
-  CCLOG("GravityCtrlLayer::onBeginCtrlTouch");
-  if (isVisible()) {
-    CCLOG("Layer is visible");
-    if (m_wheelCtrl->isVisible()) {
-      CCLOG("Wheel Ctrl is visible");
-    } else {
-      CCLOG("Wheel Ctrl is not visible");
-    }
-  } else {
-    CCLOG("Layer is not visible");
-  }
 }
 
 void GravityCtrlLayer::onEndCtrlTouch() {

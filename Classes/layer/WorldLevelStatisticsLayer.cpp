@@ -66,13 +66,10 @@ bool WorldLevelStatisticsLayer::init()
 }
 
 void WorldLevelStatisticsLayer::onEnter() {
-  CCLOG("WorldLevelStatisticsLayer::onEnter");
   Layer::onEnter();
 }
 
 void WorldLevelStatisticsLayer::onExit() {
-  //unscheduleUpdate();
-  CCLOG("WorldLevelStatisticsLayer::onExit");
   Layer::onExit();
 }
 

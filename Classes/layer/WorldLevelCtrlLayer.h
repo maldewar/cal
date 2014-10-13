@@ -60,7 +60,7 @@ public:
   /**
    * Callback for when the input starts.
    */
-  virtual void onBeginCtrlTouch();
+  virtual void onBeginCtrlTouch(Entity* entity);
   /**
    * Callback for when the input gets cancelled.
    */

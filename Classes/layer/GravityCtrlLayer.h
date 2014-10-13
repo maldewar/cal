@@ -13,7 +13,7 @@ public:
   virtual bool init(WorldLevelScene* scene);
   virtual void update(float dt);
   virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-  virtual void onBeginCtrlTouch();
+  virtual void onBeginCtrlTouch(Entity* entity);
   virtual void onEndCtrlTouch();
   virtual void onCancelCtrlTouch();
 

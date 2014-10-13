@@ -83,7 +83,6 @@ void UILayer::scaleWidget(ui::Widget* widget, const Align align) {
   float maxScale = 0.75;
   float scale = (dpi - minDPI) * (maxScale - minScale) / (float)(maxDPI - minDPI) + minScale;
   Size contentSize = widget->getContentSize();
-  CCLOG("SCALE %f SIZEX:%f SIZEY:%f", scale, contentSize.width, contentSize.height);
   float positionX = contentSize.width - (scale * contentSize.width);
   float positionY = contentSize.height - (scale * contentSize.height);
   widget->setScale(scale);

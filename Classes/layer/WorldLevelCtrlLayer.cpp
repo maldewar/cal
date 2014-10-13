@@ -63,7 +63,7 @@ void WorldLevelCtrlLayer::beginCtrlTouch(Entity* entity) {
     replaceState(State::Showing);
     m_touchTime = 0;
     m_entity = entity;
-    onBeginCtrlTouch();
+    onBeginCtrlTouch(m_entity);
     if (m_isFadeToBlackCtrl) {
       m_opacityLayout->setVisible(true);
     }
@@ -137,7 +137,7 @@ Entity* WorldLevelCtrlLayer::getEntity() {
   return m_entity;
 }
 
-void WorldLevelCtrlLayer::onBeginCtrlTouch() {
+void WorldLevelCtrlLayer::onBeginCtrlTouch(Entity* entity) {
 }
 
 void WorldLevelCtrlLayer::onEndCtrlTouch() {

@@ -55,9 +55,6 @@ SceneDef* SceneFactory::getSceneDef(const char* filename, std::string& errorMsg)
     const Json::Value jLayerDef = *itr;
     LayerDef* layerDef = buildLayerDef(jLayerDef);
     if (layerDef) {
-      if (layerDef->getType() == LAYER_TYPE_BG) {
-        CCLOG("RECEIVING BG LAYER.");
-      }
       sceneDef->addLayerDef(layerDef);
     }
   }
