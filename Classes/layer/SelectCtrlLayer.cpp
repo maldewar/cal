@@ -4,6 +4,7 @@
 #include "../scene/WorldLevelScene.h"
 #include "../util/CMath.h"
 #include "../model/Unit.h"
+#include "../component/AIComponentSeekCmd.h"
 
 USING_NS_CC;
 
@@ -82,7 +83,7 @@ void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches
 void SelectCtrlLayer::onBeginCtrlTouch(Entity* entity) {
   m_units.clear();
   if (entity->getType() == ENTITY_TYPE_UNIT) {
-    m_units.push_back( (Unit*)entity);
+    m_units.push_back((Unit*)entity);
   }
   m_selectCtrl->show();
   m_cursorCtrl->show();
@@ -94,7 +95,9 @@ void SelectCtrlLayer::onEndCtrlTouch() {
   m_selectCtrl->hide();
   m_cursorCtrl->hide();
   m_worldTargetPoint->Set(m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
-  CCLOG("Setting destiny point. at %f, %f", m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
+  for (auto unit : m_units) {
+    unit->command(new AIComponentSeekCmd(m_rayCastTool->GetWorldEnd()));
+  }
 }
 
 void SelectCtrlLayer::onCancelCtrlTouch() {

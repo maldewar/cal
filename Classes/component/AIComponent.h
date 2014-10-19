@@ -3,6 +3,8 @@
 
 #include <Box2D/Box2D.h>
 
+#include "AIComponentCmd.h"
+
 const int AI_STATE_LOOSE = 0;
 const int AI_STATE_AFOOT = 1;
 const int AI_STATE_LOOSE_AFOOT = 2;
@@ -36,6 +38,8 @@ protected:
   static float s_afoot_angular_velocity_tolerance;
   static float s_afoot_timeout;
 
+  AIComponentCmd *m_cmd;
+
 public:
   /**
    * Class constructor.
@@ -52,6 +56,7 @@ public:
   virtual void onStateChange(int state, int substate);
   virtual void onSubstateChange(int substate);
   virtual void onDirectionChange(bool isRight);
+  virtual void command(AIComponentCmd *cmd);
 
 protected:
   virtual void setState(int state);
@@ -60,6 +65,7 @@ protected:
   virtual void cancelTween();
   virtual void resetPlan();
   virtual void makePlan(int targetType);
+  virtual void executePlan();
 };
 
 #endif // __AI_COMPONENT_H__

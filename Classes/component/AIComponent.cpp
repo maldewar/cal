@@ -21,6 +21,8 @@ AIComponent::AIComponent() {
   m_tweenCount     = 0;
   m_tweenDuration  = 0;
   m_tweenNextSubstate = 0;
+
+  m_cmd = nullptr;
 }
 
 AIComponent::~AIComponent(){
@@ -101,6 +103,11 @@ void AIComponent::update(float dt) {
   }
   m_lastPosition->x = m_body->GetPosition().x;
   m_lastPosition->y = m_body->GetPosition().y;
+
+  //Execute Command
+  if (m_cmd) {
+    m_cmd->Update(dt, m_body);
+  }
 }
 
 void AIComponent::setState(int state) {
@@ -168,12 +175,22 @@ void AIComponent::onDirectionChange(bool isRight) {
   m_rightDirection = isRight;
 }
 
+void AIComponent::command(AIComponentCmd *cmd) {
+  m_cmd = cmd;
+}
+
 void AIComponent::setSubstateStandDuration(float duration) {
   m_substate_stand_duration = duration;
 }
 
 void AIComponent::resetPlan() {
+  // TODO
 }
 
 void AIComponent::makePlan(int targetType) {
+  // TODO
+}
+
+void AIComponent::executePlan() {
+  // TODO
 }
