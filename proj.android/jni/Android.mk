@@ -19,6 +19,8 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 				../../Classes/util/IdUtil.cpp  \
 				../../Classes/engine/RayCastTool.cpp \
 				../../Classes/component/ContactComponent.cpp \
+				../../Classes/component/AIComponentCmd.cpp \
+				../../Classes/component/AIComponentSeekCmd.cpp \
 				../../Classes/component/AIComponent.cpp \
 				../../Classes/model/ImageNode.cpp \
 				../../Classes/model/ImageBody.cpp \
