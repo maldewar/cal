@@ -1,0 +1,29 @@
+# Setting up RUBE to use it with Calaveras
+1. Symlink <rube_install_path>/config to <calaveras_path>/rube/config
+2. On the Scripts panel click on the "script hooks setup dialog" and set the scripts folder to <calaveras_path>/rube/scripts, then link the "Images dropped" event with the calaverasResizeImage.rs file.
+
+# Create a new level.
+1. Run script to set custom properties <calavera_path>/rube/scripts/calaverasLevelCustomProperties.rs
+2. Set Scene > Scene Settings > Custom Display > Property display filter script to <calavera_path>/rube/scripts/calaverasPropertyDisplayFilter.rs
+3. Set Scene > Scene Settings > Custom Display > Label customization script to <calavera_path>/rube/scripts/calaverasLabelDisplay.rs
+4. Set Scene > Scene Settings > Export Options > Specify Path to <calavera_path>/Resources/design.
+
+# Create a new act.
+1. Run script to set custom properties <calavera_path>/rube/scripts/calaverasActCustomProperties.rs
+2. Set Scene > Scene Settings > Custom Display > Property display filter script to <calavera_path>/rube/scripts/calaverasPropertyDisplayFilter.rs
+3. Set Scene > Scene Settings > Custom Display > Label customization script to <calavera_path>/rube/scripts/calaverasLabelDisplay.rs
+4. Set Scene > Scene Settings > Export Options > Specify Path to <calavera_path>/Resources/design.
+
+# After export to json
+1. Run bash script to change files from .png to .pvr.
+
+# Edition
+t - Translate
+s - Scale
+r - Rotation
+c - Set cursor
+
+# Areas (go to edit vertices)
+e - Add vertix to line
+ee - Add free vertix to right
+eee - Add free vertix to left

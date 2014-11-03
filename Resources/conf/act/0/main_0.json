@@ -1,0 +1,273 @@
+
+{
+	"allowSleep" : true,
+	"autoClearForces" : true,
+	"body" : 
+	[
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 4,
+					"name" : "level"
+				},
+				
+				{
+					"name" : "armature",
+					"string" : ""
+				},
+				
+				{
+					"name" : "category",
+					"string" : "level"
+				},
+				
+				{
+					"name" : "title",
+					"string" : "Test 4"
+				},
+				
+				{
+					"bool" : true,
+					"name" : "active"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"circle" : 
+					{
+						"center" : 0,
+						"radius" : 0.2
+					},
+					"name" : "body_sensor",
+					"sensor" : true
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "level",
+			"position" : 
+			{
+				"x" : 0.9881420135498047,
+				"y" : -0.2371544837951660
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 3,
+					"name" : "level"
+				},
+				
+				{
+					"name" : "armature",
+					"string" : ""
+				},
+				
+				{
+					"name" : "category",
+					"string" : "level"
+				},
+				
+				{
+					"name" : "title",
+					"string" : "Test 3"
+				},
+				
+				{
+					"bool" : true,
+					"name" : "active"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"circle" : 
+					{
+						"center" : 0,
+						"radius" : 0.2
+					},
+					"name" : "body_sensor",
+					"sensor" : true
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "level",
+			"position" : 
+			{
+				"x" : 0.2371549606323242,
+				"y" : -0.5928854942321777
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 2,
+					"name" : "level"
+				},
+				
+				{
+					"name" : "armature",
+					"string" : ""
+				},
+				
+				{
+					"name" : "category",
+					"string" : "level"
+				},
+				
+				{
+					"name" : "title",
+					"string" : "Test 2"
+				},
+				
+				{
+					"bool" : true,
+					"name" : "active"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"circle" : 
+					{
+						"center" : 0,
+						"radius" : 0.2
+					},
+					"name" : "body_sensor",
+					"sensor" : true
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "level",
+			"position" : 
+			{
+				"x" : -0.2569174766540527,
+				"y" : 0.6324107646942139
+			},
+			"type" : 0
+		},
+		
+		{
+			"angle" : 0,
+			"angularVelocity" : 0,
+			"customProperties" : 
+			[
+				
+				{
+					"int" : 1,
+					"name" : "level"
+				},
+				
+				{
+					"name" : "armature",
+					"string" : ""
+				},
+				
+				{
+					"name" : "category",
+					"string" : "level"
+				},
+				
+				{
+					"name" : "title",
+					"string" : "Test 1"
+				},
+				
+				{
+					"bool" : true,
+					"name" : "active"
+				}
+			],
+			"fixture" : 
+			[
+				
+				{
+					"circle" : 
+					{
+						"center" : 0,
+						"radius" : 0.2
+					},
+					"name" : "body_sensor",
+					"sensor" : true
+				}
+			],
+			"linearVelocity" : 0,
+			"name" : "level",
+			"position" : 
+			{
+				"x" : -1.047430992126465,
+				"y" : 0.1778655052185059
+			},
+			"type" : 0
+		}
+	],
+	"collisionbitplanes" : 
+	{
+		"names" : 
+		[
+			"bitplane1",
+			"bitplane2",
+			"bitplane3",
+			"bitplane4",
+			"bitplane5",
+			"bitplane6",
+			"bitplane7",
+			"bitplane8",
+			"bitplane9",
+			"bitplane10",
+			"bitplane11",
+			"bitplane12",
+			"bitplane13",
+			"bitplane14",
+			"bitplane15",
+			"bitplane16",
+			"bitplane17",
+			"bitplane18",
+			"bitplane19",
+			"bitplane20",
+			"bitplane21",
+			"bitplane22",
+			"bitplane23",
+			"bitplane24",
+			"bitplane25",
+			"bitplane26",
+			"bitplane27",
+			"bitplane28",
+			"bitplane29",
+			"bitplane30",
+			"bitplane31",
+			"bitplane32"
+		]
+	},
+	"continuousPhysics" : true,
+	"gravity" : 
+	{
+		"x" : 0,
+		"y" : -10
+	},
+	"positionIterations" : 3,
+	"stepsPerSecond" : 60.0,
+	"subStepping" : false,
+	"velocityIterations" : 8,
+	"warmStarting" : true
+}
