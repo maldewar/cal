@@ -12,3 +12,7 @@ proj.win32/
 ._Classes
 Classes/.ycm_extra_conf.pyc
 cocos2d/plugin/.git
+Resources/small
+Resources/medium
+Resources/large
+Resources/design
