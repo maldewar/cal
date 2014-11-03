@@ -53,14 +53,37 @@ bool ActMenuLayer::init()
   int buttonYPosition = 540;
   int currentAct = StorageManager::getInstance()->getAct();
 
+  ui::Layout* layout0 = ui::Layout::create();
+  layout0->setContentSize(Size(s_actPageWidth, 1080));
+  ui::Button* button0 = ui::Button::create();
+  button0->setPosition(Vec2(s_actPageWidth / 2, buttonYPosition));
+  layout0->addChild(button0);
+  m_pageView->insertPage(layout0, 1);
+  bool showAct0 = currentAct >= 2;
+  showAct0 = true;
+  if (showAct0) {
+    button0->loadTextureNormal("act/act0.pvr");
+    button0->addTouchEventListener(CC_CALLBACK_2(ActMenuLayer::act0BtnCallback, this));
+  } else {
+    button0->loadTextureNormal("act/act_back.pvr");
+    button0->setEnabled(false);
+  }
+
   ui::Layout* layout1 = ui::Layout::create();
   layout1->setContentSize(Size(s_actPageWidth, 1080));
-  ui::Button* button1 = ui::Button::create("act/act1.pvr");
+  ui::Button* button1 = ui::Button::create();
   button1->setPosition(Vec2(s_actPageWidth / 2, buttonYPosition));
   layout1->addChild(button1);
-  m_pageView->insertPage(layout1, 0);
-  button1->addTouchEventListener(CC_CALLBACK_2(ActMenuLayer::act1BtnCallback, this));
-
+  m_pageView->insertPage(layout1, 1);
+  bool showAct1 = currentAct >= 2;
+  showAct1 = true;
+  if (showAct1) {
+    button1->loadTextureNormal("act/act1.pvr");
+    button1->addTouchEventListener(CC_CALLBACK_2(ActMenuLayer::act1BtnCallback, this));
+  } else {
+    button1->loadTextureNormal("act/act_back.pvr");
+    button1->setEnabled(false);
+  }
 
   ui::Layout* layout2 = ui::Layout::create();
   layout2->setContentSize(Size(s_actPageWidth, 1080));
@@ -138,6 +161,12 @@ void ActMenuLayer::onExit() {
   //unscheduleUpdate();
   CCLOG("ActMenuLayer::onExit");
   Layer::onExit();
+}
+
+void ActMenuLayer::act0BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
+  if (type == ui::Widget::TouchEventType::ENDED) {
+    Director::getInstance()->replaceScene(LevelMenuScene::create(1, PathUtil::getAct(0)));
+  }
 }
 
 void ActMenuLayer::act1BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {

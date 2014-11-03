@@ -12,7 +12,7 @@
 #include "../layer/WorldLevelDebugLayer.h"
 #include "../layer/WorldLevelStatisticsLayer.h"
 #include "../model/Entity.h"
-#include "../model/SceneDef.h"
+#include "../model/LevelSceneDef.h"
 class WorldLevelLayer;
 class WorldLevelUILayer;
 class GravityCtrlLayer;
@@ -36,10 +36,11 @@ protected:
   SelectCtrlLayer* m_selectCtrlLayer;
   WorldLevelStatisticsLayer* m_worldLevelStatisticsLayer;
   WorldLevelDebugLayer* m_worldLevelDebugLayer;
-  SceneDef* m_sceneDef;
+  LevelSceneDef* m_levelSceneDef;
   bool m_paused;
   bool m_debug;
   float m_gravityAngle;
+  static b2Vec2 m_gravity;
   bool m_gravityAngleRotatesWorld;
   int m_ctrl;
 
@@ -60,6 +61,7 @@ public:
   virtual void addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int index);
   virtual void setGravityAngle(float angle);
   virtual float getGravityAngle();
+  static b2Vec2 getGravity();
   virtual bool gravityAngleRotatesWorld();
   virtual void selectCtrl(int ctrl, Entity* entity);
   virtual bool isDebugEnable();

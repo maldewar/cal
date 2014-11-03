@@ -12,7 +12,12 @@ proj.win32/
 ._Classes
 Classes/.ycm_extra_conf.pyc
 cocos2d/plugin/.git
+
+# Generated resource files
 Resources/small
 Resources/medium
 Resources/large
 Resources/design
+
+# RUBE files
+rube/config/scripthooks.json

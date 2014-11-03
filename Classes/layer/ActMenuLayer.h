@@ -35,12 +35,18 @@ public:
   virtual bool init();
   virtual void onEnter();
   virtual void onExit();
-  void act1BtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void act2BtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void act3BtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void act4BtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-  void act5BtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-
+  void act0BtnCallback(cocos2d::Ref* sender,
+                       cocos2d::ui::Widget::TouchEventType type);
+  void act1BtnCallback(cocos2d::Ref* sender,
+                       cocos2d::ui::Widget::TouchEventType type);
+  void act2BtnCallback(cocos2d::Ref* sender,
+                       cocos2d::ui::Widget::TouchEventType type);
+  void act3BtnCallback(cocos2d::Ref* sender,
+                       cocos2d::ui::Widget::TouchEventType type);
+  void act4BtnCallback(cocos2d::Ref* sender,
+                       cocos2d::ui::Widget::TouchEventType type);
+  void act5BtnCallback(cocos2d::Ref* sender,
+                       cocos2d::ui::Widget::TouchEventType type);
 };
 
 #endif // __ACT_MENU_LAYER_H__

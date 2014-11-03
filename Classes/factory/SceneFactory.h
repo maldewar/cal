@@ -6,7 +6,8 @@
 
 #include "cocos2d.h"
 #include "../util/json/json.h"
-#include "../model/SceneDef.h"
+#include "../model/ActSceneDef.h"
+#include "../model/LevelSceneDef.h"
 #include "../model/LayerDef.h"
 #include "../model/BgLayerDef.h"
 #include "../model/WorldLayerDef.h"
@@ -26,11 +27,17 @@ private:
 public:
   virtual bool init();
   virtual SceneDef* getSceneDef(const char* filename, std::string& errorMsg);
+  virtual ActSceneDef* getActSceneDef(const char* filename, std::string& errorMsg);
+  virtual LevelSceneDef* getLevelSceneDef(const char* filename, std::string& errorMsg);
   virtual LayerDef* buildLayerDef(Json::Value jValue);
   virtual WorldLevelLayer* buildWorldLevelLayer(WorldLayerDef* worldLayerDef);
   virtual BackgroundLayer* buildBackgroundLayer(BgLayerDef* bgLayerDef);
 
 private:
+  bool getSceneDefBase(const char* filename,
+                    std::string& errorMsg,
+                    SceneDef *sceneDef,
+                    Json::Value& root);
   virtual void buildBaseLayerDef(LayerDef* layerDef, Json::Value jValue);
 
 };

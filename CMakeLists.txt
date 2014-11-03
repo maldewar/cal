@@ -70,6 +70,8 @@ set(GAME_SRC
   Classes/model/WorldLayerDef.cpp
   Classes/model/BgLayerDef.cpp
   Classes/model/SceneDef.cpp
+  Classes/model/ActSceneDef.cpp
+  Classes/model/LevelSceneDef.cpp
   Classes/model/Level.cpp
   Classes/system/ContactSystem.cpp
   Classes/layer/UILayer.cpp

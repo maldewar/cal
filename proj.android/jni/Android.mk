@@ -35,6 +35,8 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 				../../Classes/model/WorldLayerDef.cpp \
 				../../Classes/model/BgLayerDef.cpp \
 				../../Classes/model/SceneDef.cpp \
+				../../Classes/model/ActSceneDef.cpp \
+				../../Classes/model/LevelSceneDef.cpp \
 				../../Classes/model/Level.cpp \
 				../../Classes/system/ContactSystem.cpp \
 				../../Classes/layer/UILayer.cpp \

@@ -5,6 +5,8 @@
 #include "../util/PathUtil.h"
 #include "../factory/SceneFactory.h"
 
+b2Vec2 WorldLevelScene::m_gravity = b2Vec2(0, 0);
+
 WorldLevelScene::WorldLevelScene() {
   m_worldLevelLayer = nullptr;
   m_worldLevelUILayer = nullptr;
@@ -17,7 +19,7 @@ WorldLevelScene::WorldLevelScene() {
   m_gravityAngle = -M_PI_2;
   m_gravityAngleRotatesWorld = true;
   m_ctrl = CTRL_NONE;
-  m_sceneDef = nullptr;
+  m_levelSceneDef = nullptr;
 
   m_unitsInScene = 0;
   m_unitsSaved = 0;
@@ -57,14 +59,14 @@ bool WorldLevelScene::init(std::string filename) {
     */
 
   std::string sceneFactoryError;
-  m_sceneDef = SceneFactory::getInstance()->getSceneDef(filename.c_str(), sceneFactoryError);
+  m_levelSceneDef = SceneFactory::getInstance()->getLevelSceneDef(filename.c_str(), sceneFactoryError);
   if (!sceneFactoryError.empty()) {
     CCLOG("SceneFactory error %s", sceneFactoryError.c_str());
     //TODO: kill scene.
   }
-  m_unitsRequired = m_sceneDef->getUnitsRequired();
+  m_unitsRequired = m_levelSceneDef->getUnitsRequired();
   int topIndex = -100;
-  for (auto layerDef : m_sceneDef->getLayerDefs()) {
+  for (auto layerDef : m_levelSceneDef->getLayerDefs()) {
     if (layerDef->isEnabled()) {
       if (layerDef->getType() == LAYER_TYPE_WORLD) {
         WorldLayerDef* worldLayerDef = static_cast<WorldLayerDef*>(layerDef);
@@ -133,6 +135,7 @@ void WorldLevelScene::addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int i
   float xGravity = cos(m_gravityAngle) * 6;
   float yGravity = sin(m_gravityAngle) * 6;
   worldLevelLayer->getWorld()->SetGravity(b2Vec2(xGravity, yGravity));
+  m_gravity = worldLevelLayer->getWorld()->GetGravity();
   worldLevelLayer->setWorldLevelScene(this);
 }
 
@@ -149,10 +152,15 @@ void WorldLevelScene::setGravityAngle(float angle) {
       b->SetAwake(true);
     }
   }
+  m_gravity = m_worldLevelLayer->getWorld()->GetGravity();
 }
 
 float WorldLevelScene::getGravityAngle() {
   return m_gravityAngle;
+}
+
+b2Vec2 WorldLevelScene::getGravity() {
+  return m_gravity;
 }
 
 void WorldLevelScene::selectCtrl(int ctrl, Entity* entity) {
