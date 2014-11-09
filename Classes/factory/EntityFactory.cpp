@@ -75,6 +75,9 @@ Level* EntityFactory::getLevel(b2dJson* json, b2Body* body) {
   Level* level = Level::create(armature);
   level->setBody(body);
   level->setLevel(json->getCustomInt(body, "level", 0));
+  bool isActive = json->getCustomBool(body, "active", false);
+  if (isActive)
+    level->activate();
   level->update(0);
   return level;
 }

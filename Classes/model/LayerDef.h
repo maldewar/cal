@@ -13,7 +13,8 @@ class LayerDef
 protected:
   std::string m_id;
   int m_index;
-  float m_distance;
+  float m_width;
+  float m_height;
   bool m_enabled;
 
 public:
@@ -40,8 +41,10 @@ public:
     virtual int getType();
     virtual int getIndex();
     virtual void setIndex(int index);
-    virtual float getDistance();
-    virtual void setDistance(float distance);
+    virtual float getWidth();
+    virtual void setWidth(float width);
+    virtual float getHeight();
+    virtual void setHeight(float height);
     virtual bool isEnabled();
     virtual void setIsEnabled(bool enabled);
 };

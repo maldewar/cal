@@ -29,6 +29,11 @@ bool SceneFactory::init() {
   return true;
 }
 
+bool SceneFactory::buildSceneDef(SceneDef* sceneDef, const char* filename, std::string& errorMsg) {
+  Json::Value root;
+  getSceneDefBase(filename, errorMsg, sceneDef, root);
+}
+
 SceneDef* SceneFactory::getSceneDef(const char* filename, std::string& errorMsg) {
   SceneDef *sceneDef = new SceneDef();
   Json::Value root;

@@ -5,6 +5,7 @@
 #include "cocos2d.h"
 #include "../layer/LevelMenuLayer.h"
 #include "../layer/BasicUILayer.h"
+#include "../model/ActSceneDef.h"
 class LevelMenuLayer;
 
 class LevelMenuScene : public cocos2d::Scene

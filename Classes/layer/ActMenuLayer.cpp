@@ -165,7 +165,7 @@ void ActMenuLayer::onExit() {
 
 void ActMenuLayer::act0BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    Director::getInstance()->replaceScene(LevelMenuScene::create(1, PathUtil::getAct(0)));
+    Director::getInstance()->replaceScene(LevelMenuScene::create(0, PathUtil::getAct(0)));
   }
 }
 

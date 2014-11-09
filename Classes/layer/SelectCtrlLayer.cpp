@@ -94,9 +94,9 @@ void SelectCtrlLayer::onBeginCtrlTouch(Entity* entity) {
 void SelectCtrlLayer::onEndCtrlTouch() {
   m_selectCtrl->hide();
   m_cursorCtrl->hide();
-  m_worldTargetPoint->Set(m_rayCastTool->GetEnd()->x, m_rayCastTool->GetEnd()->y);
+  m_worldTargetPoint->Set(m_rayCastTool->GetWorldEnd()->x, m_rayCastTool->GetWorldEnd()->y);
   for (auto unit : m_units) {
-    unit->command(new AIComponentSeekCmd(m_rayCastTool->GetWorldEnd()));
+    unit->command(new AIComponentSeekCmd(CMath::getWorldPointAt(m_worldTargetPoint, -0.15f, m_scene->getGravityAngle())));
   }
 }
 

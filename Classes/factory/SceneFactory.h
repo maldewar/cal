@@ -26,6 +26,9 @@ private:
 
 public:
   virtual bool init();
+  virtual bool buildSceneDef(SceneDef* sceneDef,
+                             const char* filename,
+                             std::string& errorMsg);
   virtual SceneDef* getSceneDef(const char* filename, std::string& errorMsg);
   virtual ActSceneDef* getActSceneDef(const char* filename, std::string& errorMsg);
   virtual LevelSceneDef* getLevelSceneDef(const char* filename, std::string& errorMsg);

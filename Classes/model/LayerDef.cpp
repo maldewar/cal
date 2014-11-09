@@ -3,7 +3,8 @@
 LayerDef::LayerDef() {
   m_id = "";
   m_index = 0;
-  m_distance = 0;
+  m_width = 0;
+  m_height = 0;
   m_enabled = true;
 }
 
@@ -44,12 +45,20 @@ void LayerDef::setIndex(int index) {
   m_index = index;
 }
 
-float LayerDef::getDistance() {
-  return m_distance;
+float LayerDef::getWidth() {
+  return m_width;
 }
 
-void LayerDef::setDistance(float distance) {
-  m_distance = distance;
+void LayerDef::setWidth(float width) {
+  m_width = width;
+}
+
+float LayerDef::getHeight() {
+  return m_height;
+}
+
+void LayerDef::setHeight(float height) {
+  m_height = height;
 }
 
 bool LayerDef::isEnabled() {
