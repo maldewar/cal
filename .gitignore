@@ -21,3 +21,4 @@ Resources/design
 
 # RUBE files
 rube/config/scripthooks.json
+*.rube-backups
