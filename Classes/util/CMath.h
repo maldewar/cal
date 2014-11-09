@@ -80,6 +80,8 @@ public:
   };
   static cocos2d::Vec2* getPointAt(float x, float y, float distance, float angle);
   static cocos2d::Vec2* getPointAt(cocos2d::Vec2* base, float distance, float angle);
+  static b2Vec2* getWorldPointAt(float x, float y, float distance, float angle);
+  static b2Vec2* getWorldPointAt(b2Vec2* base, float distance, float angle);
   static float random(float a, float b);
   /**
    * Normalizes an angle in radian between 0 and PI and 0 and -  PI.

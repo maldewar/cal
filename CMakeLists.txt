@@ -74,6 +74,7 @@ set(GAME_SRC
   Classes/model/LevelSceneDef.cpp
   Classes/model/Level.cpp
   Classes/system/ContactSystem.cpp
+  Classes/layer/BaseLayer.cpp
   Classes/layer/UILayer.cpp
   Classes/layer/BasicUILayer.cpp
   Classes/layer/MainMenuUILayer.cpp

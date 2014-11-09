@@ -13,8 +13,8 @@ private:
   b2Body *m_target_body;
   float m_max_speed;
   float m_max_force;
-  b2Vec2 *m_velocity;
-  b2Vec2 *m_desire;
+  b2Vec2 m_velocity;
+  b2Vec2 m_desire;
 
 public:
   /**

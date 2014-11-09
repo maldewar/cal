@@ -27,6 +27,16 @@ cocos2d::Vec2* CMath::getPointAt(cocos2d::Vec2* base, float distance, float angl
     return getPointAt(base->x, base->y, distance, angle);
 };
 
+b2Vec2* CMath::getWorldPointAt(float x, float y, float distance, float angle) {
+  x += distance * cos(angle);
+  y += distance * sin(angle);
+  return new b2Vec2(x, y);
+}
+
+b2Vec2* CMath::getWorldPointAt(b2Vec2* base, float distance, float angle) {
+  return getWorldPointAt(base->x, base->y, distance, angle);
+}
+
 float CMath::random(float a, float b) {
     float random = ((float) rand()) / (float) RAND_MAX;
     float diff = b - a;
