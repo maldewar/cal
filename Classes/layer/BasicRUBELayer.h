@@ -35,6 +35,7 @@
 
 #include "cocos2d.h"
 #include <Box2D/Box2D.h>
+#include "BaseLayer.h"
 #include "../util/Box2DDebugDraw.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/CCCustomCommand.h"
@@ -44,7 +45,7 @@
 
 class b2dJson;
 
-class BasicRUBELayer : public cocos2d::Layer
+class BasicRUBELayer : public BaseLayer
 {
 protected:
     b2World* m_world;
@@ -174,14 +175,14 @@ public:
      * Cancel any ongoing follow up to a body.
      */
     virtual void cancelFollow();
-    /**
-     * Rotates a layer around the center of the view.
-     */
-    virtual void rotate(float angle, float transitionTime = 0);
     virtual bool isNavigationEnabled();
     virtual void setNavigationEnabled(bool navigationEnabled);
     virtual void pause(bool pause);
     virtual bool isPaused();
+
+    bool translate(float x, float y, float transitionTime = 0);
+    bool scale(float factor, float transitionTime = 0);
+    bool rotate(float angle, float transitionTime = 0);
 
 };
 

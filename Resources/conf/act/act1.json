@@ -28,7 +28,12 @@
 				
 				{
 					"name" : "title",
-					"string" : ""
+					"string" : "Second Level"
+				},
+				
+				{
+					"bool" : true,
+					"name" : "active"
 				}
 			],
 			"fixture" : 

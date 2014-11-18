@@ -7,7 +7,7 @@
 
 b2Vec2 WorldLevelScene::m_gravity = b2Vec2(0, 0);
 
-WorldLevelScene::WorldLevelScene() {
+WorldLevelScene::WorldLevelScene() : BaseScene() {
   m_worldLevelLayer = nullptr;
   m_worldLevelUILayer = nullptr;
   m_gravityCtrlLayer = nullptr;
@@ -58,23 +58,23 @@ bool WorldLevelScene::init(std::string filename) {
     "ui/ctrl/ctrl.plist", "wheelCtrl.ExportJson");
     */
 
-  std::string sceneFactoryError;
-  m_levelSceneDef = SceneFactory::getInstance()->getLevelSceneDef(filename.c_str(), sceneFactoryError);
-  if (!sceneFactoryError.empty()) {
-    CCLOG("SceneFactory error %s", sceneFactoryError.c_str());
+  m_levelSceneDef = SceneFactory::getInstance()->getLevelSceneDef(filename.c_str());
+  if (m_levelSceneDef == nullptr) {
     //TODO: kill scene.
   }
+
   m_unitsRequired = m_levelSceneDef->getUnitsRequired();
   int topIndex = -100;
   for (auto layerDef : m_levelSceneDef->getLayerDefs()) {
     if (layerDef->isEnabled()) {
       if (layerDef->getType() == LAYER_TYPE_WORLD) {
         WorldLayerDef* worldLayerDef = static_cast<WorldLayerDef*>(layerDef);
-        WorldLevelLayer* worldLayer = SceneFactory::getInstance()->buildWorldLevelLayer(worldLayerDef);
+        WorldLevelLayer* worldLayer = SceneFactory::getInstance()->getWorldLevelLayer(worldLayerDef);
+
         addWorldLevelLayer(worldLayer, worldLayerDef->getIndex());
       } else if (layerDef->getType() == LAYER_TYPE_BG) {
         BgLayerDef* bgLayerDef = static_cast<BgLayerDef*>(layerDef);
-        BackgroundLayer* bgLayer = SceneFactory::getInstance()->buildBackgroundLayer(bgLayerDef);
+        BackgroundLayer* bgLayer = SceneFactory::getInstance()->getBackgroundLayer(bgLayerDef);
         addChild(bgLayer, bgLayerDef->getIndex());
       }
       if (layerDef->getIndex() > topIndex)
@@ -271,4 +271,15 @@ void WorldLevelScene::onEndCtrl(WorldLevelCtrlLayer* ctrlLayer) {
   if (ctrlLayer->isFollowingCtrl()) {
     m_worldLevelLayer->cancelFollow();
   }
+}
+
+SceneDef* WorldLevelScene::getSceneDef(std::string filename) {
+  if (m_levelSceneDef == nullptr) {
+    m_levelSceneDef = SceneFactory::getInstance()->getLevelSceneDef(filename.c_str());
+  }
+  return m_levelSceneDef;
+}
+
+BaseLayer* WorldLevelScene::getWorldLayer(WorldLayerDef* worldLayerDef) {
+  return SceneFactory::getInstance()->getWorldLevelLayer(worldLayerDef);
 }

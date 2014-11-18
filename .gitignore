@@ -12,6 +12,8 @@ proj.win32/
 ._Classes
 Classes/.ycm_extra_conf.pyc
 cocos2d/plugin/.git
+cocos2d/cocos/platform/android/java/bin/build.prop
+cocos2d/cocos/platform/android/java/bin/classes.jar
 
 # Generated resource files
 Resources/small

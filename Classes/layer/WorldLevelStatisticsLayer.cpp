@@ -1,6 +1,6 @@
 #include "WorldLevelStatisticsLayer.h"
 #include "../manager/StorageManager.h"
-#include "../scene/LevelMenuScene.h"
+#include "../scene/ActScene.h"
 #include "../scene/WorldLevelScene.h"
 #include "../util/PathUtil.h"
 #include "editor-support/cocostudio/CCSGUIReader.h"
@@ -75,6 +75,6 @@ void WorldLevelStatisticsLayer::onExit() {
 
 void WorldLevelStatisticsLayer::continueBtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    Director::getInstance()->replaceScene(LevelMenuScene::create(1, PathUtil::getAct(1)));
+    Director::getInstance()->replaceScene(ActScene::create(1, PathUtil::getAct(1)));
   }
 }

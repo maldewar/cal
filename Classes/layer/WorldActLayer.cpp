@@ -1,4 +1,4 @@
-#include "LevelMenuLayer.h"
+#include "WorldActLayer.h"
 #include "WorldLevelUILayer.h"
 #include "../util/b2dJson.h"
 #include "../util/b2dJsonImage.h"
@@ -13,12 +13,12 @@
 using namespace std;
 using namespace cocos2d;
 
-LevelMenuLayer::LevelMenuLayer() : BasicRUBELayer() {
+WorldActLayer::WorldActLayer() : BasicRUBELayer() {
   m_debugDrawEnabled = true;
 }
 
-LevelMenuLayer* LevelMenuLayer::create(int act, std::string filename) {
-  LevelMenuLayer* worldLevelLayer = new (std::nothrow) LevelMenuLayer();
+WorldActLayer* WorldActLayer::create(int act, std::string filename) {
+  WorldActLayer* worldLevelLayer = new (std::nothrow) WorldActLayer();
   if (worldLevelLayer && worldLevelLayer->init(act, filename)) {
     worldLevelLayer->autorelease();
     return worldLevelLayer;
@@ -27,18 +27,18 @@ LevelMenuLayer* LevelMenuLayer::create(int act, std::string filename) {
   return nullptr;
 }
 
-bool LevelMenuLayer::init(int act, std::string filename) {
+bool WorldActLayer::init(int act, std::string filename) {
   m_act = act;
   m_filename = filename;
   return BasicRUBELayer::init();
 }
 
-string LevelMenuLayer::getFilename() {
+string WorldActLayer::getFilename() {
     return m_filename;
 }
 
 // Override superclass to set different starting offset
-Point LevelMenuLayer::initialWorldOffset()
+Point WorldActLayer::initialWorldOffset()
 {
     // If you are not sure what to set the starting position as, you can
     // pan and zoom the scene until you get the right fit, and then set
@@ -60,7 +60,7 @@ Point LevelMenuLayer::initialWorldOffset()
 
 
 // Override superclass to set different starting scale
-float LevelMenuLayer::initialWorldScale()
+float WorldActLayer::initialWorldScale()
 {
     Size s = Director::getInstance()->getWinSize();
     //return s.height / 35; //screen will be 35 physics units high
@@ -70,7 +70,7 @@ float LevelMenuLayer::initialWorldScale()
 
 // This is called after the Box2D world has been loaded, and while the b2dJson information
 // is still available to do extra loading. Here is where we load the images.
-void LevelMenuLayer::afterLoadProcessing(b2dJson* json)
+void WorldActLayer::afterLoadProcessing(b2dJson* json)
 {
   // Process bodies
   std::vector<b2Body*> b2Bodies;
@@ -129,11 +129,11 @@ void LevelMenuLayer::afterLoadProcessing(b2dJson* json)
 }
 
 // Remove one body and any images is had attached to it from the layer
-void LevelMenuLayer::removeBodyFromWorld(b2Body* body) {
+void WorldActLayer::removeBodyFromWorld(b2Body* body) {
   m_world->DestroyBody(body);
 }
 
-void LevelMenuLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
+void WorldActLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
   if (fixture->IsSensor()) {
     void* userData;
     userData = body->GetUserData();
@@ -146,5 +146,5 @@ void LevelMenuLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
   }
 }
 
-void LevelMenuLayer::onWorldTouchBegan(b2Vec2& position) {
+void WorldActLayer::onWorldTouchBegan(b2Vec2& position) {
 }

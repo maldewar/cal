@@ -2,43 +2,70 @@
 #include "BaseScene.h"
 #include "../factory/SceneFactory.h"
 
-BaseScene::BaseScene() {
-}
-
-BaseScene::~BaseScene() {
+BaseScene::BaseScene() : cocos2d::Scene() {
+  m_sceneDef    = nullptr;
+  m_topIndex    = 0;
+  m_bottomIndex = 0;
 }
 
 bool BaseScene::init(std::string filename) {
   // Get the scene definition.
-  std::string sceneFactoryError;
-  m_sceneDef = getSceneDef();
-  SceneFactory::getInstance()->buildSceneDef(m_sceneDef, filename.c_str(), sceneFactoryError);
-  if (!sceneFactoryError.empty()) {
-    CCLOG("SceneFactory error %s", sceneFactoryError.c_str());
-    // TODO: clean
+  m_sceneDef = getSceneDef(filename);
+  if (m_sceneDef == nullptr)
     return false;
-  }
 
   // Add layers
+  bool layerAdded = false;
+  int layerIndex = 0;
+  BaseLayer* baseLayer = nullptr;
   for (auto layerDef : m_sceneDef->getLayerDefs()) {
-      if (layerDef->isEnabled()) {
-        if (layerDef->getType() == LAYER_TYPE_WORLD) {
+    layerAdded = false;
+    if (layerDef->isEnabled()) {
+      switch(layerDef->getType()) {
+        case LAYER_TYPE_WORLD: {
           WorldLayerDef* worldLayerDef = static_cast<WorldLayerDef*>(layerDef);
-          WorldLevelLayer* worldLayer = SceneFactory::getInstance()->buildWorldLevelLayer(worldLayerDef);
-          addWorldLevelLayer(worldLayer, worldLayerDef->getIndex());
-        } else if (layerDef->getType() == LAYER_TYPE_BG) {
-          BgLayerDef* bgLayerDef = static_cast<BgLayerDef*>(layerDef);
-          BackgroundLayer* bgLayer = SceneFactory::getInstance()->buildBackgroundLayer(bgLayerDef);
-          addChild(bgLayer, bgLayerDef->getIndex());
+          baseLayer = getWorldLayer(worldLayerDef);
+          layerAdded = true;
+          break;
         }
-        if (layerDef->getIndex() > topIndex)
-          topIndex = layerDef->getIndex();
+        case LAYER_TYPE_BG: {
+          BgLayerDef* bgLayerDef = static_cast<BgLayerDef*>(layerDef);
+          baseLayer = SceneFactory::getInstance()->getBackgroundLayer(bgLayerDef);
+          layerAdded = true;
+          break;
+        }
       }
     }
+    if (layerAdded) {
+      addChild(baseLayer, layerDef->getIndex());
+      layerIndex = layerDef->getIndex();
+      onLayerAdded(baseLayer, layerDef);
+      if (layerIndex < m_bottomIndex)
+        m_bottomIndex = layerIndex;
+      if (layerIndex > m_topIndex)
+        m_topIndex = layerIndex;
+    }
+  }
   return true;
 }
 
-SceneDef* BaseScene::getSceneDef() {
+int BaseScene::getTopLayerIndex() {
+  return m_topIndex;
+}
+
+int BaseScene::getBottomLayerIndex() {
+  return m_bottomIndex;
+}
+
+void BaseScene::onLayerAdded(BaseLayer* layer, LayerDef* layerDef) {
+}
+
+SceneDef* BaseScene::getSceneDef(std::string filename) {
+  // Pure virtual
+  return nullptr;
+}
+
+BaseLayer* BaseScene::getWorldLayer(WorldLayerDef* worldLayerDef) {
   // Pure virtual
   return nullptr;
 }

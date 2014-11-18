@@ -1,20 +1,20 @@
-#ifndef __LEVEL_MENU_LAYER__
-#define __LEVEL_MENU_LAYER__
+#ifndef __WORLD_ACT_LAYER__
+#define __WORLD_ACT_LAYER__
 
 #include <vector>
 #include "BasicRUBELayer.h"
 #include "cocostudio/CocoStudio.h"
 #include "../model/Entity.h"
 
-class LevelMenuLayer : public BasicRUBELayer
+class WorldActLayer : public BasicRUBELayer
 {
 protected:
   std::string m_filename;
   int m_act;
 
 public:
-  LevelMenuLayer();
-  static LevelMenuLayer* create(int act, std::string filename);
+  WorldActLayer();
+  static WorldActLayer* create(int act, std::string filename);
   virtual bool init(int act, std::string filename);
   virtual std::string getFilename();
   virtual cocos2d::Point initialWorldOffset();
@@ -26,4 +26,4 @@ public:
 
 };
 
-#endif /* __LEVEL_MENU_LAYER__ */
+#endif /* __WORLD_ACT_LAYER__ */

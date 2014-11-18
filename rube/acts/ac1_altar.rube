@@ -43,9 +43,16 @@
     
     {
       "class" : "body",
-      "displayName" : "Category",
-      "name" : "category",
-      "type" : "string"
+      "displayName" : "Active",
+      "name" : "active",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Level",
+      "name" : "level",
+      "type" : "int"
     },
     
     {
@@ -57,9 +64,9 @@
     
     {
       "class" : "body",
-      "displayName" : "Level",
-      "name" : "level",
-      "type" : "int"
+      "displayName" : "Category",
+      "name" : "category",
+      "type" : "string"
     },
     
     {
@@ -176,7 +183,12 @@
           
           {
             "name" : "title",
-            "string" : ""
+            "string" : "Second Level"
+          },
+          
+          {
+            "bool" : true,
+            "name" : "active"
           }
         ],
         "fixture" : 
@@ -222,7 +234,7 @@
           "x" : -0.9986801147460938,
           "y" : 1.673923969268799
         },
-        "file" : "../../../home/waldemar/Projects/Calaveras/Resources/design/act/act1/act1_catrina.png",
+        "file" : "../../Resources/design/act/act1/act1_catrina.png",
         "filter" : 1,
         "flip" : false,
         "id" : 1,

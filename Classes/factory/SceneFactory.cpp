@@ -29,92 +29,67 @@ bool SceneFactory::init() {
   return true;
 }
 
-bool SceneFactory::buildSceneDef(SceneDef* sceneDef, const char* filename, std::string& errorMsg) {
-  Json::Value root;
-  getSceneDefBase(filename, errorMsg, sceneDef, root);
-}
-
-SceneDef* SceneFactory::getSceneDef(const char* filename, std::string& errorMsg) {
+SceneDef* SceneFactory::getSceneDef(const char* filename) {
   SceneDef *sceneDef = new SceneDef();
-  Json::Value root;
-  getSceneDefBase(filename, errorMsg, sceneDef, root);
+  if (!buildSceneDef(sceneDef, filename)) {
+    return nullptr;
+  }
   return sceneDef;
 }
 
-ActSceneDef* SceneFactory::getActSceneDef(const char* filename, std::string& errorMsg) {
+ActSceneDef* SceneFactory::getActSceneDef(const char* filename) {
   ActSceneDef *actSceneDef = new ActSceneDef();
-  Json::Value root;
-  getSceneDefBase(filename, errorMsg, actSceneDef, root);
-  actSceneDef->setAct(root.get("act", "").asString());
+  if (!buildSceneDef(actSceneDef, filename)) {
+    return nullptr;
+  }
+  if (!buildActSceneDef(actSceneDef, filename)) {
+    return nullptr;
+  }
   return actSceneDef;
 }
 
-LevelSceneDef* SceneFactory::getLevelSceneDef(const char* filename, std::string& errorMsg) {
+LevelSceneDef* SceneFactory::getLevelSceneDef(const char* filename) {
   LevelSceneDef *levelSceneDef = new LevelSceneDef();
-  Json::Value root;
-  getSceneDefBase(filename, errorMsg, levelSceneDef, root);
-  levelSceneDef->setUnitsRequired(root.get("unitsRequired", 0).asInt());
+  if (!buildSceneDef(levelSceneDef, filename)) {
+    return nullptr;
+  }
+  if (!buildLevelSceneDef(levelSceneDef, filename)) {
+    return nullptr;
+  }
   return levelSceneDef;
 }
 
-bool SceneFactory::getSceneDefBase(const char* filename,
-                                   std::string& errorMsg,
-                                   SceneDef *sceneDef,
-                                   Json::Value& root) {
-  if (!filename || sceneDef == nullptr)
-    return false;
-
-  std::string fullpath = cocos2d::FileUtils::sharedFileUtils()->fullPathForFilename(filename);
-  Json::Reader reader;
-  ssize_t fileSize = 0;
-  unsigned char* fileData = cocos2d::FileUtils::sharedFileUtils()->getFileData(fullpath, "r", &fileSize);
-  std::string jsonContent;
-  jsonContent.assign(reinterpret_cast<const char*>(fileData), fileSize);
-
-  if (!reader.parse(jsonContent, root)) {
-    errorMsg = std::string("Failed to parse '") + std::string(filename) + std::string(" : ") + reader.getFormatedErrorMessages();
+LayerDef* SceneFactory::getLayerDef(Json::Value& jLayerDef) {
+  LayerDef *layerDef = new LayerDef();
+  if (!buildLayerDef(layerDef, jLayerDef)) {
     return nullptr;
   }
+  return layerDef;
+}
 
-  sceneDef->setId(root.get("id", "").asString());
-  sceneDef->setTitle(root.get("title", "").asString());
-  const Json::Value jarrLayerDefs = root["layers"];
-  for (Json::ValueIterator itr = jarrLayerDefs.begin(); itr != jarrLayerDefs.end(); itr++) {
-    const Json::Value jLayerDef = *itr;
-    LayerDef* layerDef = buildLayerDef(jLayerDef);
-    if (layerDef) {
-      sceneDef->addLayerDef(layerDef);
-    }
+WorldLayerDef* SceneFactory::getWorldLayerDef(Json::Value& jLayerDef) {
+  WorldLayerDef* worldLayerDef = new WorldLayerDef();
+  if (!buildLayerDef(worldLayerDef, jLayerDef)) {
+    return nullptr;
   }
-  return true;
-}
-
-LayerDef* SceneFactory::buildLayerDef(Json::Value jValue) {
-  std::string layerType = jValue.get("type", "").asString();
-  if (layerType.compare("world") == 0) {
-    WorldLayerDef* layerDef = new WorldLayerDef();
-    layerDef->setPath(jValue.get("path", "").asString());
-    layerDef->setIsMain(jValue.get("isMain", false).asBool());
-    buildBaseLayerDef(layerDef, jValue);
-    return layerDef;
-  } else if (layerType.compare("bg") == 0) {
-    BgLayerDef* layerDef = new BgLayerDef();
-    layerDef->setBgType(jValue.get("bgType",0).asInt());
-    buildBaseLayerDef(layerDef, jValue);
-    return layerDef;
+  if (!buildWorldLayerDef(worldLayerDef, jLayerDef)) {
+    return nullptr;
   }
-  return nullptr;
+  return worldLayerDef;
 }
 
-void SceneFactory::buildBaseLayerDef(LayerDef* layerDef, Json::Value jValue) {
-  layerDef->setId(jValue.get("id", "").asString());
-  layerDef->setWidth(jValue.get("width", 0).asDouble());
-  layerDef->setHeight(jValue.get("height", 0).asDouble());
-  layerDef->setIndex(jValue.get("zIndex", 0).asInt());
-  layerDef->setIsEnabled(jValue.get("enabled", true).asBool());
+BgLayerDef* SceneFactory::getBgLayerDef(Json::Value& jLayerDef) {
+  BgLayerDef* bgLayerDef = new BgLayerDef();
+  if (!buildLayerDef(bgLayerDef, jLayerDef)) {
+    return nullptr;
+  }
+  if (!buildBgLayerDef(bgLayerDef, jLayerDef)) {
+    return nullptr;
+  }
+  return bgLayerDef;
 }
 
-WorldLevelLayer* SceneFactory::buildWorldLevelLayer(WorldLayerDef* worldLayerDef) {
+WorldLevelLayer* SceneFactory::getWorldLevelLayer(WorldLayerDef* worldLayerDef) {
   if (worldLayerDef) {
     WorldLevelLayer* worldLevelLayer = WorldLevelLayer::create(worldLayerDef->getPath());
     worldLevelLayer->setMain(worldLayerDef->isMain());
@@ -123,10 +98,117 @@ WorldLevelLayer* SceneFactory::buildWorldLevelLayer(WorldLayerDef* worldLayerDef
   return nullptr;
 }
 
-BackgroundLayer* SceneFactory::buildBackgroundLayer(BgLayerDef* bgLayerDef) {
+WorldActLayer* SceneFactory::getWorldActLayer(int act, WorldLayerDef* worldLayerDef) {
+  if (worldLayerDef) {
+    WorldActLayer* worldActLayer = WorldActLayer::create(act, worldLayerDef->getPath());
+    return worldActLayer;
+  }
+  return nullptr;
+}
+
+BackgroundLayer* SceneFactory::getBackgroundLayer(BgLayerDef* bgLayerDef) {
   if (bgLayerDef) {
     BackgroundLayer* backgroundLayer = BackgroundLayer::create(bgLayerDef->getBgType());
     return backgroundLayer;
   }
   return nullptr;
+}
+
+bool SceneFactory::buildSceneDef(SceneDef* sceneDef,
+                                 const char* filename) {
+  Json::Value root;
+  std::string errorMsg;
+
+  if (!readFile(filename, errorMsg, root)) {
+    return false;
+  }
+
+  // Set base properties
+  sceneDef->setId(root.get("id", "").asString());
+  sceneDef->setTitle(root.get("title", "").asString());
+  // Set layers
+  const Json::Value jarrLayerDefs = root["layers"];
+  for (Json::ValueIterator itr = jarrLayerDefs.begin(); itr != jarrLayerDefs.end(); itr++) {
+    Json::Value jLayerDef = *itr;
+    std::string layerType = jLayerDef.get("type", "").asString();
+    if (layerType.compare("world") == 0) {
+      WorldLayerDef* worldLayerDef = getWorldLayerDef(jLayerDef);
+      if (worldLayerDef != nullptr)
+        sceneDef->addLayerDef(worldLayerDef);
+    } else if (layerType.compare("bg") == 0) {
+      BgLayerDef* bgLayerDef = getBgLayerDef(jLayerDef);
+      if (bgLayerDef != nullptr)
+        sceneDef->addLayerDef(bgLayerDef);
+    }
+  }
+  return true;
+}
+
+bool SceneFactory::buildActSceneDef(ActSceneDef* actSceneDef,
+                                    const char* filename) {
+  Json::Value root;
+  std::string errorMsg;
+
+  if (!readFile(filename, errorMsg, root)) {
+    return false;
+  }
+
+  // Set base properties
+  actSceneDef->setAct(root.get("act","").asString());
+  return true;
+}
+
+bool SceneFactory::buildLevelSceneDef(LevelSceneDef* actSceneDef,
+                                      const char* filename) { 
+  Json::Value root;
+  std::string errorMsg;
+
+  if (!readFile(filename, errorMsg, root)) { 
+    return false;
+  } 
+
+  // Set base properties
+  return true;
+}
+
+bool SceneFactory::buildLayerDef(LayerDef* layerDef,
+                                 Json::Value& jLayerDef) {
+  layerDef->setId(jLayerDef.get("id", "").asString());
+  layerDef->setWidth(jLayerDef.get("width", 0.0f).asDouble());
+  layerDef->setHeight(jLayerDef.get("height", 0.0f).asDouble());
+  layerDef->setIndex(jLayerDef.get("zIndex", 0).asInt());
+  layerDef->setIsEnabled(jLayerDef.get("enabled", true).asBool());
+  return true;
+}
+
+bool SceneFactory::buildWorldLayerDef(WorldLayerDef* worldLayerDef,
+                                      Json::Value& jLayerDef) {
+  worldLayerDef->setPath(jLayerDef.get("path", "").asString());
+  worldLayerDef->setIsMain(jLayerDef.get("isMain", false).asBool());
+  return true;
+}
+
+bool SceneFactory::buildBgLayerDef(BgLayerDef* bgLayerDef,
+                                   Json::Value& jLayerDef) {
+  bgLayerDef->setBgType(jLayerDef.get("bgType", 0).asInt());
+  return true;
+}
+
+bool SceneFactory::readFile(const char* filename,
+                            std::string& errorMsg,
+                            Json::Value& root) {
+  if (!filename)
+    return false;
+  std::string fullpath = cocos2d::FileUtils::getInstance()->fullPathForFilename(filename);
+  Json::Reader reader;
+  ssize_t fileSize = 0;
+  unsigned char* fileData = cocos2d::FileUtils::getInstance()->getFileData(fullpath, "r", &fileSize);
+  std::string jsonContent;
+  jsonContent.assign(reinterpret_cast<const char*>(fileData), fileSize);
+  
+  if (!reader.parse(jsonContent, root)) {
+    errorMsg = std::string("Failed to parse '") + std::string(filename) + std::string(" : ") + reader.getFormatedErrorMessages();
+    return false;
+  }
+  return true;
 }

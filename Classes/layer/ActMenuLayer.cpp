@@ -1,6 +1,6 @@
 #include "ActMenuLayer.h"
 #include "../manager/StorageManager.h"
-#include "../scene/LevelMenuScene.h"
+#include "../scene/ActScene.h"
 #include "../scene/WorldLevelScene.h"
 #include "../util/PathUtil.h"
 #include "editor-support/cocostudio/CCSGUIReader.h"
@@ -165,38 +165,38 @@ void ActMenuLayer::onExit() {
 
 void ActMenuLayer::act0BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    Director::getInstance()->replaceScene(LevelMenuScene::create(0, PathUtil::getAct(0)));
+    Director::getInstance()->replaceScene(ActScene::create(0, PathUtil::getAct(0)));
   }
 }
 
 void ActMenuLayer::act1BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    Director::getInstance()->replaceScene(LevelMenuScene::create(1, PathUtil::getAct(1)));
+    Director::getInstance()->replaceScene(ActScene::create(1, PathUtil::getAct(1)));
   }
 }
 
 void ActMenuLayer::act2BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
     CCLOG("LOADING WORLD LEVEL SCENE.");
-    //Director::getInstance()->replaceScene(LevelMenuScene::create(PathUtil::getAct(2)));
+    //Director::getInstance()->replaceScene(ActScene::create(PathUtil::getAct(2)));
     Director::getInstance()->replaceScene(WorldLevelScene::create(0,1));
   }
 }
 
 void ActMenuLayer::act3BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    //Director::getInstance()->replaceScene(LevelMenuScene::create(PathUtil::getAct(3)));
+    //Director::getInstance()->replaceScene(ActScene::create(PathUtil::getAct(3)));
   }
 }
 
 void ActMenuLayer::act4BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    //Director::getInstance()->replaceScene(LevelMenuScene::create(PathUtil::getAct(4)));
+    //Director::getInstance()->replaceScene(ActScene::create(PathUtil::getAct(4)));
   }
 }
 
 void ActMenuLayer::act5BtnCallback(Ref* sender, ui::Widget::TouchEventType type) {
   if (type == ui::Widget::TouchEventType::ENDED) {
-    //Director::getInstance()->replaceScene(LevelMenuScene::create(PathUtil::getAct(5)));
+    //Director::getInstance()->replaceScene(ActScene::create(PathUtil::getAct(5)));
   }
 }

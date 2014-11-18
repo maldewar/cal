@@ -44,20 +44,6 @@
     
     {
       "class" : "body",
-      "displayName" : "Force Max Angle",
-      "name" : "forceMaxAngle",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Use Open Timer",
-      "name" : "useOpenTimer",
-      "type" : "bool"
-    },
-    
-    {
-      "class" : "body",
       "displayName" : "Active",
       "name" : "active",
       "type" : "bool"
@@ -65,72 +51,9 @@
     
     {
       "class" : "body",
-      "displayName" : "Force Min Distance",
-      "name" : "forceMinDistance",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
       "displayName" : "Capacity",
       "name" : "capacity",
       "type" : "int"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Force Min Angular Impulse",
-      "name" : "forceMinAngularImpulse",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Open Timer",
-      "name" : "openTimer",
-      "type" : "int"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Force Max Distance",
-      "name" : "forceMaxDistance",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "world",
-      "displayName" : "Background",
-      "name" : "background",
-      "type" : "int"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Category",
-      "name" : "category",
-      "type" : "string"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Interval",
-      "name" : "interval",
-      "type" : "int"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Is Open",
-      "name" : "isOpen",
-      "type" : "bool"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Force Max Angular Impulse",
-      "name" : "forceMaxAngularImpulse",
-      "type" : "float"
     },
     
     {
@@ -173,6 +96,83 @@
       "displayName" : "Material",
       "name" : "material",
       "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Is Open",
+      "name" : "isOpen",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Interval",
+      "name" : "interval",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Distance",
+      "name" : "forceMaxDistance",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Use Open Timer",
+      "name" : "useOpenTimer",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Min Distance",
+      "name" : "forceMinDistance",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Category",
+      "name" : "category",
+      "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Min Angular Impulse",
+      "name" : "forceMinAngularImpulse",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Angular Impulse",
+      "name" : "forceMaxAngularImpulse",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Open Timer",
+      "name" : "openTimer",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Angle",
+      "name" : "forceMaxAngle",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "world",
+      "displayName" : "Background",
+      "name" : "background",
+      "type" : "int"
     }
   ],
   "metaworld" : 
@@ -190,7 +190,7 @@
     ],
     "displayOptions" : 
     {
-      "propertyDisplayFilterScriptFile" : "/opt/rube-lin64-1.6.0/sampleScenes/calaverasPropertyDisplayFilter.rs"
+      "propertyDisplayFilterScriptFile" : "/home/waldemar/Projects/Calaveras/rube/scripts/calaverasPropertyDisplayFilter.rs"
     },
     "exportOptions" : 
     {

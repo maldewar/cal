@@ -39,11 +39,12 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 				../../Classes/model/LevelSceneDef.cpp \
 				../../Classes/model/Level.cpp \
 				../../Classes/system/ContactSystem.cpp \
+				../../Classes/layer/BaseLayer.cpp \
 				../../Classes/layer/UILayer.cpp \
 				../../Classes/layer/BasicUILayer.cpp \
 				../../Classes/layer/MainMenuUILayer.cpp \
 				../../Classes/layer/ActMenuLayer.cpp \
-				../../Classes/layer/LevelMenuLayer.cpp \
+				../../Classes/layer/WorldActLayer.cpp \
 				../../Classes/layer/BackgroundLayer.cpp \
 				../../Classes/layer/BasicRUBELayer.cpp \
 				../../Classes/layer/WorldLevelLayer.cpp \
@@ -53,9 +54,10 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 				../../Classes/layer/WorldLevelUILayer.cpp \
 				../../Classes/layer/WorldLevelDebugLayer.cpp \
 				../../Classes/layer/WorldLevelStatisticsLayer.cpp \
+				../../Classes/scene/BaseScene.cpp \
 				../../Classes/scene/MainMenuScene.cpp \
 				../../Classes/scene/ActMenuScene.cpp \
-				../../Classes/scene/LevelMenuScene.cpp \
+				../../Classes/scene/ActScene.cpp \
 				../../Classes/scene/WorldLevelScene.cpp \
 				../../Classes/manager/StorageManager.cpp \
 				../../Classes/manager/ConfigurationManager.cpp \

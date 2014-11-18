@@ -13,6 +13,7 @@
 #include "../model/WorldLayerDef.h"
 #include "../layer/BackgroundLayer.h"
 #include "../layer/WorldLevelLayer.h"
+#include "../layer/WorldActLayer.h"
 
 class SceneFactory : public cocos2d::Ref
 {
@@ -26,22 +27,33 @@ private:
 
 public:
   virtual bool init();
-  virtual bool buildSceneDef(SceneDef* sceneDef,
-                             const char* filename,
-                             std::string& errorMsg);
-  virtual SceneDef* getSceneDef(const char* filename, std::string& errorMsg);
-  virtual ActSceneDef* getActSceneDef(const char* filename, std::string& errorMsg);
-  virtual LevelSceneDef* getLevelSceneDef(const char* filename, std::string& errorMsg);
-  virtual LayerDef* buildLayerDef(Json::Value jValue);
-  virtual WorldLevelLayer* buildWorldLevelLayer(WorldLayerDef* worldLayerDef);
-  virtual BackgroundLayer* buildBackgroundLayer(BgLayerDef* bgLayerDef);
+  virtual SceneDef* getSceneDef(const char* filename);
+  virtual ActSceneDef* getActSceneDef(const char* filename);
+  virtual LevelSceneDef* getLevelSceneDef(const char* filename);
+  virtual LayerDef* getLayerDef(Json::Value& jLayerDef);
+  virtual WorldLayerDef * getWorldLayerDef(Json::Value& jLayerDef);
+  virtual BgLayerDef* getBgLayerDef(Json::Value& jLayerDef);
+  virtual WorldLevelLayer* getWorldLevelLayer(WorldLayerDef* worldLayerDef);
+  virtual WorldActLayer* getWorldActLayer(int act,
+                                          WorldLayerDef* worldLayerDef);
+  virtual BackgroundLayer* getBackgroundLayer(BgLayerDef* bgLayerDef);
 
 private:
-  bool getSceneDefBase(const char* filename,
-                    std::string& errorMsg,
-                    SceneDef *sceneDef,
-                    Json::Value& root);
-  virtual void buildBaseLayerDef(LayerDef* layerDef, Json::Value jValue);
+  virtual bool buildSceneDef(SceneDef* sceneDef,
+                             const char* filename);
+  virtual bool buildActSceneDef(ActSceneDef* actSceneDef,
+                                const char* filename);
+  virtual bool buildLevelSceneDef(LevelSceneDef* actSceneDef,
+                                const char* filename);
+  virtual bool buildLayerDef(LayerDef* layerDef,
+                             Json::Value& jLayerDef);
+  virtual bool buildWorldLayerDef(WorldLayerDef* worldLayerDef,
+                                  Json::Value& jLayerDef);
+  virtual bool buildBgLayerDef(BgLayerDef* bgLayerDef,
+                               Json::Value& jLayerDef);
+  bool readFile(const char* filename,
+                std::string& errorMsg,
+                Json::Value& root);
 
 };
 

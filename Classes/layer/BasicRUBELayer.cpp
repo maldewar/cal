@@ -14,8 +14,7 @@
 using namespace std;
 using namespace cocos2d;
 
-BasicRUBELayer::BasicRUBELayer()
-{
+BasicRUBELayer::BasicRUBELayer() : BaseLayer() {
     m_world = NULL;
     m_debugDraw = NULL;
     m_navigationEnabled = true;
@@ -42,20 +41,17 @@ BasicRUBELayer::BasicRUBELayer()
     m_worldTouchBegan = false;
 }
 
-BasicRUBELayer::~BasicRUBELayer()
-{
+BasicRUBELayer::~BasicRUBELayer() {
 }
 
-Scene* BasicRUBELayer::scene()
-{
+Scene* BasicRUBELayer::scene() {
     auto scene = Scene::create();
     BasicRUBELayer* layer = BasicRUBELayer::create();
     scene->addChild(layer);
     return scene;
 }
 
-bool BasicRUBELayer::init()
-{
+bool BasicRUBELayer::init() {
     Layer::init();
     
     setTouchEnabled( true );
@@ -578,27 +574,6 @@ cocos2d::Vec2 BasicRUBELayer::getCenteredPosition(float worldX, float worldY) {
   return center;
 }
 
-void BasicRUBELayer::rotate(float angle, float transitionTime) {
-  if (transitionTime > 0) {
-    m_rotating = true;
-    m_rotationOrigin = CMath::wrapPosNegPI(CC_DEGREES_TO_RADIANS(-getRotation()));
-    m_rotationTarget = CMath::wrapPosNegPI(angle);
-    if (m_rotationOrigin > 0 && m_rotationTarget < 0) {
-      if (m_rotationOrigin + -m_rotationTarget > M_PI) {
-        m_rotationTarget += M_PI * 2;
-      }
-    } else if (m_rotationTarget > 0 && m_rotationOrigin < 0) {
-      if (m_rotationTarget + -m_rotationOrigin > M_PI) {
-        m_rotationOrigin += M_PI * 2;
-      }
-    }
-    m_transitionLapse = 0;
-    m_transitionDuration = transitionTime;
-  } else {
-    setRotation(CC_RADIANS_TO_DEGREES(-angle));
-  }
-}
-
 void BasicRUBELayer::setCenteredRotation(float rotation) {
   setRotation(CC_RADIANS_TO_DEGREES(-rotation));
   Vec2 position = getCenteredPosition(m_worldCenter.x, m_worldCenter.y);
@@ -633,4 +608,34 @@ void BasicRUBELayer::pauseChildrenRecursive(cocos2d::Node* node, bool pause) {
   for (auto child : node->getChildren()) {
     pauseChildrenRecursive(child, pause);
   }
+}
+
+bool BasicRUBELayer::translate(float x, float y, float transitionTime) {
+  return true;
+}
+
+bool BasicRUBELayer::scale(float factor, float transitionTime) {
+  return true;
+}
+
+bool BasicRUBELayer::rotate(float angle, float transitionTime) {
+  if (transitionTime > 0) {
+    m_rotating = true;
+    m_rotationOrigin = CMath::wrapPosNegPI(CC_DEGREES_TO_RADIANS(-getRotation()));
+    m_rotationTarget = CMath::wrapPosNegPI(angle);
+    if (m_rotationOrigin > 0 && m_rotationTarget < 0) {
+      if (m_rotationOrigin + -m_rotationTarget > M_PI) {
+        m_rotationTarget += M_PI * 2;
+      }
+    } else if (m_rotationTarget > 0 && m_rotationOrigin < 0) {
+      if (m_rotationTarget + -m_rotationOrigin > M_PI) {
+        m_rotationOrigin += M_PI * 2;
+      }
+    }
+    m_transitionLapse = 0;
+    m_transitionDuration = transitionTime;
+  } else {
+    setRotation(CC_RADIANS_TO_DEGREES(-angle));
+  }
+  return true;
 }

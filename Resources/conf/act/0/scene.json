@@ -7,15 +7,15 @@
     "bg1": {
       "id": "bg1",
       "type": "bg",
-      "width": "1920",
-      "height": "1080",
+      "width": 1920,
+      "height": 1080,
       "zIndex": -1
     },
     "main": {
       "id": "main",
       "type": "world",
-      "width": "1920",
-      "height": "1080",
+      "width": 1920,
+      "height": 1080,
       "isMain": true,
       "path": "conf/act/0/main_0.json",
       "zIndex": 0

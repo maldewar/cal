@@ -1,0 +1,394 @@
+
+{
+  "collisionbitplanes" : 
+  {
+    "names" : 
+    [
+      "bitplane1",
+      "bitplane2",
+      "bitplane3",
+      "bitplane4",
+      "bitplane5",
+      "bitplane6",
+      "bitplane7",
+      "bitplane8",
+      "bitplane9",
+      "bitplane10",
+      "bitplane11",
+      "bitplane12",
+      "bitplane13",
+      "bitplane14",
+      "bitplane15",
+      "bitplane16",
+      "bitplane17",
+      "bitplane18",
+      "bitplane19",
+      "bitplane20",
+      "bitplane21",
+      "bitplane22",
+      "bitplane23",
+      "bitplane24",
+      "bitplane25",
+      "bitplane26",
+      "bitplane27",
+      "bitplane28",
+      "bitplane29",
+      "bitplane30",
+      "bitplane31",
+      "bitplane32"
+    ]
+  },
+  "customPropertyDefs" : 
+  [
+    
+    {
+      "class" : "body",
+      "displayName" : "Interval",
+      "name" : "interval",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "world",
+      "displayName" : "Background",
+      "name" : "bg",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Capacity",
+      "name" : "capacity",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Use Open Timer",
+      "name" : "useOpenTimer",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Min Distance",
+      "name" : "forceMinDistance",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Is Open",
+      "name" : "isOpen",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Open Timer",
+      "name" : "openTimer",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "world",
+      "displayName" : "Units Required",
+      "name" : "unitsRequired",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Distance",
+      "name" : "forceMaxDistance",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Angle",
+      "name" : "forceMaxAngle",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Min Angular Impulse",
+      "name" : "forceMinAngularImpulse",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Angular Impulse",
+      "name" : "forceMaxAngularImpulse",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "world",
+      "displayName" : "Time",
+      "name" : "time",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Level",
+      "name" : "level",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Active",
+      "name" : "active",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Category",
+      "name" : "category",
+      "type" : "string"
+    }
+  ],
+  "metaworld" : 
+  {
+    "allowSleep" : true,
+    "autoClearForces" : true,
+    "continuousPhysics" : true,
+    "displayOptions" : 
+    {
+      "propertyDisplayFilterScriptFile" : "/home/waldemar/Projects/Calaveras/rube/scripts/calaverasPropertyDisplayFilter.rs"
+    },
+    "exportOptions" : 
+    {
+      "compactCommonFloats" : true,
+      "compactZeroVecs" : true,
+      "saveFullPathForImages" : false,
+      "saveFullPathForSamplerOutput" : false,
+      "saveImagePathsRelativeToRUBEFile" : false,
+      "saveSamplerOutputPathsRelativeToRUBEFile" : false,
+      "useHumanReadableFloats" : true,
+      "usePrettyPrint" : true
+    },
+    "gravity" : 
+    {
+      "x" : 0,
+      "y" : -10
+    },
+    "metabody" : 
+    [
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "name" : "category",
+            "string" : "area"
+          },
+          
+          {
+            "name" : "material",
+            "string" : "default"
+          }
+        ],
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "friction" : 0.8,
+            "id" : 1,
+            "name" : "fixture0",
+            "shapes" : 
+            [
+              
+              {
+                "type" : "polygon"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : 
+              [
+                1.010709524154663,
+                2.118531465530396,
+                3.448411941528320,
+                1.824720382690430,
+                -0.7267952561378479,
+                -1.979357719421387,
+                -3.247383832931519,
+                -3.804078102111816,
+                -4.005106449127197,
+                -2.644298076629639,
+                -1.283489704132080,
+                -0.4203044772148132,
+                0.3374187946319580
+              ],
+              "y" : 
+              [
+                0.3711293935775757,
+                0.3556659221649170,
+                0.3556659221649170,
+                -1.329880952835083,
+                -2.103067398071289,
+                -1.917502641677856,
+                -1.005142569541931,
+                -0.1701008081436157,
+                0.4484481811523438,
+                0.4484481811523438,
+                0.4020570516586304,
+                0.4065804481506348,
+                0.3820698261260986
+              ]
+            }
+          }
+        ],
+        "id" : 1,
+        "linearVelocity" : 0,
+        "name" : "area",
+        "position" : 
+        {
+          "x" : -0.2106565833091736,
+          "y" : 0.4428086280822754
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "name" : "category",
+            "string" : "unit"
+          }
+        ],
+        "fixture" : 
+        [
+          
+          {
+            "density" : 1,
+            "filter-categoryBits" : 2,
+            "filter-maskBits" : 1,
+            "friction" : 0.8,
+            "id" : 2,
+            "name" : "fixture1",
+            "restitution" : 0.4,
+            "shapes" : 
+            [
+              
+              {
+                "radius" : 0.15,
+                "type" : "circle"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ 0.0 ],
+              "y" : [ 0.0 ]
+            }
+          }
+        ],
+        "id" : 2,
+        "linearVelocity" : 0,
+        "massData-I" : 0.0007952157175168395,
+        "massData-mass" : 0.07068584114313126,
+        "name" : "unit",
+        "position" : 
+        {
+          "x" : -0.9683794975280762,
+          "y" : 2.035573005676270
+        },
+        "type" : "dynamic"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 1,
+            "name" : "capacity"
+          },
+          
+          {
+            "int" : 100,
+            "name" : "interval"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "openTimer"
+          },
+          
+          {
+            "float" : 0,
+            "name" : "forceMaxAngle"
+          },
+          
+          {
+            "float" : 0,
+            "name" : "forceMaxAngularImpulse"
+          },
+          
+          {
+            "float" : 0,
+            "name" : "forceMaxDistance"
+          },
+          
+          {
+            "float" : 0,
+            "name" : "forceMinAngularImpulse"
+          },
+          
+          {
+            "float" : 0,
+            "name" : "forceMinDistance"
+          },
+          
+          {
+            "name" : "category",
+            "string" : "entry"
+          },
+          
+          {
+            "bool" : false,
+            "name" : "isOpen"
+          },
+          
+          {
+            "bool" : true,
+            "name" : "useOpenTimer"
+          }
+        ],
+        "id" : 3,
+        "linearVelocity" : 0,
+        "name" : "entry",
+        "position" : 
+        {
+          "x" : -2.404358863830566,
+          "y" : 1.928771734237671
+        },
+        "type" : "static"
+      }
+    ],
+    "positionIterations" : 3,
+    "stepsPerSecond" : 60.0,
+    "subStepping" : false,
+    "velocityIterations" : 8,
+    "warmStarting" : true
+  }
+}

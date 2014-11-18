@@ -21,6 +21,7 @@ protected:
   bool m_onTransition;
   cocos2d::Size m_visibleSize;
   cocos2d::Size m_winSize;
+  bool m_isMain;
 
 public:
   BaseLayer();

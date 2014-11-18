@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "cocos2d.h"
+#include "BaseScene.h"
 #include "../layer/BackgroundLayer.h"
 #include "../layer/WorldLevelLayer.h"
 #include "../layer/GravityCtrlLayer.h"
@@ -26,7 +27,7 @@ const int CTRL_NONE      = 0;
 const int CTRL_GRAVITRON = 1;
 const int CTRL_SELECT    = 2;
 
-class WorldLevelScene : public cocos2d::Scene
+class WorldLevelScene : public BaseScene
 {
 protected:
   std::vector<WorldLevelLayer*> m_worldLevelLayers;
@@ -82,6 +83,10 @@ public:
 
   cocos2d::Touch* getTouch();
   void setTouch(cocos2d::Touch* touch);
+
+  SceneDef* getSceneDef(std::string filename);
+  BaseLayer* getWorldLayer(WorldLayerDef* worldLayerDef);
+
 };
 
 #endif /* __WORLD_LEVEL_SCENE__ */
