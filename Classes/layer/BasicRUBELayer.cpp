@@ -8,8 +8,11 @@
 
 #include "BasicRUBELayer.h"
 #include "../util/b2dJson.h"
+#include "../util/b2dJsonImage.h"
 #include "../util/QueryCallbacks.h"
 #include "../util/CMath.h"
+#include "../model/ImageNode.h"
+#include "../model/ImageBody.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -152,7 +155,7 @@ void BasicRUBELayer::loadWorld()
     string filename = getFilename();
     
     // Find out the absolute path for the file
-    string fullpath = FileUtils::sharedFileUtils()->fullPathForFilename(filename.c_str());
+    string fullpath = FileUtils::getInstance()->fullPathForFilename(filename.c_str());
     
     // This will print out the actual location on disk that the file is read from.
     // When using the simulator, exporting your RUBE scene to this folder means
@@ -165,7 +168,7 @@ void BasicRUBELayer::loadWorld()
     b2dJson json;
     std::string errMsg;
     ssize_t fileSize = 0;
-    unsigned char* fileData = FileUtils::sharedFileUtils()->getFileData(fullpath.c_str(), "r", &fileSize);
+    unsigned char* fileData = FileUtils::getInstance()->getFileData(fullpath.c_str(), "r", &fileSize);
     std::string jsonContent;
     jsonContent.assign(reinterpret_cast<const char*>(fileData), fileSize);
     m_world = json.readFromString(jsonContent, errMsg);
@@ -195,8 +198,45 @@ void BasicRUBELayer::loadWorld()
 // Override this in subclasses to do some extra processing (eg. acquire references
 // to named bodies, joints etc) after the world has been loaded, and while the b2dJson
 // information is still available.
-void BasicRUBELayer::afterLoadProcessing(b2dJson* json)
-{
+void BasicRUBELayer::afterLoadProcessing(b2dJson* json) {
+  // Process images
+  std::vector<b2dJsonImage*> b2dImages;
+  json->getAllImages(b2dImages);
+  for (int i = b2dImages.size() - 1; i >= 0; i--) {
+    b2dJsonImage* image = b2dImages[i]; 
+    if (image->body) {
+      ImageBody* imageBody = ImageBody::create(image->file, 
+                                               image->body);
+      if (!imageBody) {
+        continue;
+      }
+      imageBody->setPositionZ(image->renderOrder);
+      addChild(imageBody);
+    } else {
+      ImageNode* imageNode = ImageNode::create(image->file);
+      if (!imageNode) {
+        continue;
+      }
+      imageNode->getSprite()->setFlipX(image->flip);
+      imageNode->getSprite()->setColor(ccc3(image->colorTint[0],
+                                            image->colorTint[1],
+                                            image->colorTint[2]));
+      imageNode->getSprite()->setOpacity(image->colorTint[3]);
+      Size size = imageNode->getSprite()->getContentSize();
+      float sizeRatio = size.height / 420.0f; // 840
+      float spriteScale = image->scale / sizeRatio;
+      imageNode->getSprite()->setScale(spriteScale);
+      Point pos = cocos2d::Vec2(image->center.x,
+                                image->center.y);
+      b2Vec2 localPos( pos.x, pos.y );
+      pos.x = localPos.x;
+      pos.y = localPos.y;
+      imageNode->setRotation( CC_RADIANS_TO_DEGREES(-image->angle) );
+      imageNode->setPosition( pos );
+      imageNode->setPositionZ(image->renderOrder);
+      addChild(imageNode, image->renderOrder);
+    }
+  }
 }
 
 // This method should undo anything that was done by the loadWorld and afterLoadProcessing
@@ -610,15 +650,24 @@ void BasicRUBELayer::pauseChildrenRecursive(cocos2d::Node* node, bool pause) {
   }
 }
 
-bool BasicRUBELayer::translate(float x, float y, float transitionTime) {
+bool BasicRUBELayer::translate(float x, float y) {
   return true;
 }
 
-bool BasicRUBELayer::scale(float factor, float transitionTime) {
+bool BasicRUBELayer::translate(float x, float y, float transitionDuration) {
+  return BaseLayer::translate(x, y, transitionDuration);
+}
+
+bool BasicRUBELayer::scale(float factor) {
   return true;
 }
 
-bool BasicRUBELayer::rotate(float angle, float transitionTime) {
+bool BasicRUBELayer::scale(float factor, float transitionDuration) {
+  return BaseLayer::scale(factor, transitionDuration);
+}
+
+bool BasicRUBELayer::rotate(float angle) {
+  /*
   if (transitionTime > 0) {
     m_rotating = true;
     m_rotationOrigin = CMath::wrapPosNegPI(CC_DEGREES_TO_RADIANS(-getRotation()));
@@ -637,5 +686,14 @@ bool BasicRUBELayer::rotate(float angle, float transitionTime) {
   } else {
     setRotation(CC_RADIANS_TO_DEGREES(-angle));
   }
-  return true;
+  */
+  if (BaseLayer::rotate(angle)) {
+    setRotation(CC_RADIANS_TO_DEGREES(-angle));
+    return true;
+  }
+  return false;
+}
+
+bool BasicRUBELayer::rotate(float angle, float transitionDuration) {
+  return BaseLayer::rotate(angle, transitionDuration);
 }

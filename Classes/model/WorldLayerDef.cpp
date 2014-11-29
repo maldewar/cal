@@ -26,14 +26,6 @@ int WorldLayerDef::getType() {
   return LAYER_TYPE_WORLD;
 }
 
-bool WorldLayerDef::isMain() {
-  return m_isMain;
-}
-
-void WorldLayerDef::setIsMain(bool isMain) {
-  m_isMain = isMain;
-}
-
 std::string WorldLayerDef::getPath() {
   return m_path;
 }

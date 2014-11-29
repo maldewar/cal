@@ -24,14 +24,14 @@ bool BackgroundLayer::init(int bgType)
   return true;
 }
 
-bool BackgroundLayer::translate(float x, float y, float transitionTime) {
+bool BackgroundLayer::translate(float x, float y) {
   return true;
 }
 
-bool BackgroundLayer::scale(float factor, float transitionTime) {
+bool BackgroundLayer::scale(float factor) {
   return true;
 }
 
-bool BackgroundLayer::rotate(float angle, float transitionTime) {
+bool BackgroundLayer::rotate(float angle) {
   return true;
 }

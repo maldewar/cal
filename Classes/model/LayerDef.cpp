@@ -1,10 +1,11 @@
 #include "LayerDef.h"
 
 LayerDef::LayerDef() {
-  m_id = "";
-  m_index = 0;
-  m_width = 0;
-  m_height = 0;
+  m_id      = "";
+  m_isMain  = false;
+  m_index   = 0;
+  m_width   = 0;
+  m_height  = 0;
   m_enabled = true;
 }
 
@@ -35,6 +36,14 @@ void LayerDef::setId(std::string id) {
 
 int LayerDef::getType() {
   return 0;
+}
+
+bool LayerDef::isMain() {
+    return m_isMain;
+}
+
+void LayerDef::setIsMain(bool isMain) {
+    m_isMain = isMain;
 }
 
 int LayerDef::getIndex() {

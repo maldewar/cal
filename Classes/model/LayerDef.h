@@ -12,6 +12,7 @@ class LayerDef
 {
 protected:
   std::string m_id;
+  bool m_isMain;
   int m_index;
   float m_width;
   float m_height;
@@ -39,6 +40,8 @@ public:
     virtual std::string getId();
     virtual void setId(std::string id);
     virtual int getType();
+    virtual bool isMain();
+    virtual void setIsMain(bool isMain);
     virtual int getIndex();
     virtual void setIndex(int index);
     virtual float getWidth();

@@ -15,9 +15,9 @@ public:
   static BackgroundLayer* create(int bgType);
   virtual bool init(int bgType);
 
-  bool translate(float x, float y, float transitionTime = 0);
-  bool scale(float factor, float transitionTime = 0);
-  bool rotate(float angle, float transitionTime = 0);
+  bool translate(float x, float y);
+  bool scale(float factor);
+  bool rotate(float angle);
 
 };
 

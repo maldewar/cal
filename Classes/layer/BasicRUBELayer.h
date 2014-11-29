@@ -128,10 +128,14 @@ public:
     virtual void update(float dt);
     virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) override;
     
-    virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
-    virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event);
+    virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
+                                cocos2d::Event *unused_event);
+    virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
+                                cocos2d::Event *unused_event);
+    virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches,
+                                cocos2d::Event *unused_event);
+    virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches,
+                                    cocos2d::Event *unused_event);
     virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
     virtual void onWorldTouchBegan(b2Vec2& position);
     virtual void onBodyTouchEnded();
@@ -180,9 +184,12 @@ public:
     virtual void pause(bool pause);
     virtual bool isPaused();
 
-    bool translate(float x, float y, float transitionTime = 0);
-    bool scale(float factor, float transitionTime = 0);
-    bool rotate(float angle, float transitionTime = 0);
+    virtual bool translate(float x, float y);
+    virtual bool translate(float x, float y, float transitionDuration);
+    virtual bool scale(float factor);
+    virtual bool scale(float factor, float transitionDuration);
+    virtual bool rotate(float angle);
+    virtual bool rotate(float angle, float transitionDuration);
 
 };
 

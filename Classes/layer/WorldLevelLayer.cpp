@@ -96,6 +96,7 @@ float WorldLevelLayer::initialWorldScale()
 // is still available to do extra loading. Here is where we load the images.
 void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
 {
+  BasicRUBELayer::afterLoadProcessing(json);
     BodyFactory::getInstance()->setWorld(m_world);
     ContactSystem* contactSystem = new ContactSystem();
     m_world->SetContactListener(contactSystem);
@@ -125,38 +126,6 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
       }
     }
 
-    // Process images
-    std::vector<b2dJsonImage*> b2dImages;
-    json->getAllImages(b2dImages);
-    for (int i = 0; i < b2dImages.size(); i++) {
-      b2dJsonImage* image = b2dImages[i];
-      if (image->body) {
-        ImageBody* imageBody = ImageBody::create(image->file, image->body);
-        if (!imageBody) {
-          continue;
-        }
-        addChild(imageBody);
-      } else {
-        ImageNode* imageNode = ImageNode::create(image->file);
-        if (!imageNode) {
-          continue;
-        }
-        imageNode->getSprite()->setFlipX(image->flip);
-        imageNode->getSprite()->setColor(ccc3(image->colorTint[0], image->colorTint[1], image->colorTint[2]));
-        imageNode->getSprite()->setOpacity(image->colorTint[3]);
-        Size size = imageNode->getSprite()->getContentSize();
-        float sizeRatio = size.height / 840.0f;
-        float spriteScale = image->scale / sizeRatio;
-        imageNode->getSprite()->setScale(spriteScale);
-        Point pos = Point(image->center.x, image->center.y);
-        b2Vec2 localPos( pos.x, pos.y );
-        pos.x = localPos.x;
-        pos.y = localPos.y;
-        imageNode->setRotation( CC_RADIANS_TO_DEGREES(-image->angle) );
-        imageNode->setPosition( pos );
-        addChild(imageNode);
-      }
-    }
     /*
     // fill a vector with all images in the RUBE scene
     std::vector<b2dJsonImage*> b2dImages;

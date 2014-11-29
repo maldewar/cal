@@ -15,6 +15,7 @@ using namespace cocos2d;
 
 WorldActLayer::WorldActLayer() : BasicRUBELayer() {
   m_debugDrawEnabled = true;
+  m_rotationEnabled = true;
 }
 
 WorldActLayer* WorldActLayer::create(int act, std::string filename) {
@@ -70,8 +71,7 @@ float WorldActLayer::initialWorldScale()
 
 // This is called after the Box2D world has been loaded, and while the b2dJson information
 // is still available to do extra loading. Here is where we load the images.
-void WorldActLayer::afterLoadProcessing(b2dJson* json)
-{
+void WorldActLayer::afterLoadProcessing(b2dJson* json) {
   // Process bodies
   std::vector<b2Body*> b2Bodies;
   json->getAllBodies(b2Bodies);
@@ -91,41 +91,7 @@ void WorldActLayer::afterLoadProcessing(b2dJson* json)
       }
     }
   }
-
-  // Process images
-  std::vector<b2dJsonImage*> b2dImages;
-  json->getAllImages(b2dImages);
-  for (int i = 0; i < b2dImages.size(); i++) {
-    b2dJsonImage* image = b2dImages[i];
-    if (image->body) {
-      ImageBody* imageBody = ImageBody::create(image->file, image->body);
-      if (!imageBody) {
-        continue;
-      }
-      imageBody->setPositionZ(image->renderOrder);
-      addChild(imageBody);
-    } else {
-      ImageNode* imageNode = ImageNode::create(image->file);
-      if (!imageNode) {
-        continue;
-      }
-      imageNode->getSprite()->setFlipX(image->flip);
-      imageNode->getSprite()->setColor(ccc3(image->colorTint[0], image->colorTint[1], image->colorTint[2]));
-      imageNode->getSprite()->setOpacity(image->colorTint[3]);
-      Size size = imageNode->getSprite()->getContentSize();
-      float sizeRatio = size.height / 840.0f;
-      float spriteScale = image->scale / sizeRatio;
-      imageNode->getSprite()->setScale(spriteScale);
-      Point pos = cocos2d::Vec2(image->center.x, image->center.y);
-      b2Vec2 localPos( pos.x, pos.y );
-      pos.x = localPos.x;
-      pos.y = localPos.y;
-      imageNode->setRotation( CC_RADIANS_TO_DEGREES(-image->angle) );
-      imageNode->setPosition( pos );
-      imageNode->setPositionZ(image->renderOrder);
-      addChild(imageNode);
-    }
-  }
+  BasicRUBELayer::afterLoadProcessing(json);
 }
 
 // Remove one body and any images is had attached to it from the layer

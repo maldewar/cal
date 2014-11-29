@@ -18,7 +18,20 @@ protected:
   float m_xMin;
   float m_yMax;
   float m_yMin;
-  bool m_onTransition;
+  float m_translateTransitionLapse;
+  float m_rotateTransitionLapse;
+  float m_scaleTransitionLapse;
+  float m_translateTransitionDuration;
+  float m_rotateTransitionDuration;
+  float m_scaleTransitionDuration;
+  float m_xOrigin;
+  float m_yOrigin;
+  float m_angleOrigin;
+  float m_scaleOrigin;
+  float m_xTarget;
+  float m_yTarget;
+  float m_angleTarget;
+  float m_scaleTarget;
   cocos2d::Size m_visibleSize;
   cocos2d::Size m_winSize;
   bool m_isMain;
@@ -27,9 +40,17 @@ public:
   BaseLayer();
   virtual ~BaseLayer();
   virtual bool init();
-  virtual bool translate(float x, float y, float transitionTime = 0) = 0;
-  virtual bool scale(float factor, float transitionTime = 0) = 0;
-  virtual bool rotate(float angle, float transitionTime = 0) = 0;
+  virtual bool translate(float x, float y);
+  virtual bool translate(float x, float y, float transitionDuration);
+  virtual bool scale(float factor);
+  virtual bool scale(float factor, float transitionDuration);
+  virtual bool rotate(float angle);
+  virtual bool rotate(float angle, float transitionDuration);
+  virtual bool translateStep(float dX, float dY);
+  virtual bool scaleStep(float dFactor);
+  virtual bool rotateStep(float dAngle);
+  virtual bool isMain();
+  virtual void setIsMain(bool isMain);
   virtual float getX();
   virtual float getY();
   virtual float getAngle();
@@ -40,9 +61,10 @@ public:
   virtual void setScaleEnabled(bool isScaleEnabled);
   virtual bool isRotationEnabled();
   virtual void setRotationEnabled(bool isRotationEnabled);
-
-protected:
-  virtual bool onTransition();
+  bool isOnTranslation();
+  bool isOnRotation();
+  bool isOnScaling();
+  bool isOnTransition();
 
 };
 

@@ -9,6 +9,7 @@ ActScene::ActScene() : BaseScene() {
   m_act = 0;
   m_worldActLayer = nullptr;
   m_basicUILayer   = nullptr;
+  m_rotationStep = 0.05f;
 }
 
 ActScene* ActScene::create(int act, std::string filename) {

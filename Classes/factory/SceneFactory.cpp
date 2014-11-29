@@ -174,6 +174,7 @@ bool SceneFactory::buildLevelSceneDef(LevelSceneDef* actSceneDef,
 bool SceneFactory::buildLayerDef(LayerDef* layerDef,
                                  Json::Value& jLayerDef) {
   layerDef->setId(jLayerDef.get("id", "").asString());
+  layerDef->setIsMain(jLayerDef.get("isMain", false).asBool());
   layerDef->setWidth(jLayerDef.get("width", 0.0f).asDouble());
   layerDef->setHeight(jLayerDef.get("height", 0.0f).asDouble());
   layerDef->setIndex(jLayerDef.get("zIndex", 0).asInt());
