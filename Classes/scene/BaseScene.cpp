@@ -18,7 +18,7 @@ BaseScene::BaseScene() : cocos2d::Scene() {
   m_zoomOutKey  = false;
   m_rotateCWKey    = false;
   m_rotateCCWKey   = false;
-  m_translationStep = 0.01f;
+  m_translationStep = 10.0f;
   m_scalingStep     = 0.01f;
   m_rotationStep    = 0.01f;
   m_translationFactor = 0;
@@ -89,9 +89,9 @@ void BaseScene::update(float dt) {
       if (m_rightKey)
         dX += m_translationStep;
       if (m_upKey)
-        dY -= m_translationStep;
-      if (m_downKey)
         dY += m_translationStep;
+      if (m_downKey)
+        dY -= m_translationStep;
       if (m_translationFactor < 1) {
         m_translationFactor += 0.01f;
         m_mainLayer->translateStep(dX * m_translationFactor,
@@ -193,22 +193,26 @@ void BaseScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     switch(keyCode) {
       case cocos2d::EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
       case cocos2d::EventKeyboard::KeyCode::KEY_KP_RIGHT:
-        m_translationFactor = 0;
+        if (!m_upKey && !m_downKey)
+          m_translationFactor = 0;
         m_rightKey = false; return;
         break;
       case cocos2d::EventKeyboard::KeyCode::KEY_LEFT_ARROW:
       case cocos2d::EventKeyboard::KeyCode::KEY_KP_LEFT:
-        m_translationFactor = 0;
+        if (!m_upKey && !m_downKey)
+          m_translationFactor = 0;
         m_leftKey = false; return;
         break;
       case cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW:
       case cocos2d::EventKeyboard::KeyCode::KEY_KP_UP:
-        m_translationFactor = 0;
+        if (!m_rightKey && !m_leftKey)
+          m_translationFactor = 0;
         m_upKey = false; return;
         break;
       case cocos2d::EventKeyboard::KeyCode::KEY_DOWN_ARROW:
       case cocos2d::EventKeyboard::KeyCode::KEY_KP_DOWN:
-        m_translationFactor = 0;
+        if (!m_rightKey && !m_leftKey)
+          m_translationFactor = 0;
         m_downKey = false; return;
         break;
     }

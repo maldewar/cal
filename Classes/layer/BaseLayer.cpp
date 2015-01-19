@@ -5,6 +5,7 @@ BaseLayer::BaseLayer() : cocos2d::Layer() {
   m_x      = 0;
   m_y      = 0;
   m_angle  = 0;
+  m_depth  = 0;
   m_xMax   = 0;
   m_xMin   = 0;
   m_yMax   = 0;
@@ -40,9 +41,17 @@ bool BaseLayer::init() {
   }
   m_visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
   m_winSize     = cocos2d::Director::getInstance()->getWinSize();
-  CCLOG("Layer Visible size, width: %f height: %f ",
-        m_visibleSize.width, m_visibleSize.height);
-  CCLOG("Layer Window size, width: %f height: %f", m_winSize.width, m_winSize.height);
+  m_winCenter   = cocos2d::Point(m_winSize.width / 2, m_winSize.height/2);
+
+  // Set the layer at the center of the screen
+  setPosition(m_winCenter.x, m_winCenter.y);
+
+  // Set the anchor point at the center of the layer
+  setAnchorPoint(cocos2d::Vec2(0,0));
+
+  this->setContentSize(cocos2d::Size(m_winSize.height,
+                                     m_winSize.height));
+
   return true;
 }
 
@@ -50,17 +59,22 @@ bool BaseLayer::translate(float x, float y) {
   if (m_translationEnabled) {
     m_x = x;
     m_y = y;
+    setAnchorPoint(cocos2d::Vec2(x, y));
     return true;
   }
   return false;
 }
 
 bool BaseLayer::translate(float x, float y, float transitionDuration) {
-  return true;
+  if (m_translationEnabled) {
+    return true;
+  }
+  return false;
 }
 
 bool BaseLayer::scale(float factor) {
   if (m_scaleEnabled) {
+    setCenter();
     return true;
   }
   return false;
@@ -73,6 +87,7 @@ bool BaseLayer::scale(float factor, float transitionDuration) {
 bool BaseLayer::rotate(float angle) {
   if (m_rotationEnabled) {
     m_angle = angle;
+    setRotation(CC_RADIANS_TO_DEGREES(-angle));
     return true;
   }
   return false;
@@ -83,7 +98,12 @@ bool BaseLayer::rotate(float angle, float transitionDuration) {
 }
 
 bool BaseLayer::translateStep(float dX, float dY) {
-  return translate(getX() + dX, getY() + dY);
+  float transX = dX / m_visibleSize.height / getScale();
+  float transY = dY / m_visibleSize.height / getScale();
+  float angleSin = sin(-m_angle);
+  float angleCos = cos(-m_angle);
+  return translate(getX() + (transX * angleCos - transY * angleSin),
+                   getY() + (transX * angleSin + transY * angleCos));
 }
 
 bool BaseLayer::scaleStep(float dFactor) {
@@ -100,6 +120,7 @@ bool BaseLayer::isMain() {
 
 void BaseLayer::setIsMain(bool isMain) {
   m_isMain = isMain;
+  m_depth = 1;
 }
 
 float BaseLayer::getX() {
@@ -156,4 +177,17 @@ bool BaseLayer::isOnScaling() {
 
 bool BaseLayer::isOnTransition() {
   return (isOnTranslation() || isOnRotation() || isOnScaling());
+}
+
+void BaseLayer::setAnchorPoint (const cocos2d::Point &anchorPoint) {
+  Layer::setAnchorPoint (anchorPoint);
+}
+
+void BaseLayer::setCenter() {
+  float angleSin = sin(m_angle);
+  float angleCos = cos(m_angle);
+  m_winCenter.x = 960 - (m_x * angleCos - m_x * angleSin) * 1;
+  m_winCenter.y = 540 - (m_y * angleCos + m_x * angleSin) * 1;
+  CCLOG("m_x:%f m_y:%f angle:%f scale:%f", m_x, m_y, m_angle, getScale());
+  CCLOG("center_x:%f center_y:%f", m_winCenter.x, m_winCenter.y);
 }

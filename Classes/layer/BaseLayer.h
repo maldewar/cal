@@ -9,6 +9,7 @@ protected:
   float m_x;
   float m_y;
   float m_angle;
+  float m_depth;
   bool m_translationEnabled;
   bool m_rotationEnabled;
   bool m_scaleEnabled;
@@ -34,6 +35,7 @@ protected:
   float m_scaleTarget;
   cocos2d::Size m_visibleSize;
   cocos2d::Size m_winSize;
+  cocos2d::Point m_winCenter;;
   bool m_isMain;
 
 public:
@@ -52,20 +54,23 @@ public:
   virtual bool isMain();
   virtual void setIsMain(bool isMain);
   virtual float getX();
-  virtual float getY();
-  virtual float getAngle();
-  virtual float getScale();
-  virtual bool isTranslationEnabled();
-  virtual void setTranslationEnabled(bool isTranslationEnabled);
-  virtual bool isScaleEnabled();
-  virtual void setScaleEnabled(bool isScaleEnabled);
-  virtual bool isRotationEnabled();
-  virtual void setRotationEnabled(bool isRotationEnabled);
+  virtual float getY ();
+  virtual float getAngle ();
+  virtual float getScale ();
+  virtual bool isTranslationEnabled ();
+  virtual void setTranslationEnabled (bool isTranslationEnabled);
+  virtual bool isScaleEnabled ();
+  virtual void setScaleEnabled (bool isScaleEnabled);
+  virtual bool isRotationEnabled ();
+  virtual void setRotationEnabled (bool isRotationEnabled);
+  virtual void setAnchorPoint (const cocos2d::Point &anchorPoint);
   bool isOnTranslation();
   bool isOnRotation();
   bool isOnScaling();
   bool isOnTransition();
 
+protected:
+  virtual void setCenter();
 };
 
 #endif // __BASE_LAYER_H__

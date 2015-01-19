@@ -56,16 +56,18 @@ Point WorldActLayer::initialWorldOffset()
     //return cocos2d::Vec2(0,0);
     //return CCPointMake( s.width * (475 / 1024.0), s.height * (397 / 768.0) );
     // TODO: use cameras
-    return getCenteredPosition(0, 0);
+    //return getCenteredPosition(0, 0);
+    return BasicRUBELayer::initialWorldOffset();
 }
 
 
 // Override superclass to set different starting scale
 float WorldActLayer::initialWorldScale()
 {
-    Size s = Director::getInstance()->getWinSize();
+    //Size s = Director::getInstance()->getWinSize();
     //return s.height / 35; //screen will be 35 physics units high
-    return s.height/4;
+    //return s.height/4;
+    return BasicRUBELayer::initialWorldScale();
 }
 
 

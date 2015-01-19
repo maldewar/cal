@@ -18,58 +18,54 @@ using namespace std;
 using namespace cocos2d;
 
 BasicRUBELayer::BasicRUBELayer() : BaseLayer() {
-    m_world = NULL;
-    m_debugDraw = NULL;
-    m_navigationEnabled = true;
-    m_mouseJoint = NULL;
-    m_mouseJointGroundBody = NULL;
-    m_mouseJointTouch = NULL;
-    m_debugDrawEnabled = false;
+  m_world = NULL;
+  m_debugDraw = NULL;
+  m_navigationEnabled = true;
+  m_mouseJoint = NULL;
+  m_mouseJointGroundBody = NULL;
+  m_mouseJointTouch = NULL;
+  m_debugDrawEnabled = false;
 
-    m_worldCenter = b2Vec2(0,0);
+  m_worldCenter = b2Vec2(0,0);
 
-    m_rotating = false;
-    m_rotation = 0.0f;
-    m_cosRotation = 1;
-    m_sinRotation = 0;
-    m_transitioning = false;
-    m_transitionTemp = Vec2(0,0);
-    m_transitionOrigin = Vec2(0,0);
-    m_transitionTarget = Vec2(0,0);
-    m_following = false;
-    m_followingBody = nullptr;
-    m_paused = false;
+  m_rotating = false;
+  m_rotation = 0.0f;
+  m_cosRotation = 1;
+  m_sinRotation = 0;
+  m_transitioning = false;
+  m_transitionTemp = Vec2(0,0);
+  m_transitionOrigin = Vec2(0,0);
+  m_transitionTarget = Vec2(0,0);
+  m_following = false;
+  m_followingBody = nullptr;
+  m_paused = false;
 
-    m_bodyTouchBegan = false;
-    m_worldTouchBegan = false;
+  m_bodyTouchBegan = false;
+  m_worldTouchBegan = false;
 }
 
 BasicRUBELayer::~BasicRUBELayer() {
 }
 
-Scene* BasicRUBELayer::scene() {
-    auto scene = Scene::create();
-    BasicRUBELayer* layer = BasicRUBELayer::create();
-    scene->addChild(layer);
-    return scene;
-}
-
 bool BasicRUBELayer::init() {
-    Layer::init();
-    
+    if (! BaseLayer::init()) {
+      return false;
+    }
     setTouchEnabled( true );
-    setAccelerometerEnabled( true );    
+    cocos2d::Vec2 originalAnchorPoint = getAnchorPoint();
+    CCLOG("Original anchor point x:%f,y:%f", originalAnchorPoint.x, originalAnchorPoint.y);
     setAnchorPoint( Vec2(0,0) );
     
     // set the starting scale and offset values from the subclass
     //setPosition( initialWorldOffset() );
-    centerPoint(0,0);
+    //centerPoint(0,0); // LAST TODO
     setScale( initialWorldScale() );
+    CCLOG("Initial world scale %f", initialWorldScale());
     
     // load the world from RUBE .json file (this will also call afterLoadProcessing)
     loadWorld();
     
-    setKeypadEnabled(true);
+    //setKeypadEnabled(true);
     
     return true;
 }
@@ -651,7 +647,16 @@ void BasicRUBELayer::pauseChildrenRecursive(cocos2d::Node* node, bool pause) {
 }
 
 bool BasicRUBELayer::translate(float x, float y) {
-  return true;
+  CCLOG(" Translate to x:%f y:%f", x, y);
+  if (BaseLayer::translate(x,y)) {
+    //Vec2 layerOffset = getPosition();
+    //CCLOG(" Layer offset x:%f, y:%f", layerOffset.x, layerOffset.y);
+    //Vec2 moved = Vec2(x, y);
+    //layerOffset = layerOffset + moved;
+    //setPosition(960 + x, 540 +y);
+    return true;
+  }
+  return false;
 }
 
 bool BasicRUBELayer::translate(float x, float y, float transitionDuration) {
@@ -687,10 +692,12 @@ bool BasicRUBELayer::rotate(float angle) {
     setRotation(CC_RADIANS_TO_DEGREES(-angle));
   }
   */
+  /*
   if (BaseLayer::rotate(angle)) {
     setRotation(CC_RADIANS_TO_DEGREES(-angle));
     return true;
-  }
+  }*/
+  BaseLayer::rotate(angle);
   return false;
 }
 
