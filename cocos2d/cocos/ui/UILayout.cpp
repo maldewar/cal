@@ -24,16 +24,16 @@ THE SOFTWARE.
 
 #include "ui/UILayout.h"
 #include "ui/UIHelper.h"
-#include "extensions/GUI/CCControlExtension/CCScale9Sprite.h"
+#include "ui/UIScale9Sprite.h"
 #include "renderer/CCGLProgram.h"
 #include "renderer/CCGLProgramCache.h"
+#include "renderer/ccGLStateCache.h"
 #include "base/CCDirector.h"
 #include "2d/CCDrawingPrimitives.h"
 #include "renderer/CCRenderer.h"
 #include "ui/UILayoutManager.h"
 #include "2d/CCDrawNode.h"
 #include "2d/CCLayer.h"
-#include "CCGLView.h"
 #include "2d/CCSprite.h"
 #include "base/CCEventFocus.h"
 
@@ -51,13 +51,15 @@ static GLint s_layer = -1;
 IMPLEMENT_CLASS_GUI_INFO(Layout)
 
 Layout::Layout():
-_clippingEnabled(false),
 _backGroundScale9Enabled(false),
 _backGroundImage(nullptr),
 _backGroundImageFileName(""),
 _backGroundImageCapInsets(Rect::ZERO),
 _colorType(BackGroundColorType::NONE),
 _bgImageTexType(TextureResType::LOCAL),
+_backGroundImageTextureSize(Size::ZERO),
+_backGroundImageColor(Color3B::WHITE),
+_backGroundImageOpacity(255),
 _colorRender(nullptr),
 _gradientRender(nullptr),
 _cColor(Color3B::WHITE),
@@ -65,14 +67,13 @@ _gStartColor(Color3B::WHITE),
 _gEndColor(Color3B::WHITE),
 _alongVector(Vec2(0.0f, -1.0f)),
 _cOpacity(255),
-_backGroundImageTextureSize(Size::ZERO),
+_clippingEnabled(false),
 _layoutType(Type::ABSOLUTE),
 _clippingType(ClippingType::STENCIL),
 _clippingStencil(nullptr),
 _scissorRectDirty(false),
 _clippingRect(Rect::ZERO),
 _clippingParent(nullptr),
-_doLayoutDirty(true),
 _clippingRectDirty(true),
 _currentStencilEnabled(GL_FALSE),
 _currentStencilWriteMask(~0),
@@ -86,10 +87,10 @@ _currentDepthWriteMask(GL_TRUE),
 _currentAlphaTestEnabled(GL_FALSE),
 _currentAlphaTestFunc(GL_ALWAYS),
 _currentAlphaTestRef(1),
-_backGroundImageColor(Color3B::WHITE),
-_backGroundImageOpacity(255),
-_passFocusToChild(true),
+_doLayoutDirty(true),
+_isInterceptTouch(false),
 _loopFocus(false),
+_passFocusToChild(true),
 _isFocusPassing(false)
 {
     //no-op
@@ -130,7 +131,7 @@ void Layout::onExit()
 
 Layout* Layout::create()
 {
-    Layout* layout = new Layout();
+    Layout* layout = new (std::nothrow) Layout();
     if (layout && layout->init())
     {
         layout->autorelease();
@@ -351,14 +352,37 @@ void Layout::drawFullScreenQuadClearStencil()
 {
     Director* director = Director::getInstance();
     CCASSERT(nullptr != director, "Director is null when seting matrix stack");
-    
+
+    director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+    director->loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+
     director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     director->loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     
-    director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
-    director->loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+    Vec2 vertices[] = {
+        Vec2(-1, -1),
+        Vec2(1, -1),
+        Vec2(1, 1),
+        Vec2(-1, 1)
+    };
     
-    DrawPrimitives::drawSolidRect(Vec2(-1,-1), Vec2(1,1), Color4F(1, 1, 1, 1));
+    auto glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_U_COLOR);
+    
+    int colorLocation = glProgram->getUniformLocation("u_color");
+    CHECK_GL_ERROR_DEBUG();
+    
+    Color4F color(1, 1, 1, 1);
+    
+    glProgram->use();
+    glProgram->setUniformsForBuiltins();
+    glProgram->setUniformLocationWith4fv(colorLocation, (GLfloat*) &color.r, 1);
+    
+    GL::enableVertexAttribs( GL::VERTEX_ATTRIB_FLAG_POSITION );
+    
+    glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, vertices);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    
+    CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, 4);
     
     director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
@@ -574,10 +598,10 @@ void Layout::onSizeChanged()
     _clippingRectDirty = true;
     if (_backGroundImage)
     {
-        _backGroundImage->setPosition(Vec2(_contentSize.width/2.0f, _contentSize.height/2.0f));
+        _backGroundImage->setPosition(_contentSize.width/2.0f, _contentSize.height/2.0f);
         if (_backGroundScale9Enabled && _backGroundImage)
         {
-            static_cast<extension::Scale9Sprite*>(_backGroundImage)->setPreferredSize(_contentSize);
+            _backGroundImage->setPreferredSize(_contentSize);
         }
     }
     if (_colorRender)
@@ -596,11 +620,13 @@ void Layout::setBackGroundImageScale9Enabled(bool able)
     {
         return;
     }
-    removeProtectedChild(_backGroundImage);
-    _backGroundImage = nullptr;
     _backGroundScale9Enabled = able;
-    addBackGroundImage();
-    setBackGroundImage(_backGroundImageFileName,_bgImageTexType);
+    if (nullptr == _backGroundImage)
+    {
+        addBackGroundImage();
+        setBackGroundImage(_backGroundImageFileName,_bgImageTexType);
+    }
+    _backGroundImage->setScale9Enabled(_backGroundScale9Enabled);
     setBackGroundImageCapInsets(_backGroundImageCapInsets);
 }
     
@@ -618,41 +644,28 @@ void Layout::setBackGroundImage(const std::string& fileName,TextureResType texTy
     if (_backGroundImage == nullptr)
     {
         addBackGroundImage();
+        _backGroundImage->setScale9Enabled(_backGroundScale9Enabled);
     }
     _backGroundImageFileName = fileName;
     _bgImageTexType = texType;
-    if (_backGroundScale9Enabled)
+   
+    switch (_bgImageTexType)
     {
-        extension::Scale9Sprite* bgiScale9 = static_cast<extension::Scale9Sprite*>(_backGroundImage);
-        switch (_bgImageTexType)
-        {
-            case TextureResType::LOCAL:
-                bgiScale9->initWithFile(fileName);
-                break;
-            case TextureResType::PLIST:
-                bgiScale9->initWithSpriteFrameName(fileName);
-                break;
-            default:
-                break;
-        }
-        bgiScale9->setPreferredSize(_contentSize);
+        case TextureResType::LOCAL:
+            _backGroundImage->initWithFile(fileName);
+            break;
+        case TextureResType::PLIST:
+            _backGroundImage->initWithSpriteFrameName(fileName);
+            break;
+        default:
+            break;
     }
-    else
-    {
-        switch (_bgImageTexType)
-        {
-            case TextureResType::LOCAL:
-                static_cast<Sprite*>(_backGroundImage)->setTexture(fileName);
-                break;
-            case TextureResType::PLIST:
-                static_cast<Sprite*>(_backGroundImage)->setSpriteFrame(fileName);
-                break;
-            default:
-                break;
-        }
+    if (_backGroundScale9Enabled) {
+        _backGroundImage->setPreferredSize(_contentSize);
     }
+    
     _backGroundImageTextureSize = _backGroundImage->getContentSize();
-    _backGroundImage->setPosition(Vec2(_contentSize.width/2.0f, _contentSize.height/2.0f));
+    _backGroundImage->setPosition(_contentSize.width/2.0f, _contentSize.height/2.0f);
     updateBackGroundImageRGBA();
 }
 
@@ -661,7 +674,7 @@ void Layout::setBackGroundImageCapInsets(const Rect &capInsets)
     _backGroundImageCapInsets = capInsets;
     if (_backGroundScale9Enabled && _backGroundImage)
     {
-        static_cast<extension::Scale9Sprite*>(_backGroundImage)->setCapInsets(capInsets);
+        _backGroundImage->setCapInsets(capInsets);
     }
 }
     
@@ -706,18 +719,12 @@ void Layout::supplyTheLayoutParameterLackToChild(Widget *child)
 
 void Layout::addBackGroundImage()
 {
-    if (_backGroundScale9Enabled)
-    {
-        _backGroundImage = extension::Scale9Sprite::create();
-        addProtectedChild(_backGroundImage, BACKGROUNDIMAGE_Z, -1);
-        static_cast<extension::Scale9Sprite*>(_backGroundImage)->setPreferredSize(_contentSize);
-    }
-    else
-    {
-        _backGroundImage = Sprite::create();
-        addProtectedChild(_backGroundImage, BACKGROUNDIMAGE_Z, -1);
-    }
-    _backGroundImage->setPosition(Vec2(_contentSize.width/2.0f, _contentSize.height/2.0f));
+    _backGroundImage = Scale9Sprite::create();
+    _backGroundImage->setScale9Enabled(false);
+    
+    addProtectedChild(_backGroundImage, BACKGROUNDIMAGE_Z, -1);
+   
+    _backGroundImage->setPosition(_contentSize.width/2.0f, _contentSize.height/2.0f);
 }
 
 void Layout::removeBackGroundImage()
@@ -948,6 +955,12 @@ Layout::Type Layout::getLayoutType() const
 {
     return _layoutType;
 }
+
+void Layout::forceDoLayout()
+{
+    this->requestDoLayout();
+    this->doLayout();
+}
     
 void Layout::requestDoLayout()
 {
@@ -987,10 +1000,14 @@ LayoutManager* Layout::createLayoutManager()
 
 void Layout::doLayout()
 {
+    
     if (!_doLayoutDirty)
     {
         return;
     }
+    
+    sortAllChildren();
+
     LayoutManager* executant = this->createLayoutManager();
     
     if (executant)
@@ -1034,6 +1051,7 @@ void Layout::copySpecialProperties(Widget *widget)
         setClippingType(layout->_clippingType);
         _loopFocus = layout->_loopFocus;
         _passFocusToChild = layout->_passFocusToChild;
+        _isInterceptTouch = layout->_isInterceptTouch;
     }
 }
     
@@ -1137,7 +1155,7 @@ float Layout::calculateNearestDistance(Widget* baseWidget)
     return distance;
 }
     
-float Layout::calculateFarestDistance(cocos2d::ui::Widget *baseWidget)
+float Layout::calculateFarthestDistance(cocos2d::ui::Widget *baseWidget)
 {
     float distance = -FLT_MAX;
     
@@ -1147,7 +1165,7 @@ float Layout::calculateFarestDistance(cocos2d::ui::Widget *baseWidget)
         Layout *layout = dynamic_cast<Layout*>(node);
         int length;
         if (layout) {
-            length = layout->calculateFarestDistance(baseWidget);
+            length = layout->calculateFarthestDistance(baseWidget);
         }
         else
         {
@@ -1231,7 +1249,7 @@ int Layout::findNearestChildWidgetIndex(FocusDirection direction, Widget* baseWi
     return 0;
 }
     
-int Layout::findFarestChildWidgetIndex(FocusDirection direction, cocos2d::ui::Widget *baseWidget)
+int Layout::findFarthestChildWidgetIndex(FocusDirection direction, cocos2d::ui::Widget *baseWidget)
 {
     if (baseWidget == nullptr || baseWidget == this)
     {
@@ -1256,7 +1274,7 @@ int Layout::findFarestChildWidgetIndex(FocusDirection direction, cocos2d::ui::Wi
                 Layout *layout = dynamic_cast<Layout*>(w);
                 if (layout)
                 {
-                    length = layout->calculateFarestDistance(baseWidget);
+                    length = layout->calculateFarthestDistance(baseWidget);
                 }
                 else
                 {
@@ -1337,11 +1355,11 @@ void Layout::findProperSearchingFunctor(FocusDirection dir, Widget* baseWidget)
             onPassFocusToChild = CC_CALLBACK_2(Layout::findNearestChildWidgetIndex, this);
         }
         else{
-            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarestChildWidgetIndex, this);
+            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarthestChildWidgetIndex, this);
         }
     }else if(dir == FocusDirection::RIGHT){
         if (previousWidgetPosition.x > widgetPosition.x) {
-            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarestChildWidgetIndex, this);
+            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarthestChildWidgetIndex, this);
         }
         else{
             onPassFocusToChild = CC_CALLBACK_2(Layout::findNearestChildWidgetIndex, this);
@@ -1350,13 +1368,13 @@ void Layout::findProperSearchingFunctor(FocusDirection dir, Widget* baseWidget)
         if (previousWidgetPosition.y > widgetPosition.y) {
             onPassFocusToChild = CC_CALLBACK_2(Layout::findNearestChildWidgetIndex, this);
         }else{
-            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarestChildWidgetIndex, this);
+            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarthestChildWidgetIndex, this);
         }
     }else if(dir == FocusDirection::UP){
         if (previousWidgetPosition.y < widgetPosition.y) {
             onPassFocusToChild = CC_CALLBACK_2(Layout::findNearestChildWidgetIndex, this);
         }else{
-            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarestChildWidgetIndex, this);
+            onPassFocusToChild = CC_CALLBACK_2(Layout::findFarthestChildWidgetIndex, this);
         }
     }else{
         CCASSERT(0, "invalid direction!");
@@ -1648,7 +1666,7 @@ bool  Layout::isLastWidgetInContainer(Widget* widget, FocusDirection direction)c
         if (direction == FocusDirection::LEFT) {
             if (index == 0)
             {
-                return true * isLastWidgetInContainer(parent, direction);
+                return isLastWidgetInContainer(parent, direction);
             }
             else
             {
@@ -1658,7 +1676,7 @@ bool  Layout::isLastWidgetInContainer(Widget* widget, FocusDirection direction)c
         if (direction == FocusDirection::RIGHT) {
             if (index == container.size()-1)
             {
-                return true * isLastWidgetInContainer(parent, direction);
+                return isLastWidgetInContainer(parent, direction);
             }
             else
             {
@@ -1681,7 +1699,7 @@ bool  Layout::isLastWidgetInContainer(Widget* widget, FocusDirection direction)c
         {
             if (index == 0)
             {
-                return true * isLastWidgetInContainer(parent, direction);
+                return isLastWidgetInContainer(parent, direction);
                 
             }
             else
@@ -1693,7 +1711,7 @@ bool  Layout::isLastWidgetInContainer(Widget* widget, FocusDirection direction)c
         {
             if (index == container.size() - 1)
             {
-                return true * isLastWidgetInContainer(parent, direction);
+                return isLastWidgetInContainer(parent, direction);
             }
             else
             {
@@ -1754,17 +1772,14 @@ bool  Layout::isWidgetAncestorSupportLoopFocus(Widget* widget, FocusDirection di
         else
         {
             CCASSERT(0, "invalid layout type");
+            return false;
         }
-        
     }
     else
     {
         return isWidgetAncestorSupportLoopFocus(parent, direction);
     }
 }
-
-
-
 
 Widget* Layout::findNextFocusedWidget(FocusDirection direction, Widget* current)
 {

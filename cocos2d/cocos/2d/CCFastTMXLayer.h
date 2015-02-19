@@ -27,14 +27,12 @@ THE SOFTWARE.
 #ifndef __CC_FAST_TMX_LAYER_H__
 #define __CC_FAST_TMX_LAYER_H__
 
-#include "CCTMXObjectGroup.h"
-#include "CCTMXXMLParser.h"
-#include "CCNode.h"
-#include "renderer/CCCustomCommand.h"
-#include "renderer/CCQuadCommand.h"
-
 #include <map>
 #include <unordered_map>
+#include "2d/CCNode.h"
+#include "2d/CCTMXXMLParser.h"
+#include "renderer/CCPrimitiveCommand.h"
+#include "base/CCMap.h"
 
 NS_CC_BEGIN
 
@@ -44,6 +42,8 @@ class TMXTilesetInfo;
 class Texture2D;
 class Sprite;
 struct _ccCArray;
+
+namespace experimental{
 
 /**
  * @addtogroup tilemap_parallax_nodes
@@ -76,20 +76,20 @@ http://www.cocos2d-iphone.org/wiki/doku.php/prog_guide:tiled_maps
 @since v3.2
 */
 
-class CC_DLL FastTMXLayer : public Node
+class CC_DLL TMXLayer : public Node
 {
 public:
     /** creates a FastTMXLayer with an tileset info, a layer info and a map info */
-    static FastTMXLayer * create(TMXTilesetInfo *tilesetInfo, TMXLayerInfo *layerInfo, TMXMapInfo *mapInfo);
+    static TMXLayer * create(TMXTilesetInfo *tilesetInfo, TMXLayerInfo *layerInfo, TMXMapInfo *mapInfo);
     /**
      * @js ctor
      */
-    FastTMXLayer();
+    TMXLayer();
     /**
      * @js NA
      * @lua NA
      */
-    virtual ~FastTMXLayer();
+    virtual ~TMXLayer();
 
     /** returns the tile gid at a given tile coordinate. It also returns the tile flags.
      */
@@ -197,12 +197,12 @@ protected:
     //
     void updateTotalQuads();
     
-    void onDraw(int offset, int count);
-    
+    void onDraw(Primitive* primitive);
     inline int getTileIndexByPos(int x, int y) const { return x + y * (int) _layerSize.width; }
     
     void updateVertexBuffer();
     void updateIndexBuffer();
+    void updatePrimitives();
 protected:
     
     //! name of the layer
@@ -226,7 +226,7 @@ protected:
     /** container for sprite children. map<index, pair<sprite, gid> > */
     std::map<int, std::pair<Sprite*, int> > _spriteContainer;
 
-    GLuint _buffersVBO[2]; //0: vertex, 1: indices
+    //GLuint _buffersVBO; //0: vertex, 1: indices
 
     Size _screenGridSize;
     Rect _screenGridRect;
@@ -241,11 +241,19 @@ protected:
     bool _quadsDirty;
     std::vector<int> _tileToQuadIndex;
     std::vector<V3F_C4B_T2F_Quad> _totalQuads;
-    std::vector<int> _indices;
+    std::vector<GLushort> _indices;
     std::map<int/*vertexZ*/, int/*offset to _indices by quads*/> _indicesVertexZOffsets;
     std::unordered_map<int/*vertexZ*/, int/*number to quads*/> _indicesVertexZNumber;
-    std::vector<CustomCommand> _renderCommands;
+    std::vector<PrimitiveCommand> _renderCommands;
     bool _dirty;
+    
+    VertexBuffer* _vertexBuffer;
+    
+    VertexData* _vData;
+    
+    IndexBuffer* _indexBuffer;
+    
+    Map<int , Primitive*> _primitives;
     
 public:
     /** Possible orientations of the TMX map */
@@ -256,7 +264,7 @@ public:
 
 // end of tilemap_parallax_nodes group
 /// @}
-
+} //end of namespace experimental
 NS_CC_END
 
 #endif //__CCTMX_LAYER2_H__

@@ -15,7 +15,7 @@ void main(void)
 );
 
 const char* cc3D_SkinPositionTex_vert = STRINGIFY(
-attribute vec4 a_position;
+attribute vec3 a_position;
 
 attribute vec4 a_blendWeight;
 attribute vec4 a_blendIndex;
@@ -46,34 +46,32 @@ vec4 getPosition()
         matrixPalette1 += u_matrixPalette[matrixIndex] * blendWeight;
         matrixPalette2 += u_matrixPalette[matrixIndex + 1] * blendWeight;
         matrixPalette3 += u_matrixPalette[matrixIndex + 2] * blendWeight;
+        
+        blendWeight = a_blendWeight[2];
+        if (blendWeight > 0.0)
+        {
+            matrixIndex = int(a_blendIndex[2]) * 3;
+            matrixPalette1 += u_matrixPalette[matrixIndex] * blendWeight;
+            matrixPalette2 += u_matrixPalette[matrixIndex + 1] * blendWeight;
+            matrixPalette3 += u_matrixPalette[matrixIndex + 2] * blendWeight;
+            
+            blendWeight = a_blendWeight[3];
+            if (blendWeight > 0.0)
+            {
+                matrixIndex = int(a_blendIndex[3]) * 3;
+                matrixPalette1 += u_matrixPalette[matrixIndex] * blendWeight;
+                matrixPalette2 += u_matrixPalette[matrixIndex + 1] * blendWeight;
+                matrixPalette3 += u_matrixPalette[matrixIndex + 2] * blendWeight;
+            }
+        }
     }
-    
-    
-    blendWeight = a_blendWeight[2];
-    if (blendWeight > 0.0)
-    {
-        matrixIndex = int(a_blendIndex[2]) * 3;
-        matrixPalette1 += u_matrixPalette[matrixIndex] * blendWeight;
-        matrixPalette2 += u_matrixPalette[matrixIndex + 1] * blendWeight;
-        matrixPalette3 += u_matrixPalette[matrixIndex + 2] * blendWeight;
-    }
-    
-    
-    blendWeight = a_blendWeight[3];
-    if (blendWeight > 0.0)
-    {
-        matrixIndex = int(a_blendIndex[3]) * 3;
-        matrixPalette1 += u_matrixPalette[matrixIndex] * blendWeight;
-        matrixPalette2 += u_matrixPalette[matrixIndex + 1] * blendWeight;
-        matrixPalette3 += u_matrixPalette[matrixIndex + 2] * blendWeight;
-    }
-    
 
     vec4 _skinnedPosition;
-    _skinnedPosition.x = dot(a_position, matrixPalette1);
-    _skinnedPosition.y = dot(a_position, matrixPalette2);
-    _skinnedPosition.z = dot(a_position, matrixPalette3);
-    _skinnedPosition.w = a_position.w;
+    vec4 postion = vec4(a_position, 1.0);
+    _skinnedPosition.x = dot(postion, matrixPalette1);
+    _skinnedPosition.y = dot(postion, matrixPalette2);
+    _skinnedPosition.z = dot(postion, matrixPalette3);
+    _skinnedPosition.w = postion.w;
     
     return _skinnedPosition;
 }
