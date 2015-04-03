@@ -5,24 +5,21 @@
 #include "BasicRUBELayer.h"
 #include "cocostudio/CocoStudio.h"
 #include "../model/Entity.h"
+#include "../model/WorldLayerDef.h"
 
 class WorldActLayer : public BasicRUBELayer
 {
 protected:
-  std::string m_filename;
   int m_act;
 
 public:
   WorldActLayer();
-  static WorldActLayer* create(int act, std::string filename);
-  virtual bool init(int act, std::string filename);
-  virtual std::string getFilename();
-  virtual cocos2d::Point initialWorldOffset();
-  virtual float initialWorldScale();
-  virtual void afterLoadProcessing(b2dJson* json);
-  void removeBodyFromWorld(b2Body* body);
-  virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
-  virtual void onWorldTouchBegan(b2Vec2& position);
+  static WorldActLayer* create (int act, WorldLayerDef* worldLayerDef);
+  virtual bool init (int act, WorldLayerDef* worldLayerDef);
+  virtual void afterLoadProcessing (b2dJson* json);
+  void removeBodyFromWorld (b2Body* body);
+  virtual void onBodyTouchBegan (b2Body* body, b2Fixture* fixture);
+  virtual void onWorldTouchBegan (b2Vec2& position);
 
 };
 

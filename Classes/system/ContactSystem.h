@@ -1,6 +1,6 @@
 #ifndef _CONTACT_SYSTEM_H_
     #define _CONTACT_SYSTEM_H_
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 
 class ContactSystem : public b2ContactListener {
     public:

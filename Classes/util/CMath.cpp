@@ -38,19 +38,19 @@ b2Vec2* CMath::getWorldPointAt(b2Vec2* base, float distance, float angle) {
 }
 
 float CMath::random(float a, float b) {
-    float random = ((float) rand()) / (float) RAND_MAX;
-    float diff = b - a;
-    float r = random * diff;
-    return (a + r);
+  float random = ((float) rand()) / (float) RAND_MAX;
+  float diff = b - a;
+  float r = random * diff;
+  return (a + r);
 };
 
 float CMath::getAngleOffset(float base, float offset) {
-    float angle = fmod(base + offset, M_PI * 2);
-    if (angle > M_PI)
-        angle -= 2 * M_PI;
-    if (angle < -M_PI)
-        angle += 2 * M_PI;
-    return angle;
+  float angle = fmod(base + offset, M_PI * 2);
+  if (angle > M_PI)
+    angle -= 2 * M_PI;
+  if (angle < -M_PI)
+    angle += 2 * M_PI;
+  return angle;
 };
 
 bool CMath::linesIntersect(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {

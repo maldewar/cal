@@ -2,7 +2,7 @@
 #define BOX2DDEBUGDRAW_H
 
 #include "cocos2d.h"
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 
 struct b2AABB;
 
@@ -22,7 +22,7 @@ public:
 	void DrawSolidPolygon(const b2Vec2* aVertices, int32 aVertexCount, const b2Color& aColor);
 	void DrawCircle(const b2Vec2& aCenter, float32 aRadius, const b2Color& aColor);
 	void DrawSolidCircle(const b2Vec2& aCenter, float32 aRadius, const b2Vec2& aAxis, const b2Color& aColor);
-  void DrawParticles(const b2Vec2 *centers_old, float32 radius, const b2ParticleColor *colors, int32 count);
+  //void DrawParticles(const b2Vec2 *centers_old, float32 radius, const b2ParticleColor *colors, int32 count);
 	void DrawSegment(const b2Vec2& aP1, const b2Vec2& aP2, const b2Color& aColor);
 	void DrawTransform(const b2Transform& aXf);
 	void DrawPoint(const b2Vec2& aP, float32 aSize, const b2Color& aColor);

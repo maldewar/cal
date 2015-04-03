@@ -3,7 +3,7 @@
 
 #include <string>
 #include "cocos2d.h"
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 #include "Entity.h"
 
 class ImageNode : public cocos2d::Node

@@ -33,7 +33,8 @@ public:
   virtual LayerDef* getLayerDef(Json::Value& jLayerDef);
   virtual WorldLayerDef * getWorldLayerDef(Json::Value& jLayerDef);
   virtual BgLayerDef* getBgLayerDef(Json::Value& jLayerDef);
-  virtual WorldLevelLayer* getWorldLevelLayer(WorldLayerDef* worldLayerDef);
+  virtual WorldLevelLayer* getWorldLevelLayer(WorldLevelScene* parent,
+                                              WorldLayerDef* worldLayerDef);
   virtual WorldActLayer* getWorldActLayer(int act,
                                           WorldLayerDef* worldLayerDef);
   virtual BackgroundLayer* getBackgroundLayer(BgLayerDef* bgLayerDef);

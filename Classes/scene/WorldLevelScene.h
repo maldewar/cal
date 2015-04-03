@@ -40,8 +40,12 @@ protected:
   LevelSceneDef* m_levelSceneDef;
   bool m_paused;
   bool m_debug;
-  float m_gravityAngle;
+  static float m_gravityAngle;
   static b2Vec2 m_gravity;
+  static b2Vec2 m_rightNormal;
+  static b2Vec2 m_leftNormal;
+  static float m_gravityCos;
+  static float m_gravitySin;
   bool m_gravityAngleRotatesWorld;
   int m_ctrl;
 
@@ -59,19 +63,33 @@ public:
   virtual void pause(bool pause);
   virtual void togglePause();
   virtual void toggleDebug();
-  virtual void addWorldLevelLayer(WorldLevelLayer* worldLevelLayer, int index);
+  virtual void onLayerAdded(BaseLayer* layer, LayerDef* layerDef);
   virtual void setGravityAngle(float angle);
-  virtual float getGravityAngle();
+  static float getGravityAngle();
   static b2Vec2 getGravity();
+  static b2Vec2 getRightNormal();
+  static b2Vec2 getLeftNormal();
+  static float getGravityCos();
+  static float getGravitySin();
   virtual bool gravityAngleRotatesWorld();
   virtual void selectCtrl(int ctrl, Entity* entity);
   virtual bool isDebugEnable();
   virtual void enableDebug(bool debug);
   virtual void onExit() override;
   virtual WorldLevelLayer* getWorldLevelLayer();
-  // Converts a position in screen pixels to a location in the physics world.
+  /**
+   * Converts a position in screen pixels
+   * to a location in the physics world.
+   * @param screenPos Position on the screen.
+   * @return Position on the world.
+   */
   virtual b2Vec2 screenToWorld(cocos2d::Point screenPos);
-  // Converts a location in the physics world to a position in screen pixels.
+  /**
+   * Converts a location in the physics world
+   * to a position in screen pixelsa
+   * @param worldPos Position on the world.
+   * @return Position on the screen.
+   */
   virtual cocos2d::Point worldToScreen(b2Vec2 worldPos);
 
   virtual void onBeginCtrl(WorldLevelCtrlLayer* ctrlLayer);
@@ -86,6 +104,15 @@ public:
 
   SceneDef* getSceneDef(std::string filename);
   BaseLayer* getWorldLayer(WorldLayerDef* worldLayerDef);
+
+  void moveCameraTo(float worldX,
+    float worldY,
+    float duration = 0,
+    BaseLayer::TweenEq eq = BaseLayer::TweenEq::Linear,
+    BaseLayer::TweenEasing easing = BaseLayer::TweenEasing::In);
+
+private:
+  void updateGravityValues();
 
 };
 

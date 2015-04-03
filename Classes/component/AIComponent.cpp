@@ -7,6 +7,9 @@ float AIComponent::s_afoot_angular_velocity_tolerance = 7.0f;
 //static float s_afoot_linear_velocity_tolerance = 5.0f;
 
 AIComponent::AIComponent() {
+  m_disturbedDuration = 0.3;
+  m_disturbedLapse = m_disturbedDuration;
+
   m_afoot_timeout = 0;
   m_afoot_marked = false;
   m_state = AI_STATE_LOOSE;
@@ -64,18 +67,33 @@ void AIComponent::update(float dt) {
       if (m_afoot_timeout > s_afoot_timeout) {
         if (abs(m_body->GetAngularVelocity()) <= s_afoot_angular_velocity_tolerance) {
           setState(AI_STATE_AFOOT);
-          //m_afoot_marked = false;
+          m_afoot_marked = false;
         } else {
           setSubstate(AI_SUBSTATE_ROLL);
         }
       }
     }
+  } else {
+    // STATE AFOOT
+    if (m_cmd && m_disturbedLapse >= m_disturbedDuration) {
+      m_cmd->update(dt, m_body);
+    } else {
+      m_disturbedLapse += dt;
+    }
   }
   // TODO: get angle from gravity
-  if (m_touchGround && (m_lastPosition->x != m_body->GetPosition().x || m_lastPosition->y != m_body->GetPosition().y)) {
-    float angle = CMath::getAngleOffset(CMath::getAngle(m_lastPosition->x, m_lastPosition->y, m_body->GetPosition().x, m_body->GetPosition().y), M_PI_2);
-    float distance = CMath::getDistance(m_lastPosition->x, m_lastPosition->y, m_body->GetPosition().x, m_body->GetPosition().y);
-    if (distance > 0.001f) {
+  if (m_touchGround && (m_lastPosition->x != m_body->GetPosition().x ||
+      m_lastPosition->y != m_body->GetPosition().y)) {
+    float angle = CMath::getAngleOffset(CMath::getAngle(m_lastPosition->x,
+                                                        m_lastPosition->y,
+                                                        m_body->GetPosition().x,
+                                                        m_body->GetPosition().y),
+                                        M_PI_2);
+    float distance = CMath::getDistance(m_lastPosition->x,
+                                        m_lastPosition->y,
+                                        m_body->GetPosition().x,
+                                        m_body->GetPosition().y);
+    if (distance > 0.0001f) {
       if (m_rightDirection && angle < 0) {
         onDirectionChange(false);
       } else if (!m_rightDirection && angle > 0) {
@@ -90,24 +108,25 @@ void AIComponent::update(float dt) {
       cancelTween();
     }
   }
+  /*
   if (m_state == AI_STATE_AFOOT && m_substate == AI_SUBSTATE_STILL) {
     b2Vec2 vel = m_body->GetLinearVelocity();
     float desiredVel = 0.09f;
-    /*
-    float velChange = desiredVel - vel.x;
-    float force = m_body->GetMass() * velChange / (1/60.0); //f = mv/t
-    m_body->ApplyForce( b2Vec2(force,0), m_body->GetWorldCenter(), true);*/
+    //float velChange = desiredVel - vel.x;
+    //float force = m_body->GetMass() * velChange / (1/60.0); //f = mv/t
+    //m_body->ApplyForce( b2Vec2(force,0), m_body->GetWorldCenter(), true);
     float velChange = desiredVel - vel.x;
     float impulse = m_body->GetMass() * velChange; //disregard time factor
     m_body->ApplyLinearImpulse( b2Vec2(impulse,0), m_body->GetWorldCenter(), true);
   }
+  */
   m_lastPosition->x = m_body->GetPosition().x;
   m_lastPosition->y = m_body->GetPosition().y;
 
   //Execute Command
-  if (m_cmd) {
-    m_cmd->Update(dt, m_body);
-  }
+  //if (m_cmd) {
+  //  m_cmd->Update(dt, m_body);
+  //}
 }
 
 void AIComponent::setState(int state) {
@@ -143,7 +162,6 @@ void AIComponent::setSubstate(int substate) {
       setTween(m_substate_stand_duration, AI_SUBSTATE_STILL);
       break;
     case AI_SUBSTATE_STILL:
-      resetPlan();
       cancelTween();
       break;
     case AI_SUBSTATE_WALK:
@@ -175,22 +193,43 @@ void AIComponent::onDirectionChange(bool isRight) {
   m_rightDirection = isRight;
 }
 
-void AIComponent::command(AIComponentCmd *cmd) {
+void AIComponent::pushCommand(AIComponentCmd *cmd) {
   m_cmd = cmd;
+  m_cmds.push(cmd);
+}
+
+AIComponentCmd* AIComponent::popCommand() {
+  AIComponentCmd* lastCmd = nullptr;
+  if (m_cmds.size() > 0) {
+    lastCmd = m_cmds.top();
+    m_cmds.pop();
+    if (m_cmds.size() == 0) {
+      m_cmd = nullptr;
+    } else {
+      m_cmd = m_cmds.top();
+    }
+  }
+  return lastCmd;
+}
+
+void AIComponent::disturb() {
+  if (m_cmd) {
+    m_cmd->correct();
+  }
+  m_disturbedLapse = 0;
+}
+
+void AIComponent::commandWander() {
+  AIComponentWanderCmd* cmd = new AIComponentWanderCmd();
+  pushCommand(cmd);
+}
+
+void AIComponent::commandWander(b2Body* target) {
+}
+
+void AIComponent::commandWander(b2Vec2* target) {
 }
 
 void AIComponent::setSubstateStandDuration(float duration) {
   m_substate_stand_duration = duration;
-}
-
-void AIComponent::resetPlan() {
-  // TODO
-}
-
-void AIComponent::makePlan(int targetType) {
-  // TODO
-}
-
-void AIComponent::executePlan() {
-  // TODO
 }

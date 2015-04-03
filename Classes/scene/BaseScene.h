@@ -7,6 +7,7 @@
 #include "../layer/BaseLayer.h"
 #include "../model/SceneDef.h"
 #include "../model/WorldLayerDef.h"
+class BaseLayer;
 
 class BaseScene : public cocos2d::Scene
 {
@@ -16,9 +17,13 @@ protected:
   std::vector<BaseLayer*> m_layers;
   int m_topIndex;
   int m_bottomIndex;
-  bool m_translationKeysEnabled;
-  bool m_scalingKeysEnabled;
-  bool m_rotationKeysEnabled;
+  bool m_keysEnabled;
+  bool m_translateKeysEnabled;
+  bool m_scaleKeysEnabled;
+  bool m_rotateKeysEnabled;
+  bool m_translateTouchEnabled;
+  bool m_scaleTouchEnabled;
+  bool m_rotateTouchEnabled;
   bool m_rightKey;
   bool m_leftKey;
   bool m_upKey;
@@ -38,9 +43,12 @@ public:
   BaseScene(void);
   virtual bool init(std::string filename);
   virtual void update(float dt);
+  void setCtrlEnabled(bool isCtrlEnabled);
+  void translateCallback(float x, float y, BaseLayer* baseLayer);
+  void rotationCallback(float angle, BaseLayer* baseLayer);
+  void scaleCallback(float scale, BaseLayer* baseLayer);
   int getTopLayerIndex();
   int getBottomLayerIndex();
-
   virtual void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode,
                             cocos2d::Event* event);
   virtual void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode,

@@ -3,7 +3,7 @@
 
 #include <string>
 #include "cocos2d.h"
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 #include "2d/CCNode.h"
 #include "../manager/ConfigurationManager.h"
 #include "../layer/WorldLevelLayer.h"
@@ -72,6 +72,8 @@ public:
      * Entity is selected.
      */
     virtual void select();
+    virtual float getSkeletonScale();
+    virtual float getGroundOffset();
 };
 
 #endif // __ENTITY_NODE_H__

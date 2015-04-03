@@ -2,11 +2,13 @@
 #include "../manager/UnitManager.h"
 #include "../factory/BodyFactory.h"
 
+#include <spine/spine-cocos2dx.h>
+
 Unit::Unit() : Entity(), ContactComponent(), AIComponent() {
-  m_armature = nullptr;
+  m_skeletonNode = nullptr;
   m_isLost = false;
-  m_width = 0.15f;
-  m_height = 0.15f;
+  m_width = 0.3f;
+  m_height = 0.3f;
   setSubstateStandDuration(0.67f);
 }
 
@@ -57,12 +59,15 @@ void Unit::remove(bool isLost) {
 }
 
 bool Unit::init(void) {
-  m_armature = cocostudio::Armature::create("unit");
-  if (m_armature) {
+  m_skeletonNode = spine::SkeletonAnimation::createWithFile("skeletons/unit/skeleton.json",
+                                                            "unit/skeleton.atlas");
+  if (m_skeletonNode) {
+    randomSkin();
     setAnimation(UNIT_ANIM_FALL);
     scheduleUpdate();
-    addChild(m_armature);
-    setScale(PX_TO_M);
+    addChild(m_skeletonNode);
+    m_skeletonNode->setPosition(cocos2d::Point(0,getGroundOffset()));
+    setScale(getSkeletonScale());
     return true;
   }
   return false;
@@ -132,13 +137,28 @@ void Unit::onSubstateChange(int substate) {
 void Unit::onDirectionChange(bool isRight) {
   AIComponent::onDirectionChange(isRight);
   if (isRight) {
-    m_armature->setScaleX(1);
+    m_skeletonNode->setScaleX(1);
   } else {
-    m_armature->setScaleX(-1);
+    m_skeletonNode->setScaleX(-1);
   }
 }
 
 void Unit::setAnimation(int animation) {
-  m_armature->getAnimation()->playWithIndex(animation);
+  m_skeletonNode->setAnimation(0, "still", true);
+  //m_skeletonNode->setSkin("calavera_a");
   m_animation = animation;
+}
+
+void Unit::randomSkin() {
+  int skinIndex = 0 + (rand() % (int)(3 - 0 + 1));
+  switch(skinIndex) {
+   case 1:
+      m_skeletonNode->setSkin("calavera_b");
+      break;
+   case 2:
+      m_skeletonNode->setSkin("calavera_c");
+      break;
+   default:
+      m_skeletonNode->setSkin("calavera_a");
+  }
 }

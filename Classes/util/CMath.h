@@ -2,8 +2,9 @@
     #define _CMATH_H_
 
 #include <string>
-#include <Box2D/Box2D.h>
 #include "cocos2d.h"
+#include "Box2D/Box2D.h"
+
 /**
  * Constant for degrees to radians convertion.
  */
@@ -100,6 +101,9 @@ public:
   };
   static inline float getAngle(float x1, float y1, float x2, float y2) {
     return atan2(y2 - y1, x2 - x1);
+  };
+  static inline float getAngle(cocos2d::Vec2 pointA, cocos2d::Vec2 pointB) {
+    return getAngle(pointA.x, pointA.y, pointB.x, pointB.y);
   };
   static inline float getAngle(float xV, float yV, float xA, float yA, float xB, float yB) {
     float dVA = getDistance(xV, yV, xA, yA);

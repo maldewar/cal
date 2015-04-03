@@ -34,8 +34,9 @@
 #include <vector>
 
 #include "cocos2d.h"
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 #include "BaseLayer.h"
+#include "../model/WorldLayerDef.h"
 #include "../util/Box2DDebugDraw.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/CCCustomCommand.h"
@@ -48,44 +49,48 @@ class b2dJson;
 class BasicRUBELayer : public BaseLayer
 {
 protected:
-    b2World* m_world;
-    // Used to draw debug data.
-	  Box2DDebugDraw* m_debugDraw;
-    // Navigation through the world scrolling through the screen.
-    bool m_navigationEnabled;
-    // Used when dragging bodies around.
-    b2MouseJoint* m_mouseJoint;
-    // The other body for the mouse joint (static, no fixtures).
-    b2Body* m_mouseJointGroundBody;
-    // Keep track of which touch started the mouse joint.
-    cocos2d::Touch* m_mouseJointTouch;
+  b2World* m_world;
+  std::string m_filename;
+  // Used to draw debug data.
+  Box2DDebugDraw* m_debugDraw;
+  // Navigation through the world scrolling through the screen.
+  bool m_navigationEnabled;
+  // Used when dragging bodies around.
+  b2MouseJoint* m_mouseJoint;
+  // The other body for the mouse joint (static, no fixtures).
+  b2Body* m_mouseJointGroundBody;
+  // Keep track of which touch started the mouse joint.
+  cocos2d::Touch* m_mouseJointTouch;
 
-    b2Vec2 m_worldCenter;
+  b2Vec2 m_worldCenter;
 
-    bool m_rotating;
-    float m_rotation;
-    float m_rotationOrigin;
-    float m_rotationTarget;
-    float m_cosRotation;
-    float m_sinRotation;
-    bool m_bodyTouchBegan;
-    bool m_worldTouchBegan;
+  bool m_rotating;
+  float m_rotation;
+  float m_rotationOrigin;
+  float m_rotationTarget;
+  float m_cosRotation;
+  float m_sinRotation;
+  bool m_bodyTouchBegan;
+  bool m_worldTouchBegan;
 
-    bool m_transitioning;
-    float m_transitionDuration;
-    float m_transitionLapse;
-    cocos2d::Vec2 m_transitionTemp;
-    cocos2d::Vec2 m_transitionOrigin;
-    cocos2d::Vec2 m_transitionTarget;
+  bool m_transitioning;
+  float m_transitionDuration;
+  float m_transitionLapse;
+  cocos2d::Vec2 m_transitionTemp;
+  cocos2d::Vec2 m_transitionOrigin;
+  cocos2d::Vec2 m_transitionTarget;
 
-    bool m_following;
-    b2Body* m_followingBody;
-    bool m_paused;
+  bool m_following;
+  b2Body* m_followingBody;
+  bool m_paused;
 
-    bool m_debugDrawEnabled;
-    cocos2d::CustomCommand m_customCommand;
-    std::vector<b2ParticleSystem*> m_particleSystems;
-    b2ParticleSystem* _particleSystem;
+  bool m_debugDrawEnabled;
+  cocos2d::CustomCommand m_customCommand;
+  //std::vector<b2ParticleSystem*> m_particleSystems;
+  //b2ParticleSystem* _particleSystem;
+
+  float m_wToPx;
+  float m_pxToW;
 
 protected:
   virtual void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
@@ -99,97 +104,82 @@ protected:
   virtual cocos2d::Vec2 getCenteredPosition(float worldX, float worldY);
   virtual void setCenteredRotation(float rotation);
   virtual void pauseChildrenRecursive(cocos2d::Node* node, bool pause);
+  virtual void setCenter();
         
 public:
-    BasicRUBELayer();
-    virtual ~BasicRUBELayer();
-    static cocos2d::Scene* scene();
-    virtual bool init();
-    virtual void onEnter();
-    virtual void onExit();
-    virtual void setRotation(float degrees) override;
-    CREATE_FUNC(BasicRUBELayer);
-    virtual b2World* getWorld();
-    void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
-    // Override to specify which JSON file to load.
-    virtual std::string getFilename();
-    // Override to set the initial view position.
-    virtual cocos2d::Point initialWorldOffset();
-    // Override to set the initial view scale.
-    virtual float initialWorldScale();
-    virtual void loadWorld();
-    // Override to do something after loading the world (before discarding JSON info)
-    virtual void afterLoadProcessing(b2dJson* json);
-    virtual void clear();
-    // Converts a position in screen pixels to a location in the physics world.
-    virtual b2Vec2 screenToWorld(cocos2d::Point screenPos);
-    // Converts a location in the physics world to a position in screen pixels.
-    virtual cocos2d::Point worldToScreen(b2Vec2 worldPos);
-    virtual void update(float dt);
-    virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) override;
-    
-    virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
-                                cocos2d::Event *unused_event);
-    virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
-                                cocos2d::Event *unused_event);
-    virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches,
-                                cocos2d::Event *unused_event);
-    virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches,
-                                    cocos2d::Event *unused_event);
-    virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
-    virtual void onWorldTouchBegan(b2Vec2& position);
-    virtual void onBodyTouchEnded();
-    virtual void onWorldTouchEnded();
-    // Return the first fixture found under the touch location.
-    b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
-    // Return false from this function to prevent punch zoom and pan.
-    virtual bool allowPinchZoom();
-    virtual bool enableDebugDraw(bool enable);
-    /**
-     * Center the view of the layer to this point.
-     * @param x X world coordinate.
-     * @param y Y world coordinate.
-     * @param time Seconds to transition to the target.
-     */
-    virtual void centerPoint(float x, float y, float time = 0.0f);
-    /**
-     * Centers the view to the center of a body.
-     * @param body Box2D body.
-     * @param time Seconds to transition to the target.
-     */
-    virtual void centerBody(b2Body* body, float time = 0.0f);
-    /**
-     * Transition of the view from an origin to a target point.
-     * @param origin Initial point in world coordinates.
-     * @param target Target point in world coordinates.
-     * @param time Seconds to transition to the target.
-     */
-    virtual void transition(cocos2d::Vec2 origin, cocos2d::Vec2 target, float time);
-    /**
-     * Cancel any ongoing transition.
-     */
-    virtual void cancelTransition();
-    /**
-     * Maintains the view centered around a body.
-     * @param body Box2D body to follow.
-     * @param time Seconds to transition to the target.
-     */
-    virtual void follow(b2Body* body, float time = 0);
-    /**
-     * Cancel any ongoing follow up to a body.
-     */
-    virtual void cancelFollow();
-    virtual bool isNavigationEnabled();
-    virtual void setNavigationEnabled(bool navigationEnabled);
-    virtual void pause(bool pause);
-    virtual bool isPaused();
-
-    virtual bool translate(float x, float y);
-    virtual bool translate(float x, float y, float transitionDuration);
-    virtual bool scale(float factor);
-    virtual bool scale(float factor, float transitionDuration);
-    virtual bool rotate(float angle);
-    virtual bool rotate(float angle, float transitionDuration);
+  BasicRUBELayer();
+  virtual ~BasicRUBELayer();
+  static cocos2d::Scene* scene();
+  virtual bool init(BaseScene* parent, WorldLayerDef* worldLayerDef);
+  virtual void onEnter();
+  virtual void onExit();
+  virtual void setRotation(float degrees) override;
+  virtual b2World* getWorld();
+  // Override to specify which JSON file to load.
+  virtual std::string getFilename();
+  virtual void loadWorld();
+  // Override to do something after loading the world (before discarding JSON info)
+  virtual void afterLoadProcessing(b2dJson* json);
+  virtual void clear();
+  // Converts a position in screen pixels to a location in the physics world.
+  virtual b2Vec2 screenToWorld(cocos2d::Point screenPos);
+  // Converts a location in the physics world to a position in screen pixels.
+  virtual cocos2d::Point worldToScreen(b2Vec2 worldPos);
+  virtual void update(float dt);
+  virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) override;
+  virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
+                              cocos2d::Event *unused_event);
+  virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches,
+                              cocos2d::Event *unused_event);
+  virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches,
+                                  cocos2d::Event *unused_event);
+  virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
+  virtual void onWorldTouchBegan(b2Vec2& position);
+  virtual void onBodyTouchEnded();
+  virtual void onWorldTouchEnded();
+  // Return the first fixture found under the touch location.
+  b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
+  virtual bool enableDebugDraw(bool enable);
+  /**
+   * Center the view of the layer to this point.
+   * @param x X world coordinate.
+   * @param y Y world coordinate.
+   * @param time Seconds to transition to the target.
+   */
+  virtual void centerPoint(float x, float y, float time = 0.0f);
+  /**
+   * Centers the view to the center of a body.
+   * @param body Box2D body.
+   * @param time Seconds to transition to the target.
+   */
+  virtual void centerBody(b2Body* body, float time = 0.0f);
+  /**
+   * Transition of the view from an origin to a target point.
+   * @param origin Initial point in world coordinates.
+   * @param target Target point in world coordinates.
+   * @param time Seconds to transition to the target.
+   */
+  virtual void transition(cocos2d::Vec2 origin, cocos2d::Vec2 target, float time);
+  /**
+   * Cancel any ongoing transition.
+   */
+  virtual void cancelTransition();
+  /**
+   * Maintains the view centered around a body.
+   * @param body Box2D body to follow.
+   * @param time Seconds to transition to the target.
+   */
+  virtual void follow(b2Body* body, float time = 0);
+  /**
+   * Cancel any ongoing follow up to a body.
+   */
+  virtual void cancelFollow();
+  virtual bool isNavigationEnabled();
+  virtual void setNavigationEnabled(bool navigationEnabled);
+  virtual void pause(bool pause);
+  virtual bool isPaused();
+  virtual bool scale(float factor);
+  //virtual bool rotate(float angle);
 
 };
 

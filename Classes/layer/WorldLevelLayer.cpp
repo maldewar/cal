@@ -9,13 +9,13 @@
 #include "../model/Unit.h"
 #include "../factory/BodyFactory.h"
 #include "../factory/EntityFactory.h"
-#include "../system/ContactSystem.h"
+
+#include <spine/spine-cocos2dx.h>
 
 using namespace std;
 using namespace cocos2d;
 
 WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
-  m_isMain = false;
   m_unitCount = 0;
   m_worldScene = nullptr;
   m_controlGrabbed = false;
@@ -27,11 +27,14 @@ WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   BasicRUBELayer::addChild(m_areaLayer, 3);
   BasicRUBELayer::addChild(m_unitLayer, 2);
   BasicRUBELayer::addChild(m_assetLayer, 1);
+  m_contactSystem = nullptr;
+  m_AISystem = nullptr;
 }
 
-WorldLevelLayer* WorldLevelLayer::create(std::string filename) {
+WorldLevelLayer* WorldLevelLayer::create(WorldLevelScene* parent,
+                                         WorldLayerDef* worldLayerDef) {
   WorldLevelLayer* worldLevelLayer = new (std::nothrow) WorldLevelLayer();
-  if (worldLevelLayer && worldLevelLayer->init(filename)) {
+  if (worldLevelLayer && worldLevelLayer->init(parent, worldLayerDef)) {
     worldLevelLayer->autorelease();
     return worldLevelLayer;
   }
@@ -39,140 +42,63 @@ WorldLevelLayer* WorldLevelLayer::create(std::string filename) {
   return nullptr;
 }
 
-bool WorldLevelLayer::init(std::string filename) {
-  m_filename = filename;
-  if (BasicRUBELayer::init()) {
-    setTouchEnabled(false);
+bool WorldLevelLayer::init(WorldLevelScene* parent, WorldLayerDef* worldLayerDef) {
+  m_AISystem = new AISystem(parent->getGravityAngle());
+  if (BasicRUBELayer::init(parent, worldLayerDef)) {
+    cocos2d::log("WorldLevelLayer::init creating contact system.");
+    m_filename = worldLayerDef->getPath();
+    cocos2d::log("WorldLevelLayer::init loading file %s", m_filename.c_str());
     return true;
   }
   return false;
-}
-
-string WorldLevelLayer::getFilename() {
-    return m_filename;
-}
-
-void WorldLevelLayer::setMain(bool isMain) {
-  m_isMain = isMain;
-  setTouchEnabled(m_isMain);
 }
 
 int WorldLevelLayer::getUnitCount() {
   return m_unitCount;
 }
 
-// Override superclass to set different starting offset
-Point WorldLevelLayer::initialWorldOffset()
-{
-    // If you are not sure what to set the starting position as, you can
-    // pan and zoom the scene until you get the right fit, and then set
-    // a breakpoint in the draw or update methods to see what the values
-    // of [self scale] and [self position] are.
-    //
-    // For the images.json scene, I did this on my iPad in landscape (1024x768)
-    // and came up with a value of 475,397 for the position. Since the
-    // offset is measured in pixels, we need to set this as a percentage of
-    // the current screen height instead of a fixed value, to get the same
-    // result on different devices.
-    // 
-    //Size s = Director::getInstance()->getWinSize();
-    //return cocos2d::Vec2(0,0);
-    //return CCPointMake( s.width * (475 / 1024.0), s.height * (397 / 768.0) );
-    // TODO: use cameras
-    return getCenteredPosition(0, 0);
-}
-
-
-// Override superclass to set different starting scale
-float WorldLevelLayer::initialWorldScale()
-{
-    Size s = Director::getInstance()->getWinSize();
-    //return s.height / 35; //screen will be 35 physics units high
-    return s.height/6;
-}
-
-
 // This is called after the Box2D world has been loaded, and while the b2dJson information
 // is still available to do extra loading. Here is where we load the images.
 void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
 {
   BasicRUBELayer::afterLoadProcessing(json);
-    BodyFactory::getInstance()->setWorld(m_world);
-    ContactSystem* contactSystem = new ContactSystem();
-    m_world->SetContactListener(contactSystem);
-    // Process bodies
-    std::vector<b2Body*> b2Bodies;
-    json->getAllBodies(b2Bodies);
-    for (int i = 0; i < b2Bodies.size(); i++) {
-      if (json->hasCustomString(b2Bodies[i], "category")) {
-        std::string category = json->getCustomString(b2Bodies[i], "category");
-        if (category.compare("entry") == 0) {
-          Entry* entry = EntityFactory::getInstance()->getEntry(json, b2Bodies[i]);
-          addChild(entry);
-        } else if (category.compare("exit") == 0) {
-          Exit* exit = EntityFactory::getInstance()->getExit(json, b2Bodies[i]);
-          addChild(exit);
-        }else if (category.compare("unit") == 0) {
-          Unit* unit = EntityFactory::getInstance()->getUnit(json, b2Bodies[i]);
-          addChild(unit);
-        } else if (category.compare("area") == 0) {
-          Area* area = EntityFactory::getInstance()->getArea(json, b2Bodies[i]);
-          addChild(area);
-        } else if (category.compare("gravitron") == 0) {
-          Gravitron* gravitron = EntityFactory::getInstance()->getGravitron(json, b2Bodies[i]);
-          addChild(gravitron);
-        }
-        BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
+  BodyFactory::getInstance()->setWorld(m_world);
+  m_contactSystem = new ContactSystem();
+  m_world->SetContactListener(m_contactSystem);
+  // Process bodies
+  std::vector<b2Body*> b2Bodies;
+  json->getAllBodies(b2Bodies);
+  for (int i = 0; i < b2Bodies.size(); i++) {
+    if (json->hasCustomString(b2Bodies[i], "category")) {
+      std::string category = json->getCustomString(b2Bodies[i], "category");
+      if (category.compare("entry") == 0) {
+        Entry* entry = EntityFactory::getInstance()->getEntry(json, b2Bodies[i]);
+        addChild(entry);
+      } else if (category.compare("exit") == 0) {
+        Exit* exit = EntityFactory::getInstance()->getExit(json, b2Bodies[i]);
+        addChild(exit);
+      }else if (category.compare("unit") == 0) {
+        Unit* unit = EntityFactory::getInstance()->getUnit(json, b2Bodies[i]);
+        addChild(unit);
+      } else if (category.compare("area") == 0) {
+        Area* area = EntityFactory::getInstance()->getArea(json, b2Bodies[i]);
+        addChild(area);
+      } else if (category.compare("gravitron") == 0) {
+        Gravitron* gravitron = EntityFactory::getInstance()->getGravitron(json, b2Bodies[i]);
+        addChild(gravitron);
       }
+      BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
     }
+  }
 
-    /*
-    // fill a vector with all images in the RUBE scene
-    std::vector<b2dJsonImage*> b2dImages;
-    json->getAllImages(b2dImages);
-        
-    // loop through the vector, create Sprites for each image and store them in m_imageInfos
-    for (int i = 0; i < b2dImages.size(); i++) {
-        b2dJsonImage* img = b2dImages[i];
-        
-        log("Loading image: %s", img->file.c_str());
-        
-        // try to load the sprite image, and ignore if it fails
-        Sprite* sprite = Sprite::create(img->file.c_str());
-        if ( ! sprite )
-            continue;
-        
-        // add the sprite to this layer and set the render order
-        addChild(sprite);
-        reorderChild(sprite, img->renderOrder); //watch out - RUBE render order is float but cocos2d uses integer (why not float?)
-        
-        // these will not change during simulation so we can set them now
-        sprite->setFlipX(img->flip);
-        sprite->setColor(ccc3(img->colorTint[0], img->colorTint[1], img->colorTint[2]));
-        sprite->setOpacity(img->colorTint[3]);
-        sprite->setScale(img->scale / sprite->getContentSize().height);
-        
-        // create an info structure to hold the info for this image (body and position etc)
-        ImageInfo* imgInfo = new ImageInfo;
-        imgInfo->sprite = sprite;
-        imgInfo->name = img->name;
-        imgInfo->body = img->body;
-        imgInfo->scale = img->scale;
-        imgInfo->aspectScale = img->aspectScale;
-        imgInfo->angle = img->angle;
-        imgInfo->center = CCPointMake(img->center.x, img->center.y);
-        imgInfo->opacity = img->opacity;
-        imgInfo->flip = img->flip;
-        for (int n = 0; n < 4; n++)
-            imgInfo->colorTint[n] = img->colorTint[n];
-        
-        // add the info for this image to the list
-        m_imageInfos.insert(imgInfo);
-    }
-    
-    // start the images at their current positions on the physics bodies
-    setImagePositionsFromPhysicsBodies();
-    */
+  /*
+  spine::SkeletonAnimation* skeletonNode = spine::SkeletonAnimation::createWithFile("skeleton.json", "skeleton.atlas");
+  skeletonNode->setScale(1/this->getScale());
+  skeletonNode->setAnimation(0, "animation1", true);
+  addChild(skeletonNode);
+  */
+
+  cocos2d::log("WorldLevelLayer::afterLoadProcessing... 4");
 }
 
 void WorldLevelLayer::addChild(Node* node) {
@@ -180,8 +106,11 @@ void WorldLevelLayer::addChild(Node* node) {
   if (entity) {
     entity->setWorldLevelLayer(this);
     if (entity->getType() == ENTITY_TYPE_UNIT) {
+      Unit* unit = static_cast<Unit*>(entity);
+      unit->commandWander();
       m_unitLayer->addChild(node);
       m_unitCount++;
+      m_AISystem->registerComponent("unit" + std::to_string(m_unitCount), unit);
       if (m_isMain) {
         m_worldScene->addUnit(1);
       }
@@ -215,6 +144,11 @@ WorldLevelScene* WorldLevelLayer::getWorldLevelScene() {
   return m_worldScene;
 }
 
+void WorldLevelLayer::setParentScene(BaseScene* parent) {
+  BaseLayer::setParentScene(parent);
+  m_worldScene = static_cast<WorldLevelScene*>(parent);
+}
+
 // This method should undo anything that was done by afterLoadProcessing, and make sure
 // to call the superclass method so it can do the same
 void WorldLevelLayer::clear()
@@ -234,6 +168,7 @@ void WorldLevelLayer::clear()
 // move the images to match the physics body positions
 void WorldLevelLayer::update(float dt)
 {
+  /*
   if (m_deletedEntities.size() > 0) {
     vector<Entity*>::iterator entityIt = m_deletedEntities.begin();
     while (entityIt != m_deletedEntities.end()) {
@@ -252,12 +187,14 @@ void WorldLevelLayer::update(float dt)
       entityIt = m_deletedEntities.erase(entityIt);
     }
   }
+  */
   BasicRUBELayer::update(dt);
 }
 
 // Remove one body and any images is had attached to it from the layer
 void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
 {
+  cocos2d::log("WorldLevelLayer::removeBodyFromWorld...");
   m_world->DestroyBody(body);
   /*
     
@@ -277,6 +214,7 @@ void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
   */
 }
 
+/*
 void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
   BasicRUBELayer::onTouchesBegan(touches, event);
   if (touches.size() == 1) {
@@ -303,8 +241,10 @@ void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches
     return;
   }
 }
+*/
 
 void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
+  cocos2d::log("WorldLevelLayer::onBodyTouchBegan... 1");
   switch(body->GetType()) {
     case b2_staticBody:
       void* bodyUserData;
@@ -348,6 +288,11 @@ void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
 }
 
 void WorldLevelLayer::onWorldTouchBegan(b2Vec2& position) {
+  cocos2d::log("WorldLevelLayer::onWorldTouchBegan... 1");
+}
+
+AISystem* WorldLevelLayer::getAISystem() {
+  return m_AISystem;
 }
 
 void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {

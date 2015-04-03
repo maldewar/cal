@@ -62,6 +62,7 @@ void GravityCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touche
         m_wheelCtrl->cancel();
     } else {
       float angle = CMath::getAngle(m_center->x, m_center->y, screenPos.x, 1080 - screenPos.y);
+      cocos2d::log("angle for gravity: %f", angle);
       m_wheelCtrl->setTargetAngle(angle);
     }
   }
@@ -69,6 +70,12 @@ void GravityCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touche
 
 void GravityCtrlLayer::onBeginCtrlTouch(Entity* entity) {
   replaceState(State::Active);
+  m_scene->setCtrlEnabled(false);
+  m_scene->moveCameraTo(entity->getBody()->GetPosition().x,
+                        entity->getBody()->GetPosition().y,
+                        0.5,
+                        BaseLayer::TweenEq::Quad,
+                        BaseLayer::TweenEasing::Out);
   m_wheelCtrl->show();
 }
 
@@ -78,11 +85,13 @@ void GravityCtrlLayer::onEndCtrlTouch() {
   }
   m_wheelCtrl->hide();
   replaceState(State::Inactive);
+  m_scene->setCtrlEnabled(true);
 }
 
 void GravityCtrlLayer::onCancelCtrlTouch() {
   m_wheelCtrl->hide();
   replaceState(State::Inactive);
+  m_scene->setCtrlEnabled(true);
 }
 
 bool GravityCtrlLayer::checkIsCancelled(cocos2d::Point& screenPosition) {

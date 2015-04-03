@@ -10,7 +10,7 @@
 #ifndef QUERYCALLBACKS_H
 #define QUERYCALLBACKS_H
 
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 
 //
 // TouchDownQueryCallback

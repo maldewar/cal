@@ -3,7 +3,7 @@
 #include "../scene/WorldLevelScene.h"
 
 AIComponentSeekCmd::AIComponentSeekCmd(b2Vec2 *target) : AIComponentCmd() {
-  m_type         = AI_CMD_SEEK;
+  m_type         = Type::Seek;
   m_seeks_body   = false;
   m_target_point = target;
   m_max_speed = 2.0f;
@@ -11,7 +11,7 @@ AIComponentSeekCmd::AIComponentSeekCmd(b2Vec2 *target) : AIComponentCmd() {
 }
 
 AIComponentSeekCmd::AIComponentSeekCmd(b2Body *target) : AIComponentCmd() {
-  m_type        = AI_CMD_SEEK;
+  m_type        = Type::Seek;
   m_seeks_body  = true;
   m_target_body = target;
 }
@@ -24,7 +24,8 @@ void AIComponentSeekCmd::SetMaxForce(float maxForce) {
   m_max_force = maxForce;
 }
 
-void AIComponentSeekCmd::Update(float dt, b2Body *body) {
+void AIComponentSeekCmd::update(float dt, b2Body *body) {
+  /*
   //CCLOG("Updating Seek Cmd target:%f,%f", m_target_point->x, m_target_point->y);
   m_desire = b2Vec2(m_target_point->x, m_target_point->y) - body->GetPosition();
   m_desire.Normalize();
@@ -40,4 +41,5 @@ void AIComponentSeekCmd::Update(float dt, b2Body *body) {
   CCLOG("Gravity x:%f y:%f", WorldLevelScene::getGravity().x, WorldLevelScene::getGravity().y);
   //m_velocity += WorldLevelScene::getGravity();
   body->ApplyForceToCenter(m_velocity, true);
+  */
 }

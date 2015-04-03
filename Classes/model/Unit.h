@@ -2,8 +2,9 @@
 #define __UNIT_NODE_H__
 
 #include "cocos2d.h"
-#include "cocostudio/CocoStudio.h"
-#include <Box2D/Box2D.h>
+#include <spine/spine-cocos2dx.h>
+//#include "cocostudio/CocoStudio.h"
+#include "Box2D/Box2D.h"
 #include "Entity.h"
 #include "../component/ContactComponent.h"
 #include "../component/AIComponent.h"
@@ -18,10 +19,10 @@ const int UNIT_ANIM_STAND_SIDE  = 5;
 class Unit : public Entity, public ContactComponent, public AIComponent
 {
 protected:
-    cocostudio::Armature* m_armature;
-    bool m_isLost;
-    cocos2d::Sprite* m_sprite;
-    int m_animation;
+  spine::SkeletonAnimation* m_skeletonNode;
+  bool m_isLost;
+  cocos2d::Sprite* m_sprite;
+  int m_animation;
 
 public:
     /**
@@ -69,6 +70,7 @@ public:
     virtual void onDirectionChange(bool isRight);
 
     virtual void setAnimation(int animation);
+    virtual void randomSkin();
 };
 
 #endif // __UNIT_NODE_H__

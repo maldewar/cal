@@ -7,9 +7,13 @@ BaseScene::BaseScene() : cocos2d::Scene() {
   m_mainLayer   = nullptr;
   m_topIndex    = 0;
   m_bottomIndex = 0;
-  m_translationKeysEnabled = true;
-  m_rotationKeysEnabled    = true;
-  m_scalingKeysEnabled     = true;
+  m_keysEnabled           = true;
+  m_translateKeysEnabled  = true;
+  m_rotateKeysEnabled     = true;
+  m_scaleKeysEnabled      = true;
+  m_translateTouchEnabled = true;
+  m_scaleTouchEnabled     = true;
+  m_rotateTouchEnabled    = true;
   m_rightKey    = false;
   m_leftKey     = false;
   m_upKey       = false;
@@ -37,6 +41,18 @@ bool BaseScene::init(std::string filename) {
   m_sceneDef = getSceneDef(filename);
   if (m_sceneDef == nullptr)
     return false;
+  m_translateKeysEnabled  = m_sceneDef->isTranslateEnabled();
+  m_translateTouchEnabled = m_sceneDef->isTranslateEnabled();
+  m_rotateKeysEnabled     = m_sceneDef->isRotateEnabled();
+  m_rotateTouchEnabled    = m_sceneDef->isRotateEnabled();
+  m_scaleKeysEnabled      = m_sceneDef->isScaleEnabled();
+  m_scaleTouchEnabled     = m_sceneDef->isScaleEnabled();
+
+  this->ignoreAnchorPointForPosition(false);
+  this->setContentSize(cocos2d::Size(1920, 1080));
+  //this->setScale(0.45);
+  this->setAnchorPoint(cocos2d::Point(0.5, 0.5));
+  this->setPosition(cocos2d::Vec2(1920/2, 1080/2));
 
   // Add layers
   bool layerAdded = false;
@@ -47,24 +63,30 @@ bool BaseScene::init(std::string filename) {
     if (layerDef->isEnabled()) {
       switch(layerDef->getType()) {
         case LAYER_TYPE_WORLD: {
+          cocos2d::log("BaseScene::init sceneFile:%s, getting world layer.", filename.c_str());
           WorldLayerDef* worldLayerDef = static_cast<WorldLayerDef*>(layerDef);
           baseLayer = getWorldLayer(worldLayerDef);
           layerAdded = true;
           break;
         }
         case LAYER_TYPE_BG: {
+          cocos2d::log("BaseScene::init sceneFile:%s, getting background layer.", filename.c_str());
           BgLayerDef* bgLayerDef = static_cast<BgLayerDef*>(layerDef);
           baseLayer = SceneFactory::getInstance()->getBackgroundLayer(bgLayerDef);
           layerAdded = true;
           break;
         }
       }
-      if (layerDef->isMain()) {
-        baseLayer->setIsMain(true);
+      if (baseLayer->isMain()) {
+        // TODO: validate to have only one MAIN layer
         m_mainLayer = baseLayer;
       }
     }
     if (layerAdded) {
+      baseLayer->setTranslateTouchEnabled(m_translateTouchEnabled);
+      baseLayer->setRotateTouchEnabled(m_rotateTouchEnabled);
+      baseLayer->setScaleTouchEnabled(m_scaleTouchEnabled);
+      baseLayer->setParentScene(this);
       addChild(baseLayer, layerDef->getIndex());
       layerIndex = layerDef->getIndex();
       onLayerAdded(baseLayer, layerDef);
@@ -72,9 +94,19 @@ bool BaseScene::init(std::string filename) {
         m_bottomIndex = layerIndex;
       if (layerIndex > m_topIndex)
         m_topIndex = layerIndex;
+      m_layers.push_back(baseLayer);
     }
   }
   scheduleUpdate();
+  if (m_mainLayer) {
+    m_mainLayer->scale(m_sceneDef->getCameraZoom());
+    /*
+    cocos2d::log("BaseScene::init translate(1920, 1080, 2000);");
+    m_mainLayer->translate(1920, 1080, 2);
+    m_mainLayer->rotate(M_PI_2, 2.5);
+    m_mainLayer->scale(2, 2.8);
+    */
+  }
   return true;
 }
 
@@ -102,6 +134,7 @@ void BaseScene::update(float dt) {
     }
   }
   if (m_zoomInKey || m_zoomOutKey) {
+    cocos2d::log("!! zoom in or out key pressed.");
     if (m_mainLayer) {
       float m_scaleDelta = 0;
       if (m_zoomInKey)
@@ -133,6 +166,36 @@ void BaseScene::update(float dt) {
   }
 }
 
+void BaseScene::setCtrlEnabled(bool isCtrlEnabled) {
+  if (m_mainLayer)
+    m_mainLayer->setTouchEnabled(isCtrlEnabled);
+  m_keysEnabled = isCtrlEnabled;
+}
+
+void BaseScene::translateCallback(float x, float y, BaseLayer* baseLayer) {
+  for (auto layer : m_layers) {
+    if (!layer->isMain()) {
+      layer->translateCallback(x, y, baseLayer);
+    }
+  }
+}
+
+void BaseScene::rotationCallback(float angle, BaseLayer* baseLayer) {
+  for (auto layer : m_layers) {
+    if (!layer->isMain()) {
+      layer->rotationCallback(angle, baseLayer);
+    }
+  }
+}
+
+void BaseScene::scaleCallback(float scale, BaseLayer* baseLayer) {
+  for (auto layer : m_layers) {
+    if (!layer->isMain()) {
+      layer->scaleCallback(scale, baseLayer);
+    }
+  }
+}
+
 int BaseScene::getTopLayerIndex() {
   return m_topIndex;
 }
@@ -142,8 +205,7 @@ int BaseScene::getBottomLayerIndex() {
 }
 
 void BaseScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) {
-  CCLOG("Key with keycode %d pressed", keyCode);
-  if (m_translationKeysEnabled) {
+  if (m_keysEnabled && m_translateKeysEnabled) {
     switch(keyCode) {
       case cocos2d::EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
       case cocos2d::EventKeyboard::KeyCode::KEY_KP_RIGHT:
@@ -163,19 +225,22 @@ void BaseScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
         break;
     }
   }
-  if (m_scalingKeysEnabled) {
+  // TODO: String.fromCharCode(keyCode), not accurately reading + -
+  if (m_keysEnabled && m_scaleKeysEnabled) {
     switch(keyCode) {
-      case cocos2d::EventKeyboard::KeyCode::KEY_PLUS:
-      case cocos2d::EventKeyboard::KeyCode::KEY_KP_PLUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_PLUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_KP_PLUS:
+      case cocos2d::EventKeyboard::KeyCode::KEY_3:
         m_zoomInKey = true; return;
         break;
-      case cocos2d::EventKeyboard::KeyCode::KEY_MINUS:
-      case cocos2d::EventKeyboard::KeyCode::KEY_KP_MINUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_MINUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_KP_MINUS:
+      case cocos2d::EventKeyboard::KeyCode::KEY_4:
         m_zoomOutKey = true; return;
         break;
     }
   }
-  if (m_rotationKeysEnabled) {
+  if (m_keysEnabled && m_rotateKeysEnabled) {
     switch(keyCode) {
       case cocos2d::EventKeyboard::KeyCode::KEY_1:
         m_rotateCCWKey = true; return;
@@ -189,7 +254,7 @@ void BaseScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 
 void BaseScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) {
   CCLOG("Key with keycode %d released", keyCode);
-  if (m_translationKeysEnabled) {
+  if (m_translateKeysEnabled) {
     switch(keyCode) {
       case cocos2d::EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
       case cocos2d::EventKeyboard::KeyCode::KEY_KP_RIGHT:
@@ -217,21 +282,23 @@ void BaseScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         break;
     }
   }
-  if (m_scalingKeysEnabled) {
+  if (m_scaleKeysEnabled) {
     switch(keyCode) {
-      case cocos2d::EventKeyboard::KeyCode::KEY_PLUS:
-      case cocos2d::EventKeyboard::KeyCode::KEY_KP_PLUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_PLUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_KP_PLUS:
+      case cocos2d::EventKeyboard::KeyCode::KEY_3:
         m_scalingFactor = 0;
         m_zoomInKey = false; return;
         break;
-      case cocos2d::EventKeyboard::KeyCode::KEY_MINUS:
-      case cocos2d::EventKeyboard::KeyCode::KEY_KP_MINUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_MINUS:
+      //case cocos2d::EventKeyboard::KeyCode::KEY_KP_MINUS:
+      case cocos2d::EventKeyboard::KeyCode::KEY_4:
         m_scalingFactor = 0;
         m_zoomOutKey = false; return;
         break;
     }
   }
-  if (m_rotationKeysEnabled) {
+  if (m_rotateKeysEnabled) {
     switch(keyCode) {
       case cocos2d::EventKeyboard::KeyCode::KEY_1:
         m_rotatingFactor = 0;

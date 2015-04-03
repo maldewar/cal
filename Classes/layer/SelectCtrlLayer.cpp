@@ -39,11 +39,13 @@ bool SelectCtrlLayer::init(WorldLevelScene* scene) {
 }
 
 void SelectCtrlLayer::update(float dt) {
+  /*
   WorldLevelCtrlLayer::update(dt);
   if (m_state == State::Active) {
     m_selectCtrl->setRotation(m_selectCtrl->getRotation() + 0.7f);
     m_cursorCtrl->setRotation(m_cursorCtrl->getRotation() + 2.0f);
   }
+  */
 }
 
 void SelectCtrlLayer::playAnimationIn(int state) {
@@ -60,7 +62,10 @@ void SelectCtrlLayer::playAnimationOut(int state) {
   }
 }
 
-void SelectCtrlLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event){
+void SelectCtrlLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
+                                     cocos2d::Event *unused_event) {
+  //TODO: crashes because of raycast
+  /*
   Touch* touch = touches[0];
   Point screenPos = touch->getLocation();
   m_cursorCtrl->setPosition(screenPos);
@@ -68,9 +73,12 @@ void SelectCtrlLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
   m_rayCastTool->RayCast(m_scene->getWorldLevelLayer()->getWorld(),
                          worldPos.x, worldPos.y,
                          m_scene->getGravityAngle());
+                         */
 }
 
-void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event){
+void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
+                                     cocos2d::Event *unused_event) {
+  /*
   Touch* touch = touches[0];
   Point screenPos = touch->getLocation();
   m_cursorCtrl->setPosition(screenPos);
@@ -78,9 +86,11 @@ void SelectCtrlLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches
   m_rayCastTool->RayCast(m_scene->getWorldLevelLayer()->getWorld(),
                          worldPos.x, worldPos.y,
                          m_scene->getGravityAngle());
+                         */
 }
 
 void SelectCtrlLayer::onBeginCtrlTouch(Entity* entity) {
+  /*
   m_units.clear();
   if (entity->getType() == ENTITY_TYPE_UNIT) {
     m_units.push_back((Unit*)entity);
@@ -89,20 +99,25 @@ void SelectCtrlLayer::onBeginCtrlTouch(Entity* entity) {
   m_cursorCtrl->show();
   Point p = m_scene->worldToScreen(m_entity->getBody()->GetPosition());
   m_selectCtrl->setPosition(p);
+  */
 }
 
 void SelectCtrlLayer::onEndCtrlTouch() {
+  /*
   m_selectCtrl->hide();
   m_cursorCtrl->hide();
   m_worldTargetPoint->Set(m_rayCastTool->GetWorldEnd()->x, m_rayCastTool->GetWorldEnd()->y);
   for (auto unit : m_units) {
     unit->command(new AIComponentSeekCmd(CMath::getWorldPointAt(m_worldTargetPoint, -0.15f, m_scene->getGravityAngle())));
   }
+  */
 }
 
 void SelectCtrlLayer::onCancelCtrlTouch() {
+  /*
   m_selectCtrl->hide();
   m_cursorCtrl->hide();
+  */
 }
 
 void SelectCtrlLayer::draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) {

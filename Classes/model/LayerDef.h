@@ -16,7 +16,12 @@ protected:
   int m_index;
   float m_width;
   float m_height;
+  float m_depth;
+  float m_alpha;
   bool m_enabled;
+  bool m_translationEnabled;
+  bool m_rotationEnabled;
+  bool m_scaleEnabled;
 
 public:
     /**
@@ -48,8 +53,18 @@ public:
     virtual void setWidth(float width);
     virtual float getHeight();
     virtual void setHeight(float height);
+    virtual float getDepth();
+    virtual void setDepth(float depth);
+    virtual float getAlpha();
+    virtual void setAlpha(float alpha);
     virtual bool isEnabled();
     virtual void setIsEnabled(bool enabled);
+    virtual bool isTranslationEnabled();
+    virtual void setIsTranslationEnabled(bool isTranslationEnabled);
+    virtual bool isRotationEnabled();
+    virtual void setIsRotationEnabled(bool isRotationEnabled);
+    virtual bool isScaleEnabled();
+    virtual void setIsScaleEnabled(bool isScaleEnabled);
 };
 
 #endif // __LAYER_DEF_H__

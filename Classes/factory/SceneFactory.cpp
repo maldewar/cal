@@ -62,6 +62,7 @@ LevelSceneDef* SceneFactory::getLevelSceneDef(const char* filename) {
 LayerDef* SceneFactory::getLayerDef(Json::Value& jLayerDef) {
   LayerDef *layerDef = new LayerDef();
   if (!buildLayerDef(layerDef, jLayerDef)) {
+    delete layerDef;
     return nullptr;
   }
   return layerDef;
@@ -70,9 +71,11 @@ LayerDef* SceneFactory::getLayerDef(Json::Value& jLayerDef) {
 WorldLayerDef* SceneFactory::getWorldLayerDef(Json::Value& jLayerDef) {
   WorldLayerDef* worldLayerDef = new WorldLayerDef();
   if (!buildLayerDef(worldLayerDef, jLayerDef)) {
+    delete worldLayerDef;
     return nullptr;
   }
   if (!buildWorldLayerDef(worldLayerDef, jLayerDef)) {
+    delete worldLayerDef;
     return nullptr;
   }
   return worldLayerDef;
@@ -81,18 +84,20 @@ WorldLayerDef* SceneFactory::getWorldLayerDef(Json::Value& jLayerDef) {
 BgLayerDef* SceneFactory::getBgLayerDef(Json::Value& jLayerDef) {
   BgLayerDef* bgLayerDef = new BgLayerDef();
   if (!buildLayerDef(bgLayerDef, jLayerDef)) {
+    delete bgLayerDef;
     return nullptr;
   }
   if (!buildBgLayerDef(bgLayerDef, jLayerDef)) {
+    delete bgLayerDef;
     return nullptr;
   }
   return bgLayerDef;
 }
 
-WorldLevelLayer* SceneFactory::getWorldLevelLayer(WorldLayerDef* worldLayerDef) {
+WorldLevelLayer* SceneFactory::getWorldLevelLayer(WorldLevelScene* parent,
+                                                  WorldLayerDef* worldLayerDef) {
   if (worldLayerDef) {
-    WorldLevelLayer* worldLevelLayer = WorldLevelLayer::create(worldLayerDef->getPath());
-    worldLevelLayer->setMain(worldLayerDef->isMain());
+    WorldLevelLayer* worldLevelLayer = WorldLevelLayer::create(parent, worldLayerDef);
     return worldLevelLayer;
   }
   return nullptr;
@@ -100,7 +105,7 @@ WorldLevelLayer* SceneFactory::getWorldLevelLayer(WorldLayerDef* worldLayerDef) 
 
 WorldActLayer* SceneFactory::getWorldActLayer(int act, WorldLayerDef* worldLayerDef) {
   if (worldLayerDef) {
-    WorldActLayer* worldActLayer = WorldActLayer::create(act, worldLayerDef->getPath());
+    WorldActLayer* worldActLayer = WorldActLayer::create(act, worldLayerDef);
     return worldActLayer;
   }
   return nullptr;
@@ -108,7 +113,7 @@ WorldActLayer* SceneFactory::getWorldActLayer(int act, WorldLayerDef* worldLayer
 
 BackgroundLayer* SceneFactory::getBackgroundLayer(BgLayerDef* bgLayerDef) {
   if (bgLayerDef) {
-    BackgroundLayer* backgroundLayer = BackgroundLayer::create(bgLayerDef->getBgType());
+    BackgroundLayer* backgroundLayer = BackgroundLayer::create(bgLayerDef);
     return backgroundLayer;
   }
   return nullptr;
@@ -126,6 +131,13 @@ bool SceneFactory::buildSceneDef(SceneDef* sceneDef,
   // Set base properties
   sceneDef->setId(root.get("id", "").asString());
   sceneDef->setTitle(root.get("title", "").asString());
+  sceneDef->setTranslateEnabled(root.get("translateEnabled", true).asBool());
+  sceneDef->setRotateEnabled(root.get("rotateEnabled", true).asBool());
+  sceneDef->setScaleEnabled(root.get("scaleEnabled", true).asBool());
+  sceneDef->setCameraX(root.get("cameraX", 0).asDouble());
+  sceneDef->setCameraY(root.get("cameraY", 0).asDouble());
+  sceneDef->setCameraZoom(root.get("cameraZoom", 1).asDouble());
+
   // Set layers
   const Json::Value jarrLayerDefs = root["layers"];
   for (Json::ValueIterator itr = jarrLayerDefs.begin(); itr != jarrLayerDefs.end(); itr++) {
@@ -178,20 +190,28 @@ bool SceneFactory::buildLayerDef(LayerDef* layerDef,
   layerDef->setWidth(jLayerDef.get("width", 0.0f).asDouble());
   layerDef->setHeight(jLayerDef.get("height", 0.0f).asDouble());
   layerDef->setIndex(jLayerDef.get("zIndex", 0).asInt());
+  layerDef->setDepth(jLayerDef.get("depth", 1).asDouble());
+  layerDef->setAlpha(jLayerDef.get("alpha", 1).asDouble());
   layerDef->setIsEnabled(jLayerDef.get("enabled", true).asBool());
+  layerDef->setIsTranslationEnabled(jLayerDef.get("translationEnabled", true).asBool());
+  layerDef->setIsRotationEnabled(jLayerDef.get("rotationEnabled", true).asBool());
+  layerDef->setIsScaleEnabled(jLayerDef.get("scaleEnabled", true).asBool());
   return true;
 }
 
 bool SceneFactory::buildWorldLayerDef(WorldLayerDef* worldLayerDef,
                                       Json::Value& jLayerDef) {
   worldLayerDef->setPath(jLayerDef.get("path", "").asString());
-  worldLayerDef->setIsMain(jLayerDef.get("isMain", false).asBool());
   return true;
 }
 
 bool SceneFactory::buildBgLayerDef(BgLayerDef* bgLayerDef,
                                    Json::Value& jLayerDef) {
   bgLayerDef->setBgType(jLayerDef.get("bgType", 0).asInt());
+  bgLayerDef->setColor(jLayerDef.get("color", "00000000").asString());
+  bgLayerDef->setImgPath(jLayerDef.get("img", "").asString());
+  bgLayerDef->setIsImgStretch(jLayerDef.get("imgStretch", false).asBool());
+  bgLayerDef->setImgAlpha(jLayerDef.get("imgAlpha", 1).asDouble());
   return true;
 }
 

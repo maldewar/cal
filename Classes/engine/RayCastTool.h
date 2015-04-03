@@ -1,7 +1,7 @@
 #ifndef _RAYCAST_TOOL_H_
     #define _RAYCAST_TOOL_H_
-#include <Box2D/Box2D.h>
 #include "cocos2d.h"
+//#include "Box2D/Box2D.h"
 #include "../model/Entity.h"
 
 class RayCastTool : public b2RayCastCallback {

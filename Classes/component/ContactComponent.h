@@ -1,7 +1,8 @@
 #ifndef __CONTACT_COMPONENT_H__
 #define __CONTACT_COMPONENT_H__
 
-#include <Box2D/Box2D.h>
+#include "cocos2d.h"
+#include "Box2D/Box2D.h"
 #include "../model/Entity.h"
 
 class ContactComponent

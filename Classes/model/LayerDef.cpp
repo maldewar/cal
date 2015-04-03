@@ -6,7 +6,12 @@ LayerDef::LayerDef() {
   m_index   = 0;
   m_width   = 0;
   m_height  = 0;
+  m_depth   = 1;
+  m_alpha   = 1;
   m_enabled = true;
+  m_translationEnabled = true;
+  m_rotationEnabled    = false;
+  m_scaleEnabled       = false;
 }
 
 LayerDef::~LayerDef() {
@@ -70,10 +75,50 @@ void LayerDef::setHeight(float height) {
   m_height = height;
 }
 
+float LayerDef::getDepth() {
+  return m_depth;
+}
+
+void LayerDef::setDepth(float depth) {
+  m_depth = depth;
+}
+
+float LayerDef::getAlpha() {
+  return m_alpha;
+}
+
+void LayerDef::setAlpha(float alpha) {
+  m_alpha = alpha;
+}
+
 bool LayerDef::isEnabled() {
   return m_enabled;
 }
 
 void LayerDef::setIsEnabled(bool enabled) {
   m_enabled = enabled;
+}
+
+bool LayerDef::isTranslationEnabled() {
+  return m_translationEnabled;
+}
+
+void LayerDef::setIsTranslationEnabled(bool isTranslationEnabled) {
+  m_translationEnabled = isTranslationEnabled;
+}
+
+bool LayerDef::isRotationEnabled() { 
+  return m_rotationEnabled;
+}
+
+void LayerDef::setIsRotationEnabled(bool isRotationEnabled) { 
+  m_rotationEnabled = isRotationEnabled;
+}
+
+bool LayerDef::isScaleEnabled() { 
+  return m_scaleEnabled;
+}
+
+void LayerDef::setIsScaleEnabled(bool isScaleEnabled) { 
+  m_scaleEnabled = isScaleEnabled;
 }

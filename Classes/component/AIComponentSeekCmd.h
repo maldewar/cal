@@ -1,7 +1,7 @@
 #ifndef __AI_COMPONENT_SEEK_CMD_H__
 #define __AI_COMPONENT_SEEK_CMD_H__
 
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 
 #include "AIComponentCmd.h"
 
@@ -24,7 +24,7 @@ public:
   AIComponentSeekCmd(b2Body *target);
   void SetMaxSpeed(float maxSpeed);
   void SetMaxForce(float maxForce);
-  virtual void Update(float dt, b2Body * body);
+  virtual void update(float dt, b2Body * body);
 
 };
 

@@ -3,22 +3,54 @@
   "id": "act_0",
   "title": "[act_0_title]",
   "act": "zero",
+  "translateEnabled": true,
+  "scaleEnabled": true,
+  "rotateEnabled": true,
   "layers": {
     "bg1": {
       "id": "bg1",
       "type": "bg",
       "width": 1920,
-      "height": 1080,
-      "zIndex": -1
+      "height": 2160,
+      "zIndex": 1,
+      "color": "3300FF00",
+      "alpha": 1,
+      "img": "act/bg/nightforest",
+      "imgStretch": true,
+      "imgAlpha": 1,
+      "depth": 0
+    },
+    "bg2": {
+      "id": "bg2",
+      "type": "bg",
+      "width": 2880,
+      "height": 3240,
+      "zIndex": 2,
+      "color": "5500DD44",
+      "alpha": 1,
+      "depth": 0.5
+    },
+    "bg3": {
+      "id": "bg3",
+      "type": "bg",
+      "width": 3840,
+      "height": 4320,
+      "zIndex": 3,
+      "color": "5500CC66",
+      "alpha": 1,
+      //"isMain": true,
+      "depth": 1
     },
     "main": {
+      //"enabled": false,
       "id": "main",
       "type": "world",
-      "width": 1920,
-      "height": 1080,
+      "width": 3840,
+      "height": 4320,
       "isMain": true,
       "path": "conf/act/0/main_0.json",
-      "zIndex": 0
+      "zIndex": 4,
+      "depth": 1
     }
   }
 }

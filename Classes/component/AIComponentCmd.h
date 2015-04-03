@@ -1,7 +1,7 @@
 #ifndef __AI_COMPONENT_CMD_H__
 #define __AI_COMPONENT_CMD_H__
 
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 
 const int AI_CMD_STAY   = 0;
 const int AI_CMD_SEEK  = 1;
@@ -9,8 +9,21 @@ const int AI_CMD_FOLLOW = 2;
 
 class AIComponentCmd
 {
+public:
+  enum Type {
+    Stay,
+    Seek,
+    Follow,
+    Evade,
+    Wander 
+  };
+  enum Walk {
+    Right,
+    Stop,
+    Left
+  };
 protected:
-  int m_type;
+  Type m_type;
 
 public:
   /**
@@ -18,8 +31,16 @@ public:
    */
   AIComponentCmd();
   ~AIComponentCmd(void);
-  int GetType();
-  virtual void Update(float dt, b2Body *body);
+  Type getType();
+  virtual void update(float dt, b2Body *body);
+  virtual void walk(b2Body* body, Walk direction);
+  virtual void correct();
+
+protected:
+  virtual b2Vec2 getDirectionForce(AIComponentCmd::Walk direction,
+                                  float desiredVelocity,
+                                  b2Vec2 currentVelocity,
+                                  float bodyMass);
 
 };
 

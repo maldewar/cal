@@ -16,11 +16,15 @@ private:
   static cocos2d::Size m_largeResource;
   static cocos2d::Size m_fullHDResource;
   static cocos2d::Size m_xFullHDResource;
+  static cocos2d::Size m_4KResource;
+
   static cocos2d::Size m_designResolutionSize;
 
 public:
     AppDelegate();
     virtual ~AppDelegate();
+
+    virtual void initGLContextAttrs();
 
     /**
     @brief    Implement Director and Scene init code here.

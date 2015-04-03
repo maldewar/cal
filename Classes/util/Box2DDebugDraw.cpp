@@ -79,13 +79,12 @@ void Box2DDebugDraw::DrawSolidCircle(const b2Vec2& aCenter, float32 aRadius, con
 }
 
 
-void Box2DDebugDraw::DrawParticles(const b2Vec2 *centers_old, float32 radius, const b2ParticleColor *colors, int32 count) {
 /*
+void Box2DDebugDraw::DrawParticles(const b2Vec2 *centers_old, float32 radius, const b2ParticleColor *colors, int32 count) {
   // normally this is how we'd enable them on desktop OpenGL,
   // but for some reason this is not applying textures, so we use alpha instead
-  glEnable(GL_POINT_SPRITE);
-  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-  */
+  //glEnable(GL_POINT_SPRITE);
+  //glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
   const float particle_size_multiplier = 8;  // no falloff
   const float global_alpha = 0.35f;  // instead of texture
 
@@ -102,7 +101,7 @@ void Box2DDebugDraw::DrawParticles(const b2Vec2 *centers_old, float32 radius, co
   glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, centers);
   glVertexAttrib4f(GLProgram::VERTEX_ATTRIB_TEX_COORDS, 0, 0, 1, 1);
 
-  if (0 /*colors*/)
+  if (0) // colors
   {
     // hack to render with proper alpha on desktop for Testbed
     b2ParticleColor * mcolors = const_cast<b2ParticleColor *>(colors);
@@ -121,6 +120,7 @@ void Box2DDebugDraw::DrawParticles(const b2Vec2 *centers_old, float32 radius, co
   glDrawArrays(GL_POINTS, 0, count);
   CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1,count);
 }
+*/
 
 
 void Box2DDebugDraw::DrawSegment(const b2Vec2& aP1, const b2Vec2& aP2, const b2Color& aColor)

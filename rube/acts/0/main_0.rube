@@ -1,0 +1,417 @@
+
+{
+  "collisionbitplanes" : 
+  {
+    "names" : 
+    [
+      "bitplane1",
+      "bitplane2",
+      "bitplane3",
+      "bitplane4",
+      "bitplane5",
+      "bitplane6",
+      "bitplane7",
+      "bitplane8",
+      "bitplane9",
+      "bitplane10",
+      "bitplane11",
+      "bitplane12",
+      "bitplane13",
+      "bitplane14",
+      "bitplane15",
+      "bitplane16",
+      "bitplane17",
+      "bitplane18",
+      "bitplane19",
+      "bitplane20",
+      "bitplane21",
+      "bitplane22",
+      "bitplane23",
+      "bitplane24",
+      "bitplane25",
+      "bitplane26",
+      "bitplane27",
+      "bitplane28",
+      "bitplane29",
+      "bitplane30",
+      "bitplane31",
+      "bitplane32"
+    ]
+  },
+  "customPropertyDefs" : 
+  [
+    
+    {
+      "class" : "body",
+      "displayName" : "Active",
+      "name" : "active",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Armature",
+      "name" : "armature",
+      "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Level",
+      "name" : "level",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Title",
+      "name" : "title",
+      "type" : "string"
+    }
+  ],
+  "metaworld" : 
+  {
+    "allowSleep" : true,
+    "autoClearForces" : true,
+    "continuousPhysics" : true,
+    "displayOptions" : 
+    {
+      "customLabelsScriptFile" : "/home/waldemar/Projects/Calaveras/rube/scripts/calaverasLabelDisplay.rs",
+      "propertyDisplayFilterScriptFile" : "/home/waldemar/Projects/Calaveras/rube/scripts/calaverasPropertyDisplayFilter.rs"
+    },
+    "exportOptions" : 
+    {
+      "compactCommonFloats" : true,
+      "compactZeroVecs" : true,
+      "extraImagePathRelative" : "/home/waldemar/Projects/Calaveras/Resources/design",
+      "saveFullPathForImages" : false,
+      "saveFullPathForSamplerOutput" : false,
+      "saveImagePathsRelativeToRUBEFile" : false,
+      "saveSamplerOutputPathsRelativeToRUBEFile" : false,
+      "useHumanReadableFloats" : true,
+      "usePrettyPrint" : true
+    },
+    "gravity" : 
+    {
+      "x" : 0,
+      "y" : -10
+    },
+    "metabody" : 
+    [
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 1,
+            "name" : "level"
+          },
+          
+          {
+            "name" : "armature",
+            "string" : ""
+          },
+          
+          {
+            "name" : "category",
+            "string" : "level"
+          },
+          
+          {
+            "name" : "title",
+            "string" : "Test 1"
+          },
+          
+          {
+            "bool" : true,
+            "name" : "active"
+          }
+        ],
+        "fixture" : 
+        [
+          
+          {
+            "id" : 1,
+            "name" : "body_sensor",
+            "sensor" : true,
+            "shapes" : 
+            [
+              
+              {
+                "radius" : 0.2,
+                "type" : "circle"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ 0.0 ],
+              "y" : [ 0.0 ]
+            }
+          }
+        ],
+        "id" : 1,
+        "linearVelocity" : 0,
+        "name" : "level",
+        "position" : 
+        {
+          "x" : -0.9999449253082275,
+          "y" : -0.003445267677307129
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 2,
+            "name" : "level"
+          },
+          
+          {
+            "name" : "armature",
+            "string" : ""
+          },
+          
+          {
+            "name" : "category",
+            "string" : "level"
+          },
+          
+          {
+            "name" : "title",
+            "string" : "Test 2"
+          },
+          
+          {
+            "bool" : true,
+            "name" : "active"
+          }
+        ],
+        "fixture" : 
+        [
+          
+          {
+            "id" : 2,
+            "name" : "body_sensor",
+            "sensor" : true,
+            "shapes" : 
+            [
+              
+              {
+                "radius" : 0.2,
+                "type" : "circle"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ 0.0 ],
+              "y" : [ 0.0 ]
+            }
+          }
+        ],
+        "id" : 2,
+        "linearVelocity" : 0,
+        "name" : "level",
+        "position" : 
+        {
+          "x" : -0.002218842506408691,
+          "y" : 0.9561799764633179
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 3,
+            "name" : "level"
+          },
+          
+          {
+            "name" : "armature",
+            "string" : ""
+          },
+          
+          {
+            "name" : "category",
+            "string" : "level"
+          },
+          
+          {
+            "name" : "title",
+            "string" : "Test 3"
+          },
+          
+          {
+            "bool" : true,
+            "name" : "active"
+          }
+        ],
+        "fixture" : 
+        [
+          
+          {
+            "id" : 3,
+            "name" : "body_sensor",
+            "sensor" : true,
+            "shapes" : 
+            [
+              
+              {
+                "radius" : 0.2,
+                "type" : "circle"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ 0.0 ],
+              "y" : [ 0.0 ]
+            }
+          }
+        ],
+        "id" : 3,
+        "linearVelocity" : 0,
+        "name" : "level",
+        "position" : 
+        {
+          "x" : -0.008909583091735840,
+          "y" : -1.007310032844543
+        },
+        "type" : "static"
+      },
+      
+      {
+        "angle" : 0,
+        "angularVelocity" : 0,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 4,
+            "name" : "level"
+          },
+          
+          {
+            "name" : "armature",
+            "string" : ""
+          },
+          
+          {
+            "name" : "category",
+            "string" : "level"
+          },
+          
+          {
+            "name" : "title",
+            "string" : "Test 4"
+          },
+          
+          {
+            "bool" : true,
+            "name" : "active"
+          }
+        ],
+        "fixture" : 
+        [
+          
+          {
+            "id" : 4,
+            "name" : "body_sensor",
+            "sensor" : true,
+            "shapes" : 
+            [
+              
+              {
+                "radius" : 0.2,
+                "type" : "circle"
+              }
+            ],
+            "vertices" : 
+            {
+              "x" : [ 0.0 ],
+              "y" : [ 0.0 ]
+            }
+          }
+        ],
+        "id" : 4,
+        "linearVelocity" : 0,
+        "name" : "level",
+        "position" : 
+        {
+          "x" : 0.9967758655548096,
+          "y" : -0.008357644081115723
+        },
+        "type" : "static"
+      }
+    ],
+    "metaimage" : 
+    [
+      
+      {
+        "angle" : -0.5410181879997253,
+        "aspectScale" : 1,
+        "center" : 
+        {
+          "x" : -0.2628698348999023,
+          "y" : 0.3996443152427673
+        },
+        "file" : "../../../Resources/design/sprite/assets/pinata/pinata.png",
+        "filter" : 1,
+        "flip" : false,
+        "id" : 1,
+        "name" : "image0",
+        "opacity" : 1,
+        "scale" : 0.8028445839881897
+      },
+      
+      {
+        "angle" : -2.505125522613525,
+        "aspectScale" : 1,
+        "center" : 
+        {
+          "x" : 1.006500005722046,
+          "y" : -0.2406917959451675
+        },
+        "file" : "../../../Resources/design/sprite/assets/pinata/pinata.png",
+        "filter" : 1,
+        "flip" : false,
+        "id" : 2,
+        "name" : "image1",
+        "opacity" : 1,
+        "scale" : 0.3647466003894806
+      },
+      
+      {
+        "aspectScale" : 1,
+        "center" : 
+        {
+          "x" : -0.03651630878448486,
+          "y" : 0.03097605705261230
+        },
+        "file" : "../../../Resources/design/sprite/assets/pinata/pinata.png",
+        "filter" : 1,
+        "flip" : false,
+        "id" : 3,
+        "name" : "image2",
+        "opacity" : 1,
+        "scale" : 1.459523797035217
+      }
+    ],
+    "positionIterations" : 3,
+    "stepsPerSecond" : 60.0,
+    "subStepping" : false,
+    "velocityIterations" : 8,
+    "warmStarting" : true
+  }
+}

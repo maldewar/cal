@@ -67,3 +67,11 @@ void Entity::update(float dt)
 
 void Entity::select() {
 }
+
+float Entity::getSkeletonScale() {
+  return PX_TO_M/2;
+}
+
+float Entity::getGroundOffset() {
+  return DESIGN_HEIGHT * m_height * -0.5;
+}

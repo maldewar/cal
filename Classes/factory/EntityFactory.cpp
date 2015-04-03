@@ -1,4 +1,5 @@
 #include "EntityFactory.h"
+#include "../component/AIComponentWanderCmd.h"
 
 static EntityFactory* s_sharedEntityFactory = nullptr;
 
