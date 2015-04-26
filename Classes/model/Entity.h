@@ -1,8 +1,10 @@
 #ifndef __ENTITY_NODE_H__
 #define __ENTITY_NODE_H__
 
+#include <unordered_map>
 #include <string>
 #include "cocos2d.h"
+#include <spine/spine-cocos2dx.h>
 #include "Box2D/Box2D.h"
 #include "2d/CCNode.h"
 #include "../manager/ConfigurationManager.h"
@@ -17,6 +19,12 @@ const int ENTITY_TYPE_GRAVITRON = 5;
 const int ENTITY_TYPE_IMAGE = 6;
 const int ENTITY_TYPE_IMAGE_BODY = 7;
 const int ENTITY_TYPE_LEVEL = 8;
+const int ENTITY_TYPE_BRANCH = 9;
+const int ENTITY_TYPE_DRAGGABLE = 10;
+
+const int ENTITY_ANIM_STAND = 0;
+const int ENTITY_ANIM_WALK  = 1;
+const int ENTITY_ANIM_FALL  = 2;
 
 class Entity : public cocos2d::Node
 {
@@ -24,56 +32,70 @@ protected:
   std::string m_id;
   WorldLevelLayer* m_worldLayer;
   b2Body* m_body;
+  spine::SkeletonAnimation* m_skeletonNode;
   float m_width;
   float m_height;
+  static std::unordered_map<int, int> m_ids;
+  int m_animation;
 
 public:
-    /**
-     * Class constructor.
-     */
-    Entity(void);
-    /**
-     * Class destructor.
-     */
-    virtual ~Entity(void);
-    virtual void setId(std::string id);
-    virtual std::string getId();
-    /**
-     * Get the identifier for the subclass.
-     * @return Type identifier for the object.
-     */
-    virtual int getType();
-    /**
-     * Set the Box2d body for this entity.
-     * @param body Box2D body object.
-     */
-    virtual void setBody(b2Body* body);
-    /**
-     * Get the Box2D body for this entity.
-     * @return Box2D body object.
-     */
-    virtual b2Body* getBody();
-    /**
-     * Set the world layer for this entity.
-     * @param worldLevelLayer World layer.
-     */
-    virtual void setWorldLevelLayer(WorldLevelLayer* worldLevelLayer);
-    /**
-     * Get the world layer for this entity.
-     * @return World layer.
-     */
-    virtual WorldLevelLayer* getWorldLevelLayer();
-    /**
-     * Override Node update method.
-     * @param dt Time passed from the last update call.
-     */
-    virtual void update(float dt);
-    /**
-     * Entity is selected.
-     */
-    virtual void select();
-    virtual float getSkeletonScale();
-    virtual float getGroundOffset();
+  /**
+   * Class constructor.
+   */
+  Entity(void);
+  /**
+   * Class destructor.
+   */
+  virtual ~Entity(void);
+  virtual void setId(std::string id);
+  virtual std::string getId();
+  /**
+   * Get the identifier for the subclass.
+   * @return Type identifier for the object.
+   */
+  virtual int getType();
+  /**
+   * Set the Box2d body for this entity.
+   * @param body Box2D body object.
+   */
+  virtual void setBody(b2Body* body);
+  /**
+   * Get the Box2D body for this entity.
+   * @return Box2D body object.
+   */
+  virtual b2Body* getBody();
+  /**
+   * Set the world layer for this entity.
+   * @param worldLevelLayer World layer.
+   */
+  virtual void setWorldLevelLayer(WorldLevelLayer* worldLevelLayer);
+  /**
+   * Get the world layer for this entity.
+   * @return World layer.
+   */
+  virtual WorldLevelLayer* getWorldLevelLayer();
+  /**
+   * Override Node update method.
+   * @param dt Time passed from the last update call.
+   */
+  virtual void update(float dt);
+  /**
+   * Entity is selected.
+   */
+  virtual void select();
+  virtual void select(b2Body* body);
+  virtual float getSkeletonScale();
+  virtual float getGroundOffset();
+
+  virtual void onDirectionChange(int direction);
+  virtual void setAnimation(int animation);
+  virtual void randomSkin();
+
+  virtual bool onStartTouchEvent();
+  virtual bool onEndTouchEvent();
+
+protected:
+  void setAutoId();
 };
 
 #endif // __ENTITY_NODE_H__

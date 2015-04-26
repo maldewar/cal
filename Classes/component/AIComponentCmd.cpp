@@ -4,7 +4,8 @@
 #include "../scene/WorldLevelScene.h"
 
 AIComponentCmd::AIComponentCmd() {
-  m_type = Type::Stay;;
+  m_type = Type::Stay;
+  m_animation = 0;
 }
 
 AIComponentCmd::~AIComponentCmd() {
@@ -18,17 +19,26 @@ void AIComponentCmd::update(float dt, b2Body *body) {
 }
 
 void AIComponentCmd::walk(b2Body* body, AIComponentCmd::Walk direction) {
-  body->ApplyLinearImpulse(getDirectionForce(
+  if (direction == Walk::Right || direction == Walk::Left) {
+    body->ApplyLinearImpulse(getDirectionForce(
                              direction,
-                             0.5,
+                             0.1,
                              body->GetLinearVelocity(),
                              body->GetMass()
                            ),
                            body->GetWorldCenter(),
                            true);
+  }
 }
 
 void AIComponentCmd::correct() {
+}
+
+void AIComponentCmd::onDirectionChange(int direction) {
+}
+
+int AIComponentCmd::getAnimation() {
+  return m_animation;
 }
 
 b2Vec2 AIComponentCmd::getDirectionForce(AIComponentCmd::Walk direction,
@@ -50,6 +60,6 @@ b2Vec2 AIComponentCmd::getDirectionForce(AIComponentCmd::Walk direction,
   }
   //b2Vec2 desiredVelocityVec = *CMath::getWorldPointAt(0, 0, desiredVelocity, directionAngle);
   desiredVelocityVec -= currentVelocity;
-  desiredVelocityVec *= bodyMass * 0.5;
+  desiredVelocityVec *= bodyMass * 0.3;
   return desiredVelocityVec;
 }

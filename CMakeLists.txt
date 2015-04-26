@@ -145,6 +145,7 @@ set(GAME_SRC
   Classes/util/IdUtil.cpp
   Classes/util/CppTweener.cpp
   Classes/engine/RayCastTool.cpp
+  Classes/component/DraggableComponent.cpp
   Classes/component/ContactComponent.cpp
   Classes/component/AIComponentCmd.cpp
   Classes/component/AIComponentWanderCmd.cpp
@@ -158,6 +159,7 @@ set(GAME_SRC
   Classes/model/Unit.cpp
   Classes/model/Area.cpp
   Classes/model/Gravitron.cpp
+  Classes/model/DraggableEntity.cpp
   Classes/model/ctrl/WheelCtrl.cpp
   Classes/model/LayerDef.cpp
   Classes/model/WorldLayerDef.cpp
@@ -166,6 +168,7 @@ set(GAME_SRC
   Classes/model/ActSceneDef.cpp
   Classes/model/LevelSceneDef.cpp
   Classes/model/Level.cpp
+  Classes/model/Branch.cpp
   Classes/system/ContactSystem.cpp
   Classes/system/AISystem.cpp
   Classes/layer/BaseLayer.cpp

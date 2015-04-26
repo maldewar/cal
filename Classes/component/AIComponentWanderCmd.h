@@ -47,6 +47,11 @@ private:
    * Probability for moving to the left.
    */
   float m_moveLeftBias;
+  /**
+   * If != 0 tells the next direction to take,
+   * not randomly.
+   */
+  int m_sureNextDirection;
 
 public:
   /**
@@ -59,6 +64,7 @@ public:
   void setMaxSpeed(float maxSpeed);
   void setMaxForce(float maxForce);
   Walk getNextWalk();
+  void onDirectionChange(int direction);
   virtual void update(float dt, b2Body * body);
 
 };

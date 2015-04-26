@@ -2,10 +2,7 @@
 #include "../manager/UnitManager.h"
 #include "../factory/BodyFactory.h"
 
-#include <spine/spine-cocos2dx.h>
-
 Unit::Unit() : Entity(), ContactComponent(), AIComponent() {
-  m_skeletonNode = nullptr;
   m_isLost = false;
   m_width = 0.3f;
   m_height = 0.3f;
@@ -63,7 +60,6 @@ bool Unit::init(void) {
                                                             "unit/skeleton.atlas");
   if (m_skeletonNode) {
     randomSkin();
-    setAnimation(UNIT_ANIM_FALL);
     scheduleUpdate();
     addChild(m_skeletonNode);
     m_skeletonNode->setPosition(cocos2d::Point(0,getGroundOffset()));
@@ -74,6 +70,9 @@ bool Unit::init(void) {
 }
 
 void Unit::update(float dt) {
+  if (AIComponent::m_animation != Entity::m_animation) {
+    setAnimation(AIComponent::m_animation);
+  }
   Entity::update(dt);
   AIComponent::update(dt);
 }
@@ -88,7 +87,7 @@ void Unit::contactStart(b2Body* body, Entity* contactEntity) {
 }
 
 void Unit::contactEnd(b2Body* body, Entity* contactEntity) {
-  if (!hasContact())
+  if (!hasContact() && isAfoot())
     setLoose();
 }
 
@@ -110,6 +109,7 @@ void Unit::onStateChange(int state, int substate) {
 }
 
 void Unit::onSubstateChange(int substate) {
+  /*
   switch(substate) {
     case AI_SUBSTATE_FALL:
       setAnimation(UNIT_ANIM_FALL);
@@ -132,21 +132,29 @@ void Unit::onSubstateChange(int substate) {
       }
       break;
   }
+  */
 }
 
-void Unit::onDirectionChange(bool isRight) {
-  AIComponent::onDirectionChange(isRight);
-  if (isRight) {
-    m_skeletonNode->setScaleX(1);
-  } else {
-    m_skeletonNode->setScaleX(-1);
-  }
+void Unit::onDirectionChange(int direction) {
+  Entity::onDirectionChange(direction);
+  AIComponent::onDirectionChange(direction);
 }
 
 void Unit::setAnimation(int animation) {
-  m_skeletonNode->setAnimation(0, "still", true);
-  //m_skeletonNode->setSkin("calavera_a");
-  m_animation = animation;
+  m_skeletonNode->setBonesToSetupPose();
+  m_skeletonNode->setSlotsToSetupPose();
+  switch(animation) {
+    case ENTITY_ANIM_STAND:
+      m_skeletonNode->setAnimation(0, "still", true);
+      break;
+    case ENTITY_ANIM_WALK:
+      m_skeletonNode->setAnimation(0, "walk", true);
+      break;
+    case ENTITY_ANIM_FALL:
+      m_skeletonNode->setAnimation(0, "fall", true);
+      break;
+  }
+  Entity::setAnimation(animation);
 }
 
 void Unit::randomSkin() {

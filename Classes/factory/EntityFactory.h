@@ -10,6 +10,8 @@
 #include "../model/Area.h"
 #include "../model/Gravitron.h"
 #include "../model/Level.h"
+#include "../model/Branch.h"
+#include "../model/DraggableEntity.h"
 
 class EntityFactory : public cocos2d::Ref
 {
@@ -29,6 +31,8 @@ public:
   virtual Area* getArea(b2dJson* json, b2Body* body);
   virtual Gravitron* getGravitron(b2dJson* json, b2Body* body);
   virtual Level* getLevel(b2dJson* json, b2Body* body);
+  virtual Branch* getBranch(b2dJson* json, b2Body* body);
+  virtual DraggableEntity* getDraggableEntity(b2dJson* json, b2Body* body);
 
 };
 

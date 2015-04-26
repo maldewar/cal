@@ -5,8 +5,6 @@
 #include "../util/QueryCallbacks.h"
 #include "../model/ImageNode.h"
 #include "../model/ImageBody.h"
-#include "../model/Entry.h"
-#include "../model/Unit.h"
 #include "../factory/BodyFactory.h"
 #include "../factory/EntityFactory.h"
 
@@ -71,6 +69,7 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
   for (int i = 0; i < b2Bodies.size(); i++) {
     if (json->hasCustomString(b2Bodies[i], "category")) {
       std::string category = json->getCustomString(b2Bodies[i], "category");
+      cocos2d::log("!!Found body with category: %s", category.c_str());
       if (category.compare("entry") == 0) {
         Entry* entry = EntityFactory::getInstance()->getEntry(json, b2Bodies[i]);
         addChild(entry);
@@ -86,19 +85,37 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
       } else if (category.compare("gravitron") == 0) {
         Gravitron* gravitron = EntityFactory::getInstance()->getGravitron(json, b2Bodies[i]);
         addChild(gravitron);
+      } else if (category.compare("branch") == 0) {
+        if (json->hasCustomString(b2Bodies[i], "m_id")) {
+          Branch* branch = EntityFactory::getInstance()->getBranch(json, b2Bodies[i]);
+          std::string _id = json->getCustomString(b2Bodies[i], "m_id");
+          m_branches.insert(std::make_pair(_id, branch));
+          addChild(branch);
+        }
+      } else if (category.compare("draggable") == 0) {
+        DraggableEntity* draggableEntity = EntityFactory::getInstance()->getDraggableEntity(json, b2Bodies[i]);
+        addChild(draggableEntity);
       }
       BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
     }
   }
-
-  /*
-  spine::SkeletonAnimation* skeletonNode = spine::SkeletonAnimation::createWithFile("skeleton.json", "skeleton.atlas");
-  skeletonNode->setScale(1/this->getScale());
-  skeletonNode->setAnimation(0, "animation1", true);
-  addChild(skeletonNode);
-  */
-
-  cocos2d::log("WorldLevelLayer::afterLoadProcessing... 4");
+  std::vector<b2Joint*> b2Joints;
+  json->getAllJoints(b2Joints);
+  for (int i = 0; i < b2Joints.size(); i++) {
+    if (json->hasCustomString(b2Joints[i], "category")) {
+      std::string category = json->getCustomString(b2Joints[i], "category");
+      if (category.compare("branch") == 0) {
+        if (json->hasCustomString(b2Joints[i], "m_id")) {
+          std::string _id = json->getCustomString(b2Joints[i], "m_id");
+          std::map<std::string, Branch*>::iterator it;
+          it = m_branches.find(_id);
+          if (it != m_branches.end()) {
+            it->second->addJoint((b2RevoluteJoint*)b2Joints[i]);
+          }
+        }
+      }
+    }
+  }
 }
 
 void WorldLevelLayer::addChild(Node* node) {
@@ -110,7 +127,7 @@ void WorldLevelLayer::addChild(Node* node) {
       unit->commandWander();
       m_unitLayer->addChild(node);
       m_unitCount++;
-      m_AISystem->registerComponent("unit" + std::to_string(m_unitCount), unit);
+      m_AISystem->registerComponent(unit->getId(), unit);
       if (m_isMain) {
         m_worldScene->addUnit(1);
       }
@@ -265,8 +282,6 @@ void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
       break;
       break;
     case b2_kinematicBody:
-      CCLOG("Kinematic body touched.");
-      break;
     case b2_dynamicBody:
       void* dynamicBodyUserData;
       dynamicBodyUserData = body->GetUserData();
@@ -277,6 +292,12 @@ void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
             entity->select();
             break;
           case ENTITY_TYPE_GRAVITRON:
+            entity->select();
+            break;
+          case ENTITY_TYPE_BRANCH:
+            entity->select(body);
+            break;
+          case ENTITY_TYPE_DRAGGABLE:
             entity->select();
             break;
         }
@@ -293,6 +314,54 @@ void WorldLevelLayer::onWorldTouchBegan(b2Vec2& position) {
 
 AISystem* WorldLevelLayer::getAISystem() {
   return m_AISystem;
+}
+
+void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
+  if (m_isMain && touches.size() == 1) {
+    m_worldScene->setStartTouch(touches[0]);
+    std::map<std::string, Entity*>::iterator it = m_touchListeners.begin();
+    while (it != m_touchListeners.end()){
+      if (!it->second->onStartTouchEvent()) {
+        it = m_touchListeners.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+  BasicRUBELayer::onTouchesBegan(touches, event);
+}
+
+void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
+  if (m_isMain && touches.size() == 1) {
+    m_worldScene->setEndTouch(touches[0]);
+    std::map<std::string, Entity*>::iterator it = m_touchListeners.begin();
+    while (it != m_touchListeners.end()){
+      if (!it->second->onEndTouchEvent()) {
+        it = m_touchListeners.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+  BasicRUBELayer::onTouchesEnded(touches, event);
+}
+
+bool WorldLevelLayer::addTouchListener(Entity* entity) {
+  std::map<std::string, Entity*>::iterator it = m_touchListeners.find(entity->getId());
+  if (it == m_touchListeners.end()) {
+    m_touchListeners[entity->getId()] = entity;
+    return true;
+  }
+  return false;
+}
+
+bool WorldLevelLayer::removeTouchListener(Entity* entity) {
+  std::map<std::string, Entity*>::iterator it = m_touchListeners.find(entity->getId());
+  if (it != m_touchListeners.end()) {
+    m_touchListeners.erase(it);
+    return true;
+  }
+  return false;
 }
 
 void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {

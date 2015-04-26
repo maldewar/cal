@@ -45,7 +45,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     if(!glview) {
         glview = GLViewImpl::create("Calaveras");
         //glview->setFrameSize(640, 480);
-        glview->setFrameSize(480, 270);
+        //glview->setFrameSize(480, 270);
+        glview->setFrameSize(240, 135);
         //glview->setFrameSize(960, 540);
         director->setOpenGLView(glview);
     }

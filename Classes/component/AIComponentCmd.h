@@ -24,6 +24,7 @@ public:
   };
 protected:
   Type m_type;
+  int m_animation;
 
 public:
   /**
@@ -35,6 +36,8 @@ public:
   virtual void update(float dt, b2Body *body);
   virtual void walk(b2Body* body, Walk direction);
   virtual void correct();
+  virtual void onDirectionChange(int direction);
+  int getAnimation();
 
 protected:
   virtual b2Vec2 getDirectionForce(AIComponentCmd::Walk direction,

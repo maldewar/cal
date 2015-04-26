@@ -21,7 +21,6 @@ BasicRUBELayer::BasicRUBELayer() : BaseLayer() {
   m_world     = NULL;
   m_filename  = "";
   m_debugDraw = NULL;
-  m_navigationEnabled = true;
   m_debugDrawEnabled  = false;
 
   m_worldCenter = b2Vec2(0,0);
@@ -301,66 +300,46 @@ cocos2d::Point BasicRUBELayer::worldToScreen(b2Vec2 worldPos)
 
 // Standard Cocos2d method. Here we make a mouse joint to drag dynamic bodies around.
 void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
-  cocos2d::log("BasicRUBELayer::onTouchesBegan... 1");
   if (touches.size() == 1) {
-    if (m_world) {
-      cocos2d::log("BasicRUBELayer::onTouchesBegan m_world is not null.");
-    }
     Touch *touch = touches[0];
     Point screenPos = touch->getLocation();
     b2Vec2 worldPos = screenToWorld(screenPos);
-    cocos2d::log("BasicRUBELayer::onTouchesBegan... 2");
 
     // Make a small box around the touched point to query for overlapping fixtures
     b2AABB aabb;
     b2Vec2 d(0.001f, 0.001f);
     aabb.lowerBound = worldPos - d;
     aabb.upperBound = worldPos + d;
-    cocos2d::log("BasicRUBELayer::onTouchesBegan... 3");
 
     // Query the world for overlapping fixtures (the TouchDownQueryCallback simply
     // looks for any fixture that contains the touched point)
     TouchDownQueryCallback callback(worldPos);
     m_world->QueryAABB(&callback, aabb);
-    cocos2d::log("BasicRUBELayer::onTouchesBegan... 4");
 
     // Check if we found something, and it was a dynamic body (can't drag static bodies)
     if (callback.m_fixture) {
-      cocos2d::log("BasicRUBELayer::onTouchesBegan... 5");
       m_bodyTouchBegan = true;
       onBodyTouchBegan(callback.m_fixture->GetBody(), callback.m_fixture);
     } else {
-      cocos2d::log("BasicRUBELayer::onTouchesBegan... 6");
       m_worldTouchBegan = true;
-      cocos2d::log("BasicRUBELayer::onTouchesBegan... 7");
       onWorldTouchBegan(worldPos);
-      cocos2d::log("BasicRUBELayer::onTouchesBegan... 8");
     }
   }
-  cocos2d::log("BasicRUBELayer::onTouchesBegan... 9");
 }
 
 // Standard Cocos2d method
 void BasicRUBELayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event)
 {
-  cocos2d::log("BasicRUBELayer::onTouchesEnded... 1");
   Touch *touch = touches[0];
   Point screenPos = touch->getLocation();
-  cocos2d::log("BasicRUBELayer::onTouchesEnded... 2");
   b2Vec2 worldPos = screenToWorld(screenPos);
   if (m_bodyTouchBegan) {
-    cocos2d::log("BasicRUBELayer::onTouchesEnded... 3");
     m_bodyTouchBegan = false;
-    cocos2d::log("BasicRUBELayer::onTouchesEnded... 4");
     onBodyTouchEnded();
-    cocos2d::log("BasicRUBELayer::onTouchesEnded... 5");
   }
   if (m_worldTouchBegan) {
-    cocos2d::log("BasicRUBELayer::onTouchesEnded... 6");
     m_worldTouchBegan = false;
-    cocos2d::log("BasicRUBELayer::onTouchesEnded... 7");
     onWorldTouchEnded();
-    cocos2d::log("BasicRUBELayer::onTouchesEnded... 8");
   }
 }
 
@@ -454,14 +433,6 @@ void BasicRUBELayer::setCenteredRotation(float rotation) {
   setRotation(CC_RADIANS_TO_DEGREES(-rotation));
   Vec2 position = getCenteredPosition(m_worldCenter.x, m_worldCenter.y);
   setPosition(position);
-}
-
-bool BasicRUBELayer::isNavigationEnabled() {
-  return m_navigationEnabled;
-}
-
-void BasicRUBELayer::setNavigationEnabled(bool navigationEnabled) {
-  m_navigationEnabled = navigationEnabled;
 }
 
 void BasicRUBELayer::pause(bool pause) {

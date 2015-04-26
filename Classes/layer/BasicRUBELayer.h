@@ -32,6 +32,7 @@
 //
 
 #include <vector>
+#include <string>
 
 #include "cocos2d.h"
 #include "Box2D/Box2D.h"
@@ -53,8 +54,6 @@ protected:
   std::string m_filename;
   // Used to draw debug data.
   Box2DDebugDraw* m_debugDraw;
-  // Navigation through the world scrolling through the screen.
-  bool m_navigationEnabled;
   // Used when dragging bodies around.
   b2MouseJoint* m_mouseJoint;
   // The other body for the mouse joint (static, no fixtures).
@@ -174,8 +173,6 @@ public:
    * Cancel any ongoing follow up to a body.
    */
   virtual void cancelFollow();
-  virtual bool isNavigationEnabled();
-  virtual void setNavigationEnabled(bool navigationEnabled);
   virtual void pause(bool pause);
   virtual bool isPaused();
   virtual bool scale(float factor);

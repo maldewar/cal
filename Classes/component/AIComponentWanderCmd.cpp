@@ -14,6 +14,7 @@ AIComponentWanderCmd::AIComponentWanderCmd() : AIComponentCmd() {
   m_stayBias      = 0.33;
   m_moveRightBias = 0.33;
   m_moveLeftBias  = 0.33;
+  m_sureNextDirection = 0;
 }
 
 AIComponentWanderCmd::AIComponentWanderCmd(b2Vec2 *target) : AIComponentCmd() {
@@ -39,25 +40,28 @@ void AIComponentWanderCmd::setMaxForce(float maxForce) {
 }
 
 AIComponentCmd::Walk AIComponentWanderCmd::getNextWalk() {
+  if (m_sureNextDirection != 0) {
+    if (m_sureNextDirection > 0) {
+      m_sureNextDirection = 0;
+      return Walk::Right;
+    } else {
+      m_sureNextDirection = 0;
+      return Walk::Left;
+    }
+  }
   float chance      = CMath::random(0, 1);
   float chanceRange = m_stayBias;
-  cocos2d::log("chance: %f", chance);
-  cocos2d::log("chanceRange: %f", chanceRange);
   if (chance < chanceRange) {
     //TODO: get duration based on stay animation.
     m_currentWalkDuration = 2;
-    cocos2d::log("WALK STOP.");
     return Walk::Stop;
   } else {
     //TODO: randomize walking time.
     m_currentWalkDuration = 2;
     chanceRange += m_moveRightBias;
-    cocos2d::log("chanceRange: %f", chanceRange);
     if (chance < chanceRange) {
-      cocos2d::log("WALK RIGHT.");
       return Walk::Right;
     } else {
-      cocos2d::log("WALK LEFT.");
       return Walk::Left;
     }
   }
@@ -70,6 +74,16 @@ void AIComponentWanderCmd::update(float dt, b2Body* body) {
   } else {
     m_currentWalkStatus = getNextWalk();
     m_currentWalkLapse = 0;
+    switch(m_currentWalkStatus) {
+      case Walk::Left:
+      case Walk::Right: {
+        m_animation = ENTITY_ANIM_WALK;
+        break;
+      }
+      default: {
+        m_animation = ENTITY_ANIM_STAND;
+      }
+    }
   }
   //CCLOG("Updating Wander Cmd target:%f,%f", m_target_point->x, m_target_point->y);
   /*
@@ -88,4 +102,16 @@ void AIComponentWanderCmd::update(float dt, b2Body* body) {
   //m_velocity += WorldLevelScene::getGravity();
   body->ApplyForceToCenter(m_velocity, true);
   */
+}
+
+void AIComponentWanderCmd::onDirectionChange( int direction) {
+  if (direction == 0 && (m_currentWalkStatus == Walk::Right || m_currentWalkStatus == Walk::Left)) {
+    if (m_currentWalkStatus == Walk::Right) {
+      m_sureNextDirection = -1;
+    } else {
+      m_sureNextDirection = 1;
+    }
+    m_currentWalkStatus = Walk::Stop;
+    m_animation = ENTITY_ANIM_STAND;
+  }
 }

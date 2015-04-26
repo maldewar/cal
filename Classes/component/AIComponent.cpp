@@ -1,23 +1,27 @@
 #include "AIComponent.h"
 #include "cocos2d.h"
 #include "../util/CMath.h"
+#include "../model/Entity.h"
+#include "../scene/WorldLevelScene.h"
 
 float AIComponent::s_afoot_timeout = 0.1f;
+float AIComponent::s_loose_timeout = 0.0f;
 float AIComponent::s_afoot_angular_velocity_tolerance = 7.0f;
 //static float s_afoot_linear_velocity_tolerance = 5.0f;
 
 AIComponent::AIComponent() {
-  m_disturbedDuration = 0.3;
+  m_disturbedDuration = 0.8;
   m_disturbedLapse = m_disturbedDuration;
 
   m_afoot_timeout = 0;
-  m_afoot_marked = false;
+  m_afoot_marked  = false;
+  m_loose_timeout = 0;
+  m_loose_marked  = false;
   m_state = AI_STATE_LOOSE;
   m_substate = AI_SUBSTATE_FALL;
-  m_body = nullptr;
+  m_body    = nullptr;
   m_canJump = true;
   m_lastPosition = new b2Vec2(0,0);
-  m_rightDirection = true;
   m_touchGround = false;
 
   m_tween          = false;
@@ -26,27 +30,31 @@ AIComponent::AIComponent() {
   m_tweenNextSubstate = 0;
 
   m_cmd = nullptr;
+  m_animation = 0;
+  m_direction = 0;
 }
 
-AIComponent::~AIComponent(){
-}
+AIComponent::~AIComponent() {}
 
 void AIComponent::setBody(b2Body* body) {
   m_body = body;
 }
 
 void AIComponent::setAfoot() {
-  m_afoot_marked = true;
-  m_touchGround = true;
+  m_afoot_marked  = true;
+  m_loose_marked  = false;
+  m_touchGround   = true;
   m_afoot_timeout = 0;
 }
 
 void AIComponent::setLoose() {
   if (m_body) {
-    setState(AI_STATE_LOOSE);
-    m_afoot_marked = false;
-    m_touchGround = false;
-    cancelTween();
+    //setState(AI_STATE_LOOSE);
+    //cancelTween();
+    m_afoot_marked  = false;
+    m_loose_marked  = true;
+    m_touchGround   = false;
+    m_loose_timeout = 0;
   }
 }
 
@@ -75,29 +83,44 @@ void AIComponent::update(float dt) {
     }
   } else {
     // STATE AFOOT
+    if (m_loose_marked) {
+      m_loose_timeout += dt;
+      if (m_loose_timeout > s_loose_timeout) {
+        setState(AI_STATE_LOOSE);
+        cancelTween();
+        m_loose_marked = false;
+      }
+    }
     if (m_cmd && m_disturbedLapse >= m_disturbedDuration) {
       m_cmd->update(dt, m_body);
+      m_animation = m_cmd->getAnimation();
     } else {
       m_disturbedLapse += dt;
     }
   }
   // TODO: get angle from gravity
-  if (m_touchGround && (m_lastPosition->x != m_body->GetPosition().x ||
-      m_lastPosition->y != m_body->GetPosition().y)) {
-    float angle = CMath::getAngleOffset(CMath::getAngle(m_lastPosition->x,
-                                                        m_lastPosition->y,
-                                                        m_body->GetPosition().x,
-                                                        m_body->GetPosition().y),
-                                        M_PI_2);
-    float distance = CMath::getDistance(m_lastPosition->x,
-                                        m_lastPosition->y,
-                                        m_body->GetPosition().x,
-                                        m_body->GetPosition().y);
-    if (distance > 0.0001f) {
-      if (m_rightDirection && angle < 0) {
-        onDirectionChange(false);
-      } else if (!m_rightDirection && angle > 0) {
-        onDirectionChange(true);
+  if (m_touchGround) {
+    if (m_lastPosition->x != m_body->GetPosition().x &&
+        m_lastPosition->y != m_body->GetPosition().y) {
+      float angle = CMath::getAngleOffset(CMath::getAngle(m_lastPosition->x,
+                                                          m_lastPosition->y,
+                                                          m_body->GetPosition().x,
+                                                          m_body->GetPosition().y),
+                                          -WorldLevelScene::getGravityAngle());
+      float distance = CMath::getDistance(m_lastPosition->x,
+                                          m_lastPosition->y,
+                                          m_body->GetPosition().x,
+                                          m_body->GetPosition().y);
+      if (distance > 0.001) {
+        if (m_direction >= 0 && angle < 0) {
+          onDirectionChange(-1);
+        } else if (m_direction <= 0 && angle > 0) {
+          onDirectionChange(1);
+        }
+      }
+    }else {
+      if (m_direction != 0) {
+        onDirectionChange(0);
       }
     }
   }
@@ -122,11 +145,6 @@ void AIComponent::update(float dt) {
   */
   m_lastPosition->x = m_body->GetPosition().x;
   m_lastPosition->y = m_body->GetPosition().y;
-
-  //Execute Command
-  //if (m_cmd) {
-  //  m_cmd->Update(dt, m_body);
-  //}
 }
 
 void AIComponent::setState(int state) {
@@ -141,6 +159,7 @@ void AIComponent::setState(int state) {
       if (m_body) {
         m_body->SetTransform(m_body->GetPosition(), 0);
         m_body->SetFixedRotation(true);
+        // TODO: use global angle
         float angle = atan2(m_body->GetWorld()->GetGravity().y, m_body->GetWorld()->GetGravity().x);
         m_body->SetTransform(m_body->GetPosition(), angle + M_PI_2);
       }
@@ -189,8 +208,11 @@ void AIComponent::onStateChange(int state, int substate) {
 void AIComponent::onSubstateChange(int substate) {
 }
 
-void AIComponent::onDirectionChange(bool isRight) {
-  m_rightDirection = isRight;
+void AIComponent::onDirectionChange(int direction) {
+  m_direction = direction;;
+  if (m_cmd) {
+    m_cmd->onDirectionChange(direction);
+  }
 }
 
 void AIComponent::pushCommand(AIComponentCmd *cmd) {
@@ -213,6 +235,7 @@ AIComponentCmd* AIComponent::popCommand() {
 }
 
 void AIComponent::disturb() {
+  cocos2d::log("Calling AIComponent::disturb()");
   if (m_cmd) {
     m_cmd->correct();
   }
@@ -228,6 +251,10 @@ void AIComponent::commandWander(b2Body* target) {
 }
 
 void AIComponent::commandWander(b2Vec2* target) {
+}
+
+int AIComponent::getAnimation() {
+  return m_animation;
 }
 
 void AIComponent::setSubstateStandDuration(float duration) {

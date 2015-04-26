@@ -82,3 +82,25 @@ Level* EntityFactory::getLevel(b2dJson* json, b2Body* body) {
   level->update(0);
   return level;
 }
+
+Branch* EntityFactory::getBranch(b2dJson* json, b2Body* body) {
+  bool isActive = json->getCustomBool(body, "active", false);
+  Branch* branch = Branch::create(isActive);
+  branch->setAngle(json->getCustomFloat(body, "angle", 0));
+  branch->setTopAngle(json->getCustomFloat(body, "topAngle", 0));
+  branch->setBottomAngle(json->getCustomFloat(body, "bottomAngle", 0));
+  branch->setMotorSpeed(json->getCustomFloat(body, "motorSpeed", 0));
+  branch->setBody(body);
+  branch->update(0);
+  return branch;
+}
+
+DraggableEntity* EntityFactory::getDraggableEntity(b2dJson* json, b2Body* body) {
+  bool isActive = json->getCustomBool(body, "active", false);
+  DraggableEntity* draggableEntity = DraggableEntity::create(isActive);
+  draggableEntity->setPinX(json->getCustomFloat(body, "draggablePinX", 0));
+  draggableEntity->setPinY(json->getCustomFloat(body, "draggablePinY", 0));
+  draggableEntity->setBody(body);
+  draggableEntity->update(0);
+  return draggableEntity;
+}

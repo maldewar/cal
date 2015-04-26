@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 #include "cocostudio/CocoStudio.h"
-#include <Box2D/Box2D.h>
+#include "Box2D/Box2D.h"
 #include "Entity.h"
 
 const int ENTRY_STATE_CLOSED  = 0;

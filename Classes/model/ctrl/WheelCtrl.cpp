@@ -48,7 +48,7 @@ void WheelCtrl::show(bool ease) {
     if (m_scene->gravityAngleRotatesWorld()) {
       m_armature->setRotation(-CC_RADIANS_TO_DEGREES(-M_PI_2));
     } else {
-      m_armature->setRotation(-CC_RADIANS_TO_DEGREES(m_scene->getGravityAngle()));
+      m_armature->setRotation(-CC_RADIANS_TO_DEGREES(WorldLevelScene::getGravityAngle()));
     }
     if (m_pauseScene) {
       m_scene->pause(true);
@@ -136,7 +136,7 @@ void WheelCtrl::setTargetAngle(float angle) {
   }
   m_armature->setRotation(CC_RADIANS_TO_DEGREES(-angle));
   if (m_scene->gravityAngleRotatesWorld()) {
-    m_targetAngle = angle + m_scene->getGravityAngle() + M_PI_2;
+    m_targetAngle = CMath::wrapPosNegPI(angle + WorldLevelScene::getGravityAngle() + M_PI_2);
   } else {
     m_targetAngle = angle;
   }

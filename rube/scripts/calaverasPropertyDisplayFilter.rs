@@ -35,7 +35,11 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
 
   bool shouldDisplay = true;
   if (propertyName == "category" ||
+    propertyName == "m_id" ||
     propertyName == "material" ||
+    propertyName == "armature" ||
+    propertyName == "level" ||
+    propertyName == "title" ||
     propertyName == "capacity" ||
     propertyName == "interval" ||
     propertyName == "isOpen" ||
@@ -46,7 +50,14 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
     propertyName == "forceMaxAngle" ||
     propertyName == "forceMinAngularImpulse" ||
     propertyName == "forceMaxAngularImpulse" ||
-    propertyName == "active") {
+    propertyName == "active" ||
+    propertyName == "angle" ||
+    propertyName == "topAngle" ||
+    propertyName == "bottomAngle" ||
+    propertyName == "isPositionable" ||
+    propertyName == "draggablePinX" ||
+    propertyName == "draggablePinY" ||
+    propertyName == "isDraggable") {
     shouldDisplay = false;
   }
 
@@ -62,15 +73,15 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   if ( b.getCustomString( 'category' ) == 'entry' ) {
     if (propertyName == "category" ||
         propertyName == "capacity" ||
-      propertyName == "interval" ||
-      propertyName == "isOpen" ||
-      propertyName == "useOpenTimer" ||
-      propertyName == "openTimer" || 
-      propertyName == "forceMinDistance" ||
-      propertyName == "forceMaxDistance" ||
-      propertyName == "forceMaxAngle" ||
-      propertyName == "forceMinAngularImpulse" ||
-      propertyName == "forceMaxAngularImpulse") {
+        propertyName == "interval" ||
+        propertyName == "isOpen" ||
+        propertyName == "useOpenTimer" ||
+        propertyName == "openTimer" || 
+        propertyName == "forceMinDistance" ||
+        propertyName == "forceMaxDistance" ||
+        propertyName == "forceMaxAngle" ||
+        propertyName == "forceMinAngularImpulse" ||
+        propertyName == "forceMaxAngularImpulse") {
       shouldDisplay = true;
     }
   }
@@ -104,6 +115,30 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
     }
   }
 
+  // Branch
+  if ( b.getCustomString( 'category' ) == 'branch' ) {
+    if (propertyName == "category" ||
+        propertyName == "m_id" ||
+        propertyName == "angle" ||
+        propertyName == "topAngle" ||
+        propertyName == "bottomAngle" ||
+        propertyName == "isPositionable" ||
+        propertyName == "isDraggable" ||
+        propertyName == "active") {
+      shouldDisplay = true;
+    }
+  }
+
+  // Branch
+  if ( b.getCustomString( 'category' ) == 'draggable' ) {
+    if (propertyName == "category" ||
+        propertyName == "draggablePinX" ||
+        propertyName == "draggablePinY" ||
+        propertyName == "active") {
+      shouldDisplay = true;
+    }
+  }
+
   return shouldDisplay;
 }
 
@@ -114,11 +149,24 @@ bool shouldDisplayProperty( fixture f, const string& in propertyName ) {
 }
 */
 // ========== Joint property display ==========
-/*
 bool shouldDisplayProperty( joint j, const string& in propertyName ) {
-    return true;
+  bool shouldDisplay = true;
+  if (propertyName == "category" ||
+    propertyName == "m_id") {
+    shouldDisplay = false;
+  }
+
+  // Branch
+  if ( j.getCustomString( 'category' ) == 'branch' ) {
+    if (propertyName == "category" ||
+        propertyName == "m_id") {
+      shouldDisplay = true;
+    }
+  }
+
+  return shouldDisplay;
 }
-*/
+
 // ========== Image property display ==========
 /*
 bool shouldDisplayProperty( image i, const string& in propertyName ) {
