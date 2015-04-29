@@ -53,8 +53,8 @@
 			"name" : "level",
 			"position" : 
 			{
-				"x" : 0.9967758655548096,
-				"y" : -0.008357644081115723
+				"x" : 1.050724983215332,
+				"y" : 0.3594779968261719
 			},
 			"type" : 0
 		},
@@ -107,8 +107,8 @@
 			"name" : "level",
 			"position" : 
 			{
-				"x" : -0.008909583091735840,
-				"y" : -1.007310032844543
+				"x" : 0.4373975992202759,
+				"y" : 0.9103397130966187
 			},
 			"type" : 0
 		},
@@ -161,8 +161,8 @@
 			"name" : "level",
 			"position" : 
 			{
-				"x" : -0.002218842506408691,
-				"y" : 0.9561799764633179
+				"x" : -0.4828574657440186,
+				"y" : 0.8139504194259644
 			},
 			"type" : 0
 		},
@@ -294,7 +294,7 @@
 					0.9110149145126343
 				]
 			},
-			"file" : "sprite/assets/pinata/pinata.pvr",
+			"file" : "sprite/assets/pinata/pinata.png",
 			"filter" : 1,
 			"glDrawElements" : [ 0, 1, 2, 2, 3, 0 ],
 			"glTexCoordPointer" : [ 0.0, 0.0, 1, 0.0, 1, 1, 0.0, 1 ],
@@ -340,7 +340,7 @@
 					-0.2996502518653870
 				]
 			},
-			"file" : "sprite/assets/pinata/pinata.pvr",
+			"file" : "sprite/assets/pinata/pinata.png",
 			"filter" : 1,
 			"glDrawElements" : [ 0, 1, 2, 2, 3, 0 ],
 			"glTexCoordPointer" : [ 0.0, 0.0, 1, 0.0, 1, 1, 0.0, 1 ],
@@ -385,7 +385,7 @@
 					0.7607379555702209
 				]
 			},
-			"file" : "sprite/assets/pinata/pinata.pvr",
+			"file" : "sprite/assets/pinata/pinata.png",
 			"filter" : 1,
 			"glDrawElements" : [ 0, 1, 2, 2, 3, 0 ],
 			"glTexCoordPointer" : [ 0.0, 0.0, 1, 0.0, 1, 1, 0.0, 1 ],

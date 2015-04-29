@@ -41,13 +41,14 @@ void Area::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
   //CHECK_GL_ERROR_DEBUG();
   //glEnable( GL_LINE_SMOOTH );
   //glEnable( GL_POLYGON_SMOOTH );
+  //glLineWidth(2);
 
   float mRatio = 1.0f;
   int maxVertices = 64;
   cocos2d::Point *mVertices = new cocos2d::Point[maxVertices];
   const b2Transform& xf = m_body->GetTransform();
   for (b2Fixture* f = m_body->GetFixtureList(); f; f = f->GetNext()) {
-    const b2Color& color = b2Color(0.1f, 0.1f, 0.1f);
+    const b2Color& color = b2Color(0.3f, 0.1f, 0.1f);
     b2PolygonShape* poly = (b2PolygonShape*)f->GetShape();
     int32 vertexCount = poly->m_count;
     b2Assert(vertexCount <= b2_maxPolygonVertices);
@@ -67,6 +68,6 @@ void Area::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
     
     cocos2d::DrawPrimitives::drawPoly(mVertices, vertexCount, true);
   }
-  CHECK_GL_ERROR_DEBUG();
+  //CHECK_GL_ERROR_DEBUG();
   cocos2d::Director::getInstance()->popMatrix(cocos2d::MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 }

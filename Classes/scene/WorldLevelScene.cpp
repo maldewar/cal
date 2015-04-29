@@ -32,8 +32,10 @@ WorldLevelScene::WorldLevelScene() : BaseScene() {
   m_unitsLost     = 0;
   m_unitsRequired = 0;
 
-  m_startTouch = new cocos2d::Vec2();
-  m_endTouch   = new cocos2d::Vec2();
+  m_startTouchLocation = new cocos2d::Vec2();
+  m_endTouchLocation   = new cocos2d::Vec2();
+  m_startTouch = nullptr;
+  m_endTouch = nullptr;
 }
 
 WorldLevelScene* WorldLevelScene::create(std::string filename) {
@@ -267,22 +269,32 @@ void WorldLevelScene::removeUnit(int count, bool isLost) {
   CCLOG("Unit removed from scene, total: %d", m_unitsInScene);
 }
 
-cocos2d::Vec2* WorldLevelScene::getStartTouch() {
+cocos2d::Vec2* WorldLevelScene::getStartTouchLocation() {
+  return m_startTouchLocation;
+}
+
+cocos2d::Touch* WorldLevelScene::getStartTouch() {
   return m_startTouch;
 }
 
 void WorldLevelScene::setStartTouch(cocos2d::Touch* touch) {
-  m_startTouch->x = touch->getLocation().x;
-  m_startTouch->y = touch->getLocation().y;
+  m_startTouch = touch;
+  m_startTouchLocation->x = touch->getLocation().x;
+  m_startTouchLocation->y = touch->getLocation().y;
 }
 
-cocos2d::Vec2* WorldLevelScene::getEndTouch() {
+cocos2d::Vec2* WorldLevelScene::getEndTouchLocation() {
+  return m_endTouchLocation;
+}
+
+cocos2d::Touch* WorldLevelScene::getEndTouch() {
   return m_endTouch;
 }
 
 void WorldLevelScene::setEndTouch(cocos2d::Touch* touch) {
-  m_endTouch->x = touch->getLocation().x;
-  m_endTouch->y = touch->getLocation().y;
+  m_endTouch = touch;
+  m_endTouchLocation->x = touch->getLocation().x;
+  m_endTouchLocation->y = touch->getLocation().y;
 }
 
 void WorldLevelScene::onBeginCtrl(WorldLevelCtrlLayer* ctrlLayer) {

@@ -43,17 +43,24 @@
   [
     
     {
-      "class" : "joint",
-      "displayName" : "Category",
-      "name" : "category",
-      "type" : "string"
+      "class" : "body",
+      "displayName" : "Force Min Distance",
+      "name" : "forceMinDistance",
+      "type" : "float"
     },
     
     {
       "class" : "body",
-      "displayName" : "Is Open",
-      "name" : "isOpen",
-      "type" : "bool"
+      "displayName" : "Force Max Distance",
+      "name" : "forceMaxDistance",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "joint",
+      "displayName" : "Category",
+      "name" : "category",
+      "type" : "string"
     },
     
     {
@@ -72,6 +79,13 @@
     
     {
       "class" : "body",
+      "displayName" : "Is Open",
+      "name" : "isOpen",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
       "displayName" : "Title",
       "name" : "title",
       "type" : "string"
@@ -81,13 +95,6 @@
       "class" : "body",
       "displayName" : "Bottom Angle",
       "name" : "bottomAngle",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Force Min Distance",
-      "name" : "forceMinDistance",
       "type" : "float"
     },
     
@@ -114,22 +121,8 @@
     
     {
       "class" : "body",
-      "displayName" : "Force Max Distance",
-      "name" : "forceMaxDistance",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
       "displayName" : "Open Timer",
       "name" : "openTimer",
-      "type" : "int"
-    },
-    
-    {
-      "class" : "world",
-      "displayName" : "Background",
-      "name" : "background",
       "type" : "int"
     },
     
@@ -138,6 +131,13 @@
       "displayName" : "Force Min Angular Impulse",
       "name" : "forceMinAngularImpulse",
       "type" : "float"
+    },
+    
+    {
+      "class" : "world",
+      "displayName" : "Background",
+      "name" : "background",
+      "type" : "int"
     },
     
     {
@@ -236,6 +236,27 @@
       "displayName" : "Material",
       "name" : "material",
       "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Pin Y",
+      "name" : "draggablePinY",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Pin X",
+      "name" : "draggablePinX",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Skin",
+      "name" : "skin",
+      "type" : "int"
     }
   ],
   "metaworld" : 
@@ -607,11 +628,16 @@
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
         "customProperties" : 
         [
+          
+          {
+            "int" : 0,
+            "name" : "skin"
+          },
           
           {
             "float" : 0,
@@ -624,7 +650,7 @@
           },
           
           {
-            "float" : 0.5235986709594727,
+            "float" : 0.7853980064392090,
             "name" : "motorSpeed"
           },
           
@@ -640,7 +666,7 @@
           
           {
             "name" : "m_id",
-            "string" : "branch_12"
+            "string" : "branch_13"
           },
           
           {
@@ -664,7 +690,7 @@
           {
             "density" : 0.8,
             "friction" : 0.2,
-            "id" : 14,
+            "id" : 15,
             "name" : "fixture5",
             "shapes" : 
             [
@@ -677,25 +703,24 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4857139885425568,
-                0.4857139885425568,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.4452379941940308,
+                0.4452379941940308,
+                -0.3928569853305817
               ],
               "y" : 
               [
                 -0.1749999970197678,
-                -0.1559520065784454,
-                0.1559520065784454,
+                -0.1597619950771332,
+                0.1597619950771332,
                 0.1749999970197678
               ]
             }
           },
           
           {
-            "density" : 1,
             "friction" : 0.2,
-            "id" : 15,
+            "id" : 16,
             "name" : "body_sensor",
             "restitution" : 0.4,
             "sensor" : true,
@@ -714,28 +739,46 @@
             }
           }
         ],
-        "id" : 12,
+        "id" : 13,
         "linearVelocity" : 0,
         "name" : "body0",
         "position" : 
         {
-          "x" : 0.3817912936210632,
-          "y" : -0.2161844074726105
+          "x" : 0.3457033932209015,
+          "y" : -0.1722826957702637
         },
         "type" : "kinematic"
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 0,
+            "name" : "belongsToIndex"
+          },
+          
+          {
+            "name" : "belongsToCategory",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "belongsToId",
+            "string" : "branch_13"
+          }
+        ],
         "fixture" : 
         [
           
           {
             "density" : 0.7142860293388367,
             "friction" : 0.2,
-            "id" : 16,
+            "id" : 17,
             "name" : "fixture6",
             "shapes" : 
             [
@@ -748,50 +791,68 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4857139885425568,
-                0.4857139885425568,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.4452379941940308,
+                0.4452379941940308,
+                -0.3928569853305817
               ],
               "y" : 
               [
-                -0.1571429967880249,
-                -0.1380950063467026,
-                0.1380950063467026,
-                0.1571429967880249
+                -0.1607140004634857,
+                -0.1454759985208511,
+                0.1454759985208511,
+                0.1607140004634857
               ]
             }
           }
         ],
-        "id" : 13,
+        "id" : 14,
         "linearVelocity" : 0,
-        "massData-I" : 0.01488641276955605,
+        "massData-I" : 0.01222364045679569,
         "massData-center" : 
         {
-          "x" : 0.01874028146266937,
+          "x" : 0.01923899725079536,
           "y" : 0
         },
-        "massData-mass" : 0.1928084194660187,
+        "massData-mass" : 0.1832974404096603,
         "name" : "body1",
         "position" : 
         {
-          "x" : 1.219889044761658,
-          "y" : -0.03650143742561340
+          "x" : 1.098011493682861,
+          "y" : 0.05438762903213501
         },
         "type" : "dynamic"
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 1,
+            "name" : "belongsToIndex"
+          },
+          
+          {
+            "name" : "belongsToCategory",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "belongsToId",
+            "string" : "branch_13"
+          }
+        ],
         "fixture" : 
         [
           
           {
             "density" : 0.6285709738731384,
             "friction" : 0.2,
-            "id" : 17,
+            "id" : 18,
             "name" : "fixture7",
             "shapes" : 
             [
@@ -804,50 +865,68 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4857139885425568,
-                0.4857139885425568,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.4452379941940308,
+                0.4452379941940308,
+                -0.3928569853305817
               ],
               "y" : 
               [
-                -0.1392859965562820,
-                -0.1202379986643791,
-                0.1202379986643791,
-                0.1392859965562820
+                -0.1464290022850037,
+                -0.1311900019645691,
+                0.1311900019645691,
+                0.1464290022850037
               ]
             }
           }
         ],
-        "id" : 14,
+        "id" : 15,
         "linearVelocity" : 0,
-        "massData-I" : 0.01125757675617933,
+        "massData-I" : 0.009544286876916885,
         "massData-center" : 
         {
-          "x" : 0.01738736033439636,
+          "x" : 0.01852308213710785,
           "y" : 0
         },
-        "massData-mass" : 0.1491466313600540,
+        "massData-mass" : 0.1462502926588058,
         "name" : "body2",
         "position" : 
         {
-          "x" : 2.057986974716187,
-          "y" : 0.1431815326213837
+          "x" : 1.850319623947144,
+          "y" : 0.2810579836368561
         },
         "type" : "dynamic"
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 2,
+            "name" : "belongsToIndex"
+          },
+          
+          {
+            "name" : "belongsToCategory",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "belongsToId",
+            "string" : "branch_13"
+          }
+        ],
         "fixture" : 
         [
           
           {
             "density" : 0.5428569912910461,
             "friction" : 0.2,
-            "id" : 18,
+            "id" : 19,
             "name" : "fixture8",
             "shapes" : 
             [
@@ -860,50 +939,68 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4857139885425568,
-                0.4857139885425568,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.4452379941940308,
+                0.4452379941940308,
+                -0.3928569853305817
               ],
               "y" : 
               [
-                -0.1214289963245392,
-                -0.1023809984326363,
-                0.1023809984326363,
-                0.1214289963245392
+                -0.1321430057287216,
+                -0.1169049963355064,
+                0.1169049963355064,
+                0.1321430057287216
               ]
             }
           }
         ],
-        "id" : 15,
+        "id" : 16,
         "linearVelocity" : 0,
-        "massData-I" : 0.008213398046791553,
+        "massData-I" : 0.007247194182127714,
         "massData-center" : 
         {
-          "x" : 0.01560268271714449,
+          "x" : 0.01764402911067009,
           "y" : 0
         },
-        "massData-mass" : 0.1110827177762985,
+        "massData-mass" : 0.1133082956075668,
         "name" : "body3",
         "position" : 
         {
-          "x" : 2.896084547042847,
-          "y" : 0.3228644430637360
+          "x" : 2.602627754211426,
+          "y" : 0.5077282786369324
         },
         "type" : "dynamic"
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 3,
+            "name" : "belongsToIndex"
+          },
+          
+          {
+            "name" : "belongsToCategory",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "belongsToId",
+            "string" : "branch_13"
+          }
+        ],
         "fixture" : 
         [
           
           {
             "density" : 0.4571430087089539,
             "friction" : 0.2,
-            "id" : 19,
+            "id" : 20,
             "name" : "fixture9",
             "shapes" : 
             [
@@ -916,50 +1013,68 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4857139885425568,
-                0.4857139885425568,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.4452379941940308,
+                0.4452379941940308,
+                -0.3928569853305817
               ],
               "y" : 
               [
-                -0.1035709977149963,
-                -0.08452379703521729,
-                0.08452379703521729,
-                0.1035709977149963
+                -0.1178570017218590,
+                -0.1026189997792244,
+                0.1026189997792244,
+                0.1178570017218590
               ]
             }
           }
         ],
-        "id" : 16,
+        "id" : 17,
         "linearVelocity" : 0,
-        "massData-I" : 0.005705381743609905,
+        "massData-I" : 0.005303415004163980,
         "massData-center" : 
         {
-          "x" : 0.01314083021134138,
+          "x" : 0.01653646863996983,
           "y" : 0
         },
-        "massData-mass" : 0.07861591130495071,
+        "massData-mass" : 0.08447080105543137,
         "name" : "body4",
         "position" : 
         {
-          "x" : 3.734182357788086,
-          "y" : 0.5025473833084106
+          "x" : 3.354935884475708,
+          "y" : 0.7343985438346863
         },
         "type" : "dynamic"
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
+        "customProperties" : 
+        [
+          
+          {
+            "int" : 4,
+            "name" : "belongsToIndex"
+          },
+          
+          {
+            "name" : "belongsToCategory",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "belongsToId",
+            "string" : "branch_13"
+          }
+        ],
         "fixture" : 
         [
           
           {
             "density" : 0.3714289963245392,
             "friction" : 0.2,
-            "id" : 20,
+            "id" : 21,
             "name" : "fixture10",
             "shapes" : 
             [
@@ -972,54 +1087,69 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4857139885425568,
-                0.4857139885425568,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.4452390074729919,
+                0.4452390074729919,
+                -0.3928569853305817
               ],
               "y" : 
               [
-                -0.08571430295705795,
-                -0.06666669994592667,
-                0.06666669994592667,
-                0.08571430295705795
+                -0.1035709977149963,
+                -0.08833330124616623,
+                0.08833330124616623,
+                0.1035709977149963
               ]
             }
           }
         ],
-        "id" : 17,
+        "id" : 18,
         "linearVelocity" : 0,
-        "massData-I" : 0.003692322643473744,
+        "massData-I" : 0.00368747953325510,
         "massData-center" : 
         {
-          "x" : 0.009523915126919746,
+          "x" : 0.01509984862059355,
           "y" : 0
         },
-        "massData-mass" : 0.05174735933542252,
+        "massData-mass" : 0.05973849445581436,
         "name" : "body5",
         "position" : 
         {
-          "x" : 4.572280406951904,
-          "y" : 0.6822303533554077
+          "x" : 4.107244014739990,
+          "y" : 0.9610689282417297
         },
         "type" : "dynamic"
       },
       
       {
-        "angle" : 0.2111966609954834,
+        "angle" : 0.2926489114761353,
         "angularVelocity" : 0,
         "awake" : true,
         "customProperties" : 
         [
           
           {
-            "float" : 0.4285714328289032,
+            "int" : 5,
+            "name" : "belongsToIndex"
+          },
+          
+          {
+            "float" : 0.3928571343421936,
             "name" : "draggablePinX"
           },
           
           {
             "float" : 0,
             "name" : "draggablePinY"
+          },
+          
+          {
+            "name" : "belongsToCategory",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "belongsToId",
+            "string" : "branch_13"
           },
           
           {
@@ -1038,7 +1168,7 @@
           {
             "density" : 0.2857140004634857,
             "friction" : 0.2,
-            "id" : 21,
+            "id" : 22,
             "name" : "fixture11",
             "shapes" : 
             [
@@ -1051,18 +1181,24 @@
             {
               "x" : 
               [
-                -0.4285709857940674,
-                0.4285719990730286,
-                0.4285719990730286,
-                -0.4285709857940674
+                -0.3928569853305817,
+                0.3928569853305817,
+                0.3928569853305817,
+                -0.3928569853305817
               ],
-              "y" : [ -0.06785710155963898, -0.05, 0.05, 0.06785710155963898 ]
+              "y" : 
+              [
+                -0.08928570151329041,
+                -0.07500000298023224,
+                0.07500000298023224,
+                0.08928570151329041
+              ]
             }
           },
           
           {
             "friction" : 0.2,
-            "id" : 22,
+            "id" : 23,
             "name" : "draggable_sensor",
             "restitution" : 0.4,
             "sensor" : true,
@@ -1076,25 +1212,25 @@
             ],
             "vertices" : 
             {
-              "x" : [ 0.4285709857940674 ],
+              "x" : [ 0.3928569853305817 ],
               "y" : [ 0.0 ]
             }
           }
         ],
-        "id" : 18,
+        "id" : 19,
         "linearVelocity" : 0,
-        "massData-I" : 0.001801295322366059,
+        "massData-I" : 0.001980909379199147,
         "massData-center" : 
         {
-          "x" : -0.02164447307586670,
+          "x" : -0.01138714049011469,
           "y" : 0
         },
-        "massData-mass" : 0.02886294014751911,
+        "massData-mass" : 0.03688041493296623,
         "name" : "body6",
         "position" : 
         {
-          "x" : 5.410377979278564,
-          "y" : 0.8619133234024048
+          "x" : 4.859552383422852,
+          "y" : 1.187739372253418
         },
         "type" : "dynamic"
       }
@@ -1105,51 +1241,12 @@
       {
         "anchorA" : 
         {
-          "x" : 0.4285709857940674,
+          "x" : 0.3928569853305817,
           "y" : 0
         },
         "anchorB" : 
         {
-          "x" : -0.4285709857940674,
-          "y" : 0
-        },
-        "bodyA" : 12,
-        "bodyB" : 13,
-        "collideConnected" : false,
-        "customProperties" : 
-        [
-          
-          {
-            "name" : "category",
-            "string" : "branch"
-          },
-          
-          {
-            "name" : "m_id",
-            "string" : "branch_12"
-          }
-        ],
-        "enableLimit" : true,
-        "enableMotor" : true,
-        "id" : 6,
-        "lowerLimit" : 0,
-        "maxMotorTorque" : 0,
-        "motorSpeed" : 0,
-        "name" : "joint0",
-        "referenceAngle" : 0,
-        "type" : "revolute",
-        "upperLimit" : 0.4363319873809814
-      },
-      
-      {
-        "anchorA" : 
-        {
-          "x" : 0.4285709857940674,
-          "y" : 0
-        },
-        "anchorB" : 
-        {
-          "x" : -0.4285709857940674,
+          "x" : -0.3928569853305817,
           "y" : 0
         },
         "bodyA" : 13,
@@ -1165,7 +1262,7 @@
           
           {
             "name" : "m_id",
-            "string" : "branch_12"
+            "string" : "branch_13"
           }
         ],
         "enableLimit" : true,
@@ -1174,7 +1271,7 @@
         "lowerLimit" : 0,
         "maxMotorTorque" : 0,
         "motorSpeed" : 0,
-        "name" : "joint1",
+        "name" : "joint0",
         "referenceAngle" : 0,
         "type" : "revolute",
         "upperLimit" : 0.4363319873809814
@@ -1183,12 +1280,12 @@
       {
         "anchorA" : 
         {
-          "x" : 0.4285709857940674,
+          "x" : 0.3928569853305817,
           "y" : 0
         },
         "anchorB" : 
         {
-          "x" : -0.4285709857940674,
+          "x" : -0.3928569853305817,
           "y" : 0
         },
         "bodyA" : 14,
@@ -1204,7 +1301,7 @@
           
           {
             "name" : "m_id",
-            "string" : "branch_12"
+            "string" : "branch_13"
           }
         ],
         "enableLimit" : true,
@@ -1213,7 +1310,7 @@
         "lowerLimit" : 0,
         "maxMotorTorque" : 0,
         "motorSpeed" : 0,
-        "name" : "joint2",
+        "name" : "joint1",
         "referenceAngle" : 0,
         "type" : "revolute",
         "upperLimit" : 0.4363319873809814
@@ -1222,12 +1319,12 @@
       {
         "anchorA" : 
         {
-          "x" : 0.4285709857940674,
+          "x" : 0.3928569853305817,
           "y" : 0
         },
         "anchorB" : 
         {
-          "x" : -0.4285709857940674,
+          "x" : -0.3928569853305817,
           "y" : 0
         },
         "bodyA" : 15,
@@ -1243,7 +1340,7 @@
           
           {
             "name" : "m_id",
-            "string" : "branch_12"
+            "string" : "branch_13"
           }
         ],
         "enableLimit" : true,
@@ -1252,7 +1349,7 @@
         "lowerLimit" : 0,
         "maxMotorTorque" : 0,
         "motorSpeed" : 0,
-        "name" : "joint3",
+        "name" : "joint2",
         "referenceAngle" : 0,
         "type" : "revolute",
         "upperLimit" : 0.4363319873809814
@@ -1261,12 +1358,12 @@
       {
         "anchorA" : 
         {
-          "x" : 0.4285709857940674,
+          "x" : 0.3928569853305817,
           "y" : 0
         },
         "anchorB" : 
         {
-          "x" : -0.4285709857940674,
+          "x" : -0.3928569853305817,
           "y" : 0
         },
         "bodyA" : 16,
@@ -1282,7 +1379,7 @@
           
           {
             "name" : "m_id",
-            "string" : "branch_12"
+            "string" : "branch_13"
           }
         ],
         "enableLimit" : true,
@@ -1291,7 +1388,7 @@
         "lowerLimit" : 0,
         "maxMotorTorque" : 0,
         "motorSpeed" : 0,
-        "name" : "joint4",
+        "name" : "joint3",
         "referenceAngle" : 0,
         "type" : "revolute",
         "upperLimit" : 0.4363319873809814
@@ -1300,12 +1397,12 @@
       {
         "anchorA" : 
         {
-          "x" : 0.4285709857940674,
+          "x" : 0.3928569853305817,
           "y" : 0
         },
         "anchorB" : 
         {
-          "x" : -0.4285709857940674,
+          "x" : -0.3928569853305817,
           "y" : 0
         },
         "bodyA" : 17,
@@ -1321,12 +1418,51 @@
           
           {
             "name" : "m_id",
-            "string" : "branch_12"
+            "string" : "branch_13"
           }
         ],
         "enableLimit" : true,
         "enableMotor" : true,
         "id" : 11,
+        "lowerLimit" : 0,
+        "maxMotorTorque" : 0,
+        "motorSpeed" : 0,
+        "name" : "joint4",
+        "referenceAngle" : 0,
+        "type" : "revolute",
+        "upperLimit" : 0.4363319873809814
+      },
+      
+      {
+        "anchorA" : 
+        {
+          "x" : 0.3928569853305817,
+          "y" : 0
+        },
+        "anchorB" : 
+        {
+          "x" : -0.3928569853305817,
+          "y" : 0
+        },
+        "bodyA" : 18,
+        "bodyB" : 19,
+        "collideConnected" : false,
+        "customProperties" : 
+        [
+          
+          {
+            "name" : "category",
+            "string" : "branch"
+          },
+          
+          {
+            "name" : "m_id",
+            "string" : "branch_13"
+          }
+        ],
+        "enableLimit" : true,
+        "enableMotor" : true,
+        "id" : 12,
         "lowerLimit" : 0,
         "maxMotorTorque" : 0,
         "motorSpeed" : 0,

@@ -2,22 +2,27 @@
   "version": "0.1",
   "id": "scene_0_1",
   "title": "[scene_0_1_title]",
+  "cameraZoom": 0.5,
   "layers": {
     "layer_bg": {
       "id":"layer_bg",
       "type": "bg",
+      "width": 1920,
+      "height": 1080,
       "enabled": false,
-      "distance": 0,
-      "zIndex": -1,
+      "depth": 0,
+      "zIndex": 0,
       "bgType": 1
     },
     "layer_0": {
       "id": "layer_0",
       "type": "world",
-      "distance": 0,
+      "width": 1920,
+      "height": 1080,
+      "depth": 1,
       "isMain": true,
       "path": "scene/0/1/main.json",
-      "zIndex": 0
+      "zIndex": 1
     }
   }
 }

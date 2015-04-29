@@ -53,8 +53,10 @@ protected:
   int m_unitsSaved;
   int m_unitsLost;
   int m_unitsRequired;
-  cocos2d::Vec2* m_startTouch;
-  cocos2d::Vec2* m_endTouch;
+  cocos2d::Touch* m_startTouch;
+  cocos2d::Touch* m_endTouch;
+  cocos2d::Vec2* m_startTouchLocation;
+  cocos2d::Vec2* m_endTouchLocation;
 
 public:
   WorldLevelScene(void);
@@ -100,9 +102,11 @@ public:
   void addUnit(int count);
   void removeUnit(int count, bool isLost = true);
 
-  cocos2d::Vec2* getStartTouch();
+  cocos2d::Touch* getStartTouch();
+  cocos2d::Vec2* getStartTouchLocation();
   void setStartTouch(cocos2d::Touch* touch);
-  cocos2d::Vec2* getEndTouch();
+  cocos2d::Touch* getEndTouch();
+  cocos2d::Vec2* getEndTouchLocation();
   void setEndTouch(cocos2d::Touch* touch);
 
   SceneDef* getSceneDef(std::string filename);

@@ -55,6 +55,8 @@ public:
 
   virtual void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
                               cocos2d::Event *unused_event);
+  virtual void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches,
+                                      cocos2d::Event *unused_event);
   virtual void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches,
                               cocos2d::Event *unused_event);
 

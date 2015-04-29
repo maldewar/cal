@@ -37,6 +37,7 @@ protected:
   float m_height;
   static std::unordered_map<int, int> m_ids;
   int m_animation;
+  int m_skin;
 
 public:
   /**
@@ -84,15 +85,19 @@ public:
    */
   virtual void select();
   virtual void select(b2Body* body);
+  virtual void select(cocos2d::Touch* touch);
   virtual float getSkeletonScale();
   virtual float getGroundOffset();
 
   virtual void onDirectionChange(int direction);
   virtual void setAnimation(int animation);
+  virtual void setSkin(int skin);
+  virtual int getSkin();
   virtual void randomSkin();
 
-  virtual bool onStartTouchEvent();
-  virtual bool onEndTouchEvent();
+  virtual bool onStartTouchEvent(cocos2d::Touch* touch);
+  virtual bool onMoveTouchEvent(cocos2d::Touch* touch);
+  virtual bool onEndTouchEvent(cocos2d::Touch* touch);
 
 protected:
   void setAutoId();

@@ -23,6 +23,7 @@ addCustomProperty('body', 'bottomAngle', 'Bottom Angle', 'float');
 addCustomProperty('body', 'armature', 'Armature', 'string');
 addCustomProperty('body', 'draggablePinX', 'Pin X', 'float');
 addCustomProperty('body', 'draggablePinY', 'Pin Y', 'float');
+addCustomProperty('body', 'skin', 'Skin', 'int');
 
 
 addCustomProperty('joint', 'category', 'Category', 'string');

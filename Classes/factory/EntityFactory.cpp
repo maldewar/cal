@@ -100,6 +100,7 @@ DraggableEntity* EntityFactory::getDraggableEntity(b2dJson* json, b2Body* body) 
   DraggableEntity* draggableEntity = DraggableEntity::create(isActive);
   draggableEntity->setPinX(json->getCustomFloat(body, "draggablePinX", 0));
   draggableEntity->setPinY(json->getCustomFloat(body, "draggablePinY", 0));
+  draggableEntity->setSkin(json->getCustomInt(body, "skin", 0));
   draggableEntity->setBody(body);
   draggableEntity->update(0);
   return draggableEntity;

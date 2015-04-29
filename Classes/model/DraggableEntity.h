@@ -38,7 +38,9 @@ public:
      */
     virtual bool init(bool active);
     virtual void update(float dt);
-    virtual void select();
+    virtual void select(cocos2d::Touch* touch);
+    virtual bool onMoveTouchEvent(cocos2d::Touch* touch);
+    virtual bool onEndTouchEvent(cocos2d::Touch* touch);
 };
 
 #endif // __DRAGGABLE_ENTITY_NODE_H__

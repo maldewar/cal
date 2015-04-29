@@ -7,17 +7,18 @@
       "id":"layer_bg",
       "type": "bg",
       "enabled": false,
-      "distance": 0,
-      "zIndex": -1,
+      "zIndex": 0,
       "bgType": 1
     },
     "layer_0": {
       "id": "layer_0",
       "type": "world",
-      "distance": 0,
+      "width": 1920,
+      "height": 1080,
+      "depth": 1,
       "isMain": true,
       "path": "scene/0/2/main.json",
-      "zIndex": 0
+      "zIndex": 1
     }
   }
 }

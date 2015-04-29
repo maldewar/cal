@@ -57,7 +57,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
     propertyName == "isPositionable" ||
     propertyName == "draggablePinX" ||
     propertyName == "draggablePinY" ||
-    propertyName == "isDraggable") {
+    propertyName == "isDraggable" ||
+    propertyName == "skin") {
     shouldDisplay = false;
   }
 
@@ -124,12 +125,13 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
         propertyName == "bottomAngle" ||
         propertyName == "isPositionable" ||
         propertyName == "isDraggable" ||
-        propertyName == "active") {
+        propertyName == "active" ||
+        propertyName == "skin") {
       shouldDisplay = true;
     }
   }
 
-  // Branch
+  // Draggable
   if ( b.getCustomString( 'category' ) == 'draggable' ) {
     if (propertyName == "category" ||
         propertyName == "draggablePinX" ||

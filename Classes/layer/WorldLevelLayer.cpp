@@ -99,6 +99,20 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
       BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
     }
   }
+  for (int i = 0; i < b2Bodies.size(); i++) {
+    if (json->hasCustomString(b2Bodies[i], "belongsToCategory")) {
+      std::string belongsToCategory = json->getCustomString(b2Bodies[i], "belongsToCategory");
+      std::string belongsToId = json->getCustomString(b2Bodies[i], "belongsToId", "");
+      int belongsToIndex = json->getCustomInt(b2Bodies[i], "belongsToIndex", 0);
+      if (belongsToCategory.compare("branch") == 0) {
+        cocos2d::log("Belongs to ID: %s", belongsToId.c_str());
+        if (m_branches.count(belongsToId) > 0) {
+          m_branches[belongsToId]->addBody(b2Bodies[i], belongsToIndex);
+        }
+      }
+    }
+  }
+
   std::vector<b2Joint*> b2Joints;
   json->getAllJoints(b2Joints);
   for (int i = 0; i < b2Joints.size(); i++) {
@@ -298,7 +312,7 @@ void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
             entity->select(body);
             break;
           case ENTITY_TYPE_DRAGGABLE:
-            entity->select();
+            entity->select(getWorldLevelScene()->getStartTouch());
             break;
         }
       } else {
@@ -321,7 +335,7 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
     m_worldScene->setStartTouch(touches[0]);
     std::map<std::string, Entity*>::iterator it = m_touchListeners.begin();
     while (it != m_touchListeners.end()){
-      if (!it->second->onStartTouchEvent()) {
+      if (it->second->onStartTouchEvent(touches[0])) {
         it = m_touchListeners.erase(it);
       } else {
         ++it;
@@ -331,12 +345,25 @@ void WorldLevelLayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches
   BasicRUBELayer::onTouchesBegan(touches, event);
 }
 
+void WorldLevelLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *unused_event) {
+  if (m_isMain) {
+    std::map<std::string, Entity*>::iterator it = m_touchListeners.begin();
+    while (it != m_touchListeners.end()){
+      if (it->second->onMoveTouchEvent(touches[0])) {
+        it = m_touchListeners.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+}
+
 void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event *event) {
   if (m_isMain && touches.size() == 1) {
     m_worldScene->setEndTouch(touches[0]);
     std::map<std::string, Entity*>::iterator it = m_touchListeners.begin();
     while (it != m_touchListeners.end()){
-      if (!it->second->onEndTouchEvent()) {
+      if (it->second->onEndTouchEvent(touches[0])) {
         it = m_touchListeners.erase(it);
       } else {
         ++it;

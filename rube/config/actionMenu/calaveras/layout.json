@@ -33,6 +33,18 @@
           "name": "&Add Gravitron",
           "file": "addGravitron",
           "desc": "add Gravitron"
+        },
+        {
+          "type": "menu",
+          "name": "&Curves",
+          "children": [
+            {
+              "type": "action",
+              "name": "&Add Swirl",
+              "file": "curve/addBendable",
+              "desc": "add Bendable Swirl"
+            }
+          ]
         }
 			]
 		}

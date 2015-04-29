@@ -60,12 +60,18 @@ void Branch::update(float dt) {
 }
 
 void Branch::select(b2Body* body) {
+  cocos2d::log("Branch::select(b2Body*)");
   getWorldLevelLayer()->setNavigationEnabled(false);
   getWorldLevelLayer()->addTouchListener(this);
 }
 
 void Branch::addJoint(b2RevoluteJoint* joint) {
   m_joints.push_back(joint);
+}
+
+void Branch::addBody(b2Body* body, int index) {
+  cocos2d::log("Adding Body to Branch with Index: %d", index);
+  m_bodies[index] = body;
 }
 
 void Branch::setAngle(float angle) {
@@ -133,10 +139,10 @@ void Branch::sensorReceive(b2Body* body, Entity* receivedEntity) {
   }
 }
 
-bool Branch::onEndTouchEvent() {
+bool Branch::onEndTouchEvent(cocos2d::Touch* touch) {
   float baseAngle = m_body->GetAngle();
-  cocos2d::Vec2* startTouch = getWorldLevelLayer()->getWorldLevelScene()->getStartTouch();
-  cocos2d::Vec2* endTouch = getWorldLevelLayer()->getWorldLevelScene()->getEndTouch();
+  cocos2d::Vec2* startTouch = getWorldLevelLayer()->getWorldLevelScene()->getStartTouchLocation();
+  cocos2d::Vec2* endTouch = getWorldLevelLayer()->getWorldLevelScene()->getEndTouchLocation();
   float touchAngle = CMath::getAngle(startTouch->x,
                                      startTouch->y,
                                      endTouch->x,

@@ -10,6 +10,7 @@ Entity::Entity() {
   m_height = 0;
   m_skeletonNode = nullptr;
   m_animation = 0;
+  m_skin = 0;
   setAutoId();
 }
 
@@ -61,6 +62,9 @@ void Entity::select() {
 }
 
 void Entity::select(b2Body* body) {
+}
+
+void Entity::select(cocos2d::Touch* touch) {
 }
 
 float Entity::getSkeletonScale() {
@@ -127,13 +131,26 @@ void Entity::setAnimation(int animation) {
   m_animation = animation;
 }
 
+void Entity::setSkin(int skin) {
+  m_skin = skin;
+}
+
+int Entity::getSkin() {
+  return m_skin;
+}
+
 void Entity::randomSkin() {
 }
 
-bool Entity::onStartTouchEvent() {
+bool Entity::onStartTouchEvent(cocos2d::Touch* touch) {
   return false;
 }
 
-bool Entity::onEndTouchEvent() {
+bool Entity::onMoveTouchEvent(cocos2d::Touch* touch) {
   return false;
 }
+
+bool Entity::onEndTouchEvent(cocos2d::Touch* touch) {
+  return false;
+}
+

@@ -2,6 +2,7 @@
 #define __BRANCH_NODE_H__
 
 #include <vector>
+#include <unordered_map>
 #include "cocos2d.h"
 #include "Entity.h"
 #include "../component/ContactComponent.h"
@@ -18,6 +19,7 @@ class Branch : public Entity, public ContactComponent
 protected:
   int m_state;
   std::vector<b2RevoluteJoint*> m_joints;
+  std::unordered_map<int, b2Body*> m_bodies;
   float m_topAngle;
   float m_bottomAngle;
   float m_angle;
@@ -57,6 +59,7 @@ public:
     virtual void update(float dt);
     virtual void select(b2Body* body);
     void addJoint(b2RevoluteJoint* joint);
+    void addBody(b2Body* body, int index);
 
     void setAngle(float angle);
     float getAngle();
@@ -70,7 +73,7 @@ public:
 
     virtual void sensorReceive(b2Body* body, Entity* receivedEntity);
     /** Should Return true if deregisters from the listener. **/
-    virtual bool onEndTouchEvent();
+    virtual bool onEndTouchEvent(cocos2d::Touch* touch);
 };
 
 #endif // __BRANCH_NODE_H__

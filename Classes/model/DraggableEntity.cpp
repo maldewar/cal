@@ -40,6 +40,24 @@ void DraggableEntity::update(float dt) {
   Entity::update(dt);
 }
 
-void DraggableEntity::select() {
+void DraggableEntity::select(cocos2d::Touch* touch) {
   cocos2d::log("SELECTING draggable entity.");
+  getWorldLevelLayer()->setNavigationEnabled(false);
+  getWorldLevelLayer()->addTouchListener(this);
+  createMouseJoint(getWorldLevelLayer()->getWorld(),
+                   getWorldLevelLayer()->screenToWorld(touch->getLocation()),
+                   touch);
+}
+
+bool DraggableEntity::onMoveTouchEvent(cocos2d::Touch* touch) {
+  cocos2d::log(" onMoveTouchEvent");
+  moveMouseJoint(getWorldLevelLayer()->screenToWorld(touch->getLocation()));
+  return false;
+}
+
+bool DraggableEntity::onEndTouchEvent(cocos2d::Touch* touch) {
+  cocos2d::log("onEndTouchEvent");
+  getWorldLevelLayer()->setNavigationEnabled(true);
+  destroyMouseJoint(getWorldLevelLayer()->getWorld());
+  return true;
 }
