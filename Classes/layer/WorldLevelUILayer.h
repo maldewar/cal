@@ -12,6 +12,10 @@ class WorldLevelUILayer : public UILayer
 protected:
   static char* GAME_MENU_JSON;
   int m_animCount;
+  int m_totalUnits;
+  int m_totalRequiredUnits;
+  int m_totalLostUnits;
+  int m_totalSavedUnits;
   cocostudio::ActionObject* m_currentAction;
   cocos2d::ui::Button* m_settingsBtn;
   cocos2d::ui::Button* m_returnBtn;
@@ -25,6 +29,7 @@ public:
   };
 
 public:
+  WorldLevelUILayer();
   CREATE_FUNC(WorldLevelUILayer);
   virtual bool init();
   virtual void onEnter();
@@ -32,6 +37,10 @@ public:
   void returnBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
   void pauseBtnCallback(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
   void finishStateAnimation();
+  void setTotalUnits(int totalUnits);
+  void setTotalRequiredUnits(int totalRequiredUnits);
+  void setTotalSavedUnits(int totalSavedUnits);
+  void setTotalLostUnits(int totalLostUnits);
 
 
 private:

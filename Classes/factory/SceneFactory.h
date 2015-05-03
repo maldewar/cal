@@ -44,7 +44,7 @@ private:
                              const char* filename);
   virtual bool buildActSceneDef(ActSceneDef* actSceneDef,
                                 const char* filename);
-  virtual bool buildLevelSceneDef(LevelSceneDef* actSceneDef,
+  virtual bool buildLevelSceneDef(LevelSceneDef* levelSceneDef,
                                 const char* filename);
   virtual bool buildLayerDef(LayerDef* layerDef,
                              Json::Value& jLayerDef);

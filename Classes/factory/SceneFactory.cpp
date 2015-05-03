@@ -170,7 +170,7 @@ bool SceneFactory::buildActSceneDef(ActSceneDef* actSceneDef,
   return true;
 }
 
-bool SceneFactory::buildLevelSceneDef(LevelSceneDef* actSceneDef,
+bool SceneFactory::buildLevelSceneDef(LevelSceneDef* levelSceneDef,
                                       const char* filename) { 
   Json::Value root;
   std::string errorMsg;
@@ -180,6 +180,7 @@ bool SceneFactory::buildLevelSceneDef(LevelSceneDef* actSceneDef,
   } 
 
   // Set base properties
+  levelSceneDef->setUnitsRequired(root.get("unitsRequired",0).asInt());
   return true;
 }
 

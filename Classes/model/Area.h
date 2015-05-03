@@ -7,10 +7,11 @@
 #include "renderer/CCCustomCommand.h"
 
 class Area : public Entity
-{
+{ /*
 protected:
   void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
   cocos2d::CustomCommand m_customCommand;
+  */
 
 public:
     /**
@@ -36,7 +37,9 @@ public:
      * @return True if the object is correctly initialized.
      */
     virtual bool init(void);
+    /*
     virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) override;
+    */
 };
 
 #endif // __AREA_NODE_H__

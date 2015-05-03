@@ -52,6 +52,10 @@ void Unit::setIsLost(bool isLost) {
 
 void Unit::remove(bool isLost) {
   this->setIsLost(isLost);
+  getWorldLevelLayer()->removeUnit(1, isLost);
+  if (!isLost) {
+    // TODO: animate to exit.
+  }
   getWorldLevelLayer()->removeChild(this, true);
 }
 

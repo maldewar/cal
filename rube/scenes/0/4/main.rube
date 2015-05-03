@@ -44,8 +44,36 @@
     
     {
       "class" : "body",
-      "displayName" : "Force Min Distance",
-      "name" : "forceMinDistance",
+      "displayName" : "Bottom Angle",
+      "name" : "bottomAngle",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Use Open Timer",
+      "name" : "useOpenTimer",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "world",
+      "displayName" : "Background",
+      "name" : "background",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Category",
+      "name" : "category",
+      "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Min Angular Impulse",
+      "name" : "forceMinAngularImpulse",
       "type" : "float"
     },
     
@@ -58,44 +86,16 @@
     
     {
       "class" : "joint",
-      "displayName" : "Category",
-      "name" : "category",
+      "displayName" : "_ID",
+      "name" : "m_id",
       "type" : "string"
     },
     
     {
       "class" : "body",
-      "displayName" : "Active",
-      "name" : "active",
-      "type" : "bool"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Category",
-      "name" : "category",
+      "displayName" : "_ID",
+      "name" : "m_id",
       "type" : "string"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Is Open",
-      "name" : "isOpen",
-      "type" : "bool"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Title",
-      "name" : "title",
-      "type" : "string"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Bottom Angle",
-      "name" : "bottomAngle",
-      "type" : "float"
     },
     
     {
@@ -103,13 +103,6 @@
       "displayName" : "Force Max Angle",
       "name" : "forceMaxAngle",
       "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Use Open Timer",
-      "name" : "useOpenTimer",
-      "type" : "bool"
     },
     
     {
@@ -128,43 +121,50 @@
     
     {
       "class" : "body",
-      "displayName" : "Force Min Angular Impulse",
-      "name" : "forceMinAngularImpulse",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "world",
-      "displayName" : "Background",
-      "name" : "background",
-      "type" : "int"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "_ID",
-      "name" : "m_id",
-      "type" : "string"
-    },
-    
-    {
-      "class" : "joint",
-      "displayName" : "_ID",
-      "name" : "m_id",
-      "type" : "string"
-    },
-    
-    {
-      "class" : "body",
       "displayName" : "Level",
       "name" : "level",
       "type" : "int"
     },
     
     {
+      "class" : "joint",
+      "displayName" : "Category",
+      "name" : "category",
+      "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Active",
+      "name" : "active",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Title",
+      "name" : "title",
+      "type" : "string"
+    },
+    
+    {
       "class" : "body",
       "displayName" : "Force Max Angular Impulse",
       "name" : "forceMaxAngularImpulse",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Is Open",
+      "name" : "isOpen",
+      "type" : "bool"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Min Distance",
+      "name" : "forceMinDistance",
       "type" : "float"
     },
     
@@ -184,6 +184,13 @@
     
     {
       "class" : "body",
+      "displayName" : "Pin Y",
+      "name" : "draggablePinY",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
       "displayName" : "Top Angle",
       "name" : "topAngle",
       "type" : "float"
@@ -194,6 +201,27 @@
       "displayName" : "Armature",
       "name" : "armature",
       "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Pin X",
+      "name" : "draggablePinX",
+      "type" : "float"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Skin",
+      "name" : "skin",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Z Order Touch",
+      "name" : "zOrderTouch",
+      "type" : "int"
     },
     
     {
@@ -240,22 +268,8 @@
     
     {
       "class" : "body",
-      "displayName" : "Pin Y",
-      "name" : "draggablePinY",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Pin X",
-      "name" : "draggablePinX",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Skin",
-      "name" : "skin",
+      "displayName" : "Z Order Draw",
+      "name" : "zOrderDraw",
       "type" : "int"
     }
   ],
@@ -302,6 +316,16 @@
         "awake" : true,
         "customProperties" : 
         [
+          
+          {
+            "int" : 500,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 0,
+            "name" : "zOrderTouch"
+          },
           
           {
             "name" : "category",
@@ -640,6 +664,16 @@
           },
           
           {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
+          },
+          
+          {
             "float" : 0,
             "name" : "angle"
           },
@@ -763,6 +797,16 @@
           },
           
           {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
+          },
+          
+          {
             "name" : "belongsToCategory",
             "string" : "branch"
           },
@@ -834,6 +878,16 @@
           {
             "int" : 1,
             "name" : "belongsToIndex"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
           },
           
           {
@@ -911,6 +965,16 @@
           },
           
           {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
+          },
+          
+          {
             "name" : "belongsToCategory",
             "string" : "branch"
           },
@@ -982,6 +1046,16 @@
           {
             "int" : 3,
             "name" : "belongsToIndex"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
           },
           
           {
@@ -1059,6 +1133,16 @@
           },
           
           {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
+          },
+          
+          {
             "name" : "belongsToCategory",
             "string" : "branch"
           },
@@ -1130,6 +1214,16 @@
           {
             "int" : 5,
             "name" : "belongsToIndex"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderDraw"
+          },
+          
+          {
+            "int" : 1000,
+            "name" : "zOrderTouch"
           },
           
           {

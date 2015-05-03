@@ -40,6 +40,8 @@ public:
   virtual bool init (WorldLevelScene* parent,
                      WorldLayerDef* worldLayerDef);
   virtual int getUnitCount ();
+  virtual void removeUnit(int count, bool isLost);
+  virtual void addUnit(int count);
   virtual void afterLoadProcessing (b2dJson* json);
   virtual void addChild (cocos2d::Node* node) override;
   virtual void removeChild (cocos2d::Node* node, bool cleanup = true) override;
@@ -49,7 +51,7 @@ public:
   virtual void clear ();
   virtual void update (float dt);
   void removeBodyFromWorld (b2Body* body);
-  virtual void onBodyTouchBegan (b2Body* body, b2Fixture* fixture);
+  virtual void onBodyTouchBegan (std::vector<b2Body*> bodies, std::vector<b2Fixture*> fixtures);
   virtual void onWorldTouchBegan(b2Vec2& position);
   virtual AISystem* getAISystem();
 
@@ -62,6 +64,13 @@ public:
 
   virtual bool addTouchListener(Entity* entity);
   virtual bool removeTouchListener(Entity* entity);
+  /**
+   * Gets the index of the body touched based on the
+   * z touch index of a list of bodies.
+   * @param bodies List of bodies.
+   * @return int Index of the touched body.
+   */
+  int getTouchedBody(std::vector<b2Body*> bodies);
 
 protected:
   virtual void onDraw(const cocos2d::Mat4 &transform, uint32_t flags) override;

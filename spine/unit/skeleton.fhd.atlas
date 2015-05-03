@@ -1,0 +1,90 @@
+
+skeleton.fhd.png
+size: 1024,128
+format: RGBA4444
+filter: Linear,Linear
+repeat: none
+unit/body_a
+  rotate: false
+  xy: 359, 43
+  size: 76, 81
+  orig: 76, 81
+  offset: 0, 0
+  index: -1
+unit/body_c
+  rotate: false
+  xy: 359, 43
+  size: 76, 81
+  orig: 76, 81
+  offset: 0, 0
+  index: -1
+unit/body_b
+  rotate: false
+  xy: 437, 43
+  size: 76, 81
+  orig: 76, 81
+  offset: 0, 0
+  index: -1
+unit/head_a
+  rotate: false
+  xy: 2, 31
+  size: 117, 93
+  orig: 117, 93
+  offset: 0, 0
+  index: -1
+unit/head_b
+  rotate: false
+  xy: 121, 31
+  size: 117, 93
+  orig: 117, 93
+  offset: 0, 0
+  index: -1
+unit/head_c
+  rotate: false
+  xy: 240, 31
+  size: 117, 93
+  orig: 117, 93
+  offset: 0, 0
+  index: -1
+unit/left_arm
+  rotate: false
+  xy: 727, 78
+  size: 63, 46
+  orig: 63, 46
+  offset: 0, 0
+  index: -1
+unit/left_arm_extended
+  rotate: false
+  xy: 583, 81
+  size: 70, 43
+  orig: 70, 43
+  offset: 0, 0
+  index: -1
+unit/left_leg
+  rotate: true
+  xy: 2, 2
+  size: 27, 41
+  orig: 27, 41
+  offset: 0, 0
+  index: -1
+unit/right_arm
+  rotate: false
+  xy: 515, 76
+  size: 66, 48
+  orig: 66, 48
+  offset: 0, 0
+  index: -1
+unit/right_arm_extended
+  rotate: false
+  xy: 655, 81
+  size: 70, 43
+  orig: 70, 43
+  offset: 0, 0
+  index: -1
+unit/right_leg
+  rotate: false
+  xy: 792, 79
+  size: 33, 45
+  orig: 33, 45
+  offset: 0, 0
+  index: -1

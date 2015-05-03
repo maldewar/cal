@@ -33,6 +33,7 @@ DraggableEntity* DraggableEntity::create(bool active) {
 bool DraggableEntity::init(bool active)
 {
   setActive(active);
+  scheduleUpdate();
   return true;
 }
 

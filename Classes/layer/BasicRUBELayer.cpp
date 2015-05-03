@@ -9,10 +9,11 @@
 #include "BasicRUBELayer.h"
 #include "../util/b2dJson.h"
 #include "../util/b2dJsonImage.h"
-#include "../util/QueryCallbacks.h"
+#include "../util/MultiQueryCallbacks.h"
 #include "../util/CMath.h"
 #include "../model/ImageNode.h"
 #include "../model/ImageBody.h"
+#include "../model/Entity.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -313,13 +314,13 @@ void BasicRUBELayer::onTouchesBegan(const std::vector<cocos2d::Touch*>& touches,
 
     // Query the world for overlapping fixtures (the TouchDownQueryCallback simply
     // looks for any fixture that contains the touched point)
-    TouchDownQueryCallback callback(worldPos);
+    TouchDownMultiQueryCallback callback(worldPos);
     m_world->QueryAABB(&callback, aabb);
 
     // Check if we found something, and it was a dynamic body (can't drag static bodies)
-    if (callback.m_fixture) {
+    if (callback.hasTouch()) {
       m_bodyTouchBegan = true;
-      onBodyTouchBegan(callback.m_fixture->GetBody(), callback.m_fixture);
+      onBodyTouchBegan(callback.getBodies(), callback.getFixtures());
     } else {
       m_worldTouchBegan = true;
       onWorldTouchBegan(worldPos);
@@ -349,7 +350,7 @@ void BasicRUBELayer::onTouchesCancelled(const std::vector<cocos2d::Touch*>& touc
   onTouchesEnded(touches, event);
 }
 
-void BasicRUBELayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
+void BasicRUBELayer::onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<b2Fixture*> fixtures) {
 }
 
 void BasicRUBELayer::onWorldTouchBegan(b2Vec2& position) {
@@ -361,6 +362,7 @@ void BasicRUBELayer::onBodyTouchEnded() {
 void BasicRUBELayer::onWorldTouchEnded() {
 }
 
+/*
 b2Fixture* BasicRUBELayer::getTouchedFixture(Touch* touch)
 {
     Point screenPos = touch->getLocation();
@@ -375,6 +377,7 @@ b2Fixture* BasicRUBELayer::getTouchedFixture(Touch* touch)
     m_world->QueryAABB(&callback, aabb);
     return callback.m_fixture;
 }
+*/
 
 bool BasicRUBELayer::enableDebugDraw(bool enable) {
   m_debugDrawEnabled = enable;

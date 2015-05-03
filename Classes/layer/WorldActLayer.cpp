@@ -3,9 +3,6 @@
 #include <spine/spine-cocos2dx.h>
 
 #include "WorldLevelUILayer.h"
-#include "../util/b2dJson.h"
-#include "../util/b2dJsonImage.h"
-#include "../util/QueryCallbacks.h"
 #include "../model/ImageNode.h"
 #include "../model/ImageBody.h"
 #include "../model/Level.h"
@@ -67,7 +64,9 @@ void WorldActLayer::removeBodyFromWorld(b2Body* body) {
   m_world->DestroyBody(body);
 }
 
-void WorldActLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
+void WorldActLayer::onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<b2Fixture*> fixtures) {
+  b2Fixture* fixture = fixtures[0];
+  b2Body* body = bodies[0];
   if (fixture->IsSensor()) {
     void* userData;
     userData = body->GetUserData();

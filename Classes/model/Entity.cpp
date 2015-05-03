@@ -11,6 +11,10 @@ Entity::Entity() {
   m_skeletonNode = nullptr;
   m_animation = 0;
   m_skin = 0;
+  m_shapeDrawEnabled = false;
+  m_color = cocos2d::Color4F(0.1, 0.1, 0.1, 1);
+  m_zOrderDraw = 0;
+  m_zOrderTouch = 0;
   setAutoId();
 }
 
@@ -75,6 +79,26 @@ float Entity::getGroundOffset() {
   return DESIGN_HEIGHT * m_height * -0.5;
 }
 
+void Entity::enableShapeDraw(bool isShapeDrawEnabled) {
+  m_shapeDrawEnabled = isShapeDrawEnabled;
+}
+
+void Entity::setZOrderDraw(int zOrderDraw) {
+  m_zOrderDraw = zOrderDraw;
+}
+
+int Entity::getZOrderDraw() {
+  return m_zOrderDraw;
+}
+
+void Entity::setZOrderTouch(int zOrderTouch) {
+  m_zOrderTouch = zOrderTouch;
+}
+
+int Entity::getZOrderTouch() {
+  return m_zOrderTouch;
+}
+
 void Entity::setAutoId() {
   int type = getType();
   if (m_ids.count(type) == 0) {
@@ -110,7 +134,7 @@ void Entity::setAutoId() {
       kind = "branch_";
       break;
     case ENTITY_TYPE_DRAGGABLE:
-      kind = "draggable";
+      kind = "draggable_";
       break;
     default:
       kind = "undefined_";
@@ -154,3 +178,39 @@ bool Entity::onEndTouchEvent(cocos2d::Touch* touch) {
   return false;
 }
 
+void Entity::draw(cocos2d::Renderer* renderer, const cocos2d::Mat4 &transform, uint32_t flags) {
+  if (m_shapeDrawEnabled) {
+    m_customCommand.init(_globalZOrder);
+    m_customCommand.func = CC_CALLBACK_0(Entity::onDraw, this, transform, flags);
+    renderer->addCommand(&m_customCommand);
+  }
+}
+
+void Entity::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
+  cocos2d::Director::getInstance()->pushMatrix(cocos2d::MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+  cocos2d::Director::getInstance()->loadMatrix(cocos2d::MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
+  
+  float mRatio = 1.0f;
+  int maxVertices = 64;              
+  cocos2d::Point *mVertices = new cocos2d::Point[maxVertices];
+  b2PolygonShape* poly = nullptr;
+  int32 vertexCount = 0;
+  const b2Transform& _xf = m_body->GetTransform();
+  for (b2Fixture* f = m_body->GetFixtureList(); f; f = f->GetNext()) {
+    poly = (b2PolygonShape*)f->GetShape();
+    vertexCount = poly->m_count;
+    b2Assert(vertexCount <= b2_maxPolygonVertices);
+    b2Vec2 vertices[b2_maxPolygonVertices];
+    for (int32 i = 0; i < vertexCount; ++i)
+    {
+      vertices[i] = poly->m_vertices[i];
+    }
+    for (int i = 0; i < maxVertices && i < vertexCount; i++ ) {
+      mVertices[i].setPoint( mRatio * vertices[i].x, mRatio * vertices[i].y );
+    }
+    cocos2d::DrawPrimitives::drawSolidPoly(mVertices, vertexCount, m_color);
+    cocos2d::DrawPrimitives::setDrawColor4F(m_color.r, m_color.g, m_color.b, m_color.a);
+    cocos2d::DrawPrimitives::drawPoly(mVertices, vertexCount, true);
+  }
+  cocos2d::Director::getInstance()->popMatrix(cocos2d::MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+}

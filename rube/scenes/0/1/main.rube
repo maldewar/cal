@@ -43,31 +43,17 @@
   [
     
     {
-      "class" : "body",
-      "displayName" : "Force Min Angular Impulse",
-      "name" : "forceMinAngularImpulse",
-      "type" : "float"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Interval",
-      "name" : "interval",
-      "type" : "int"
-    },
-    
-    {
-      "class" : "body",
-      "displayName" : "Force Max Angle",
-      "name" : "forceMaxAngle",
-      "type" : "float"
-    },
-    
-    {
       "class" : "world",
       "displayName" : "Background",
       "name" : "background",
       "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Angular Impulse",
+      "name" : "forceMaxAngularImpulse",
+      "type" : "float"
     },
     
     {
@@ -86,16 +72,16 @@
     
     {
       "class" : "body",
-      "displayName" : "Force Max Angular Impulse",
-      "name" : "forceMaxAngularImpulse",
-      "type" : "float"
+      "displayName" : "Active",
+      "name" : "active",
+      "type" : "bool"
     },
     
     {
       "class" : "body",
-      "displayName" : "Active",
-      "name" : "active",
-      "type" : "bool"
+      "displayName" : "Force Min Angular Impulse",
+      "name" : "forceMinAngularImpulse",
+      "type" : "float"
     },
     
     {
@@ -107,8 +93,8 @@
     
     {
       "class" : "body",
-      "displayName" : "Capacity",
-      "name" : "capacity",
+      "displayName" : "Open Timer",
+      "name" : "openTimer",
       "type" : "int"
     },
     
@@ -121,8 +107,8 @@
     
     {
       "class" : "body",
-      "displayName" : "Open Timer",
-      "name" : "openTimer",
+      "displayName" : "Capacity",
+      "name" : "capacity",
       "type" : "int"
     },
     
@@ -166,6 +152,20 @@
       "displayName" : "Material",
       "name" : "material",
       "type" : "string"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Interval",
+      "name" : "interval",
+      "type" : "int"
+    },
+    
+    {
+      "class" : "body",
+      "displayName" : "Force Max Angle",
+      "name" : "forceMaxAngle",
+      "type" : "float"
     },
     
     {
@@ -375,7 +375,7 @@
           },
           
           {
-            "bool" : false,
+            "bool" : true,
             "name" : "isOpen"
           },
           

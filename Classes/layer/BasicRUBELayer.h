@@ -31,6 +31,9 @@
 //  physics world coordinates.
 //
 
+#ifndef BASIC_RUBE_LAYER
+#define BASIC_RUBE_LAYER
+
 #include <vector>
 #include <string>
 
@@ -41,9 +44,6 @@
 #include "../util/Box2DDebugDraw.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/CCCustomCommand.h"
-
-#ifndef BASIC_RUBE_LAYER
-#define BASIC_RUBE_LAYER
 
 class b2dJson;
 
@@ -132,12 +132,13 @@ public:
                               cocos2d::Event *unused_event);
   virtual void onTouchesCancelled(const std::vector<cocos2d::Touch*>& touches,
                                   cocos2d::Event *unused_event);
-  virtual void onBodyTouchBegan(b2Body* body, b2Fixture* fixture);
+  virtual void onBodyTouchBegan(std::vector<b2Body*> bodies,
+                                std::vector<b2Fixture*> fixtures);
   virtual void onWorldTouchBegan(b2Vec2& position);
   virtual void onBodyTouchEnded();
   virtual void onWorldTouchEnded();
   // Return the first fixture found under the touch location.
-  b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
+  //b2Fixture* getTouchedFixture(cocos2d::Touch* touch);
   virtual bool enableDebugDraw(bool enable);
   /**
    * Center the view of the layer to this point.

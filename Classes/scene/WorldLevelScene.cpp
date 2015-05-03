@@ -27,10 +27,10 @@ WorldLevelScene::WorldLevelScene() : BaseScene() {
   m_ctrl = CTRL_NONE;
   m_levelSceneDef = nullptr;
 
-  m_unitsInScene  = 0;
-  m_unitsSaved    = 0;
-  m_unitsLost     = 0;
-  m_unitsRequired = 0;
+  m_totalUnits         = 0;
+  m_totalSavedUnits    = 0;
+  m_totalLostUnits     = 0;
+  m_totalRequiredUnits = 0;
 
   m_startTouchLocation = new cocos2d::Vec2();
   m_endTouchLocation   = new cocos2d::Vec2();
@@ -71,7 +71,7 @@ bool WorldLevelScene::init(std::string filename) {
     //TODO: kill scene.
   }
 
-  m_unitsRequired = m_levelSceneDef->getUnitsRequired();
+  m_totalRequiredUnits = m_levelSceneDef->getUnitsRequired();
 
   cocos2d::log("WorldLevelScene::init...");
   if (!BaseScene::init(filename)) {
@@ -107,6 +107,8 @@ bool WorldLevelScene::init(std::string filename) {
   //World UI Layer
   m_worldLevelUILayer = WorldLevelUILayer::create();
   m_worldLevelUILayer->setScene(this);
+  m_worldLevelUILayer->setTotalRequiredUnits(m_totalRequiredUnits);
+  m_worldLevelUILayer->setTotalUnits(m_worldLevelLayer->getUnitCount());
   addChild(m_worldLevelUILayer, m_topIndex + 3);
 
   //Statistics Layer
@@ -143,7 +145,7 @@ void WorldLevelScene::onLayerAdded(BaseLayer* layer, LayerDef* layerDef) {
   // TODO: Inspect, probably not respecting isMain
   if (layerDef->getType() == LAYER_TYPE_WORLD) {
     m_worldLevelLayer = static_cast<WorldLevelLayer*>(layer);
-    m_unitsInScene = m_worldLevelLayer->getUnitCount();
+    m_totalUnits = m_worldLevelLayer->getUnitCount();
     m_worldLevelLayers.push_back(m_worldLevelLayer);
     m_worldLevelLayer->enableDebugDraw(m_debug);
     float xGravity = cos(m_gravityAngle) * 6;
@@ -251,22 +253,28 @@ cocos2d::Point WorldLevelScene::worldToScreen(b2Vec2 worldPos) {
 }
 
 void WorldLevelScene::addUnit(int count) {
-  m_unitsInScene += count;
-  CCLOG("New unit added to scene, total: %d", m_unitsInScene);
+  m_totalUnits += count;
+  if (m_worldLevelUILayer) {
+    m_worldLevelUILayer->setTotalUnits(m_totalUnits);
+  }
+  CCLOG("New unit added to scene, total: %d", m_totalUnits);
 }
 
 void WorldLevelScene::removeUnit(int count, bool isLost) {
   if (isLost) {
-    m_unitsLost += count;
+    m_totalLostUnits += count;
+    m_worldLevelUILayer->setTotalLostUnits(m_totalLostUnits);
   } else {
-    m_unitsSaved += count;
-    if (m_unitsSaved >= m_unitsRequired) {
+    m_totalSavedUnits += count;
+    m_worldLevelUILayer->setTotalSavedUnits(m_totalSavedUnits);
+    if (m_totalSavedUnits >= m_totalRequiredUnits) {
       m_worldLevelStatisticsLayer->setVisible(true);
       CCLOG("LEVEL COMPLETE!!!");
     }
   }
-  m_unitsInScene -= count;
-  CCLOG("Unit removed from scene, total: %d", m_unitsInScene);
+  m_totalUnits -= count;
+  m_worldLevelUILayer->setTotalUnits(m_totalUnits);
+  CCLOG("Unit removed from scene, total: %d", m_totalUnits);
 }
 
 cocos2d::Vec2* WorldLevelScene::getStartTouchLocation() {

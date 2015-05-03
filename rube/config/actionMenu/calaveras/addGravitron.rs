@@ -23,5 +23,7 @@ b.addFixture(-1, fixtureDef);
 b.addFixture(-1, '{"name":"body_sensor","density":1,"sensor":true,"restitution":0.4,"friction":1,"shapes":[{"radius":0.3,"type":"circle"}],"friction":0.2,"vertices":{"x":[0],"y":[0]}}');
 b.setCustomString("category", "gravitron");
 b.setCustomBool("active", true);
+b.setCustomInt("zOrderDraw", 0);
+b.setCustomInt("zOrderTouch", 1000);
 b.setPos( cursor() );
 

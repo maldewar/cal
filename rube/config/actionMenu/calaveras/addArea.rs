@@ -22,5 +22,7 @@ string fixtureDef = '{"density":1,"shapes":[{"radius":0,"type":"polygon"}],"fric
 b.addFixture(-1, fixtureDef);
 b.setCustomString("category", "area");
 b.setCustomString("material", "default");
+b.setCustomInt("zOrderTouch", 0);
+b.setCustomInt("zOrderDraw", 500);
 b.setPos( cursor() );
 

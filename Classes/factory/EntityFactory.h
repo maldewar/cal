@@ -22,17 +22,23 @@ public:
 private:
   EntityFactory(void);
   ~EntityFactory(void);
+  void makeEntity(Entity* entity,
+                  b2Body* body,
+                  b2dJson* json = nullptr);
 
 public:
   virtual bool init();
+  virtual Entity* getEntity(b2Body* body, b2dJson* json = nullptr);
   virtual Unit* getUnit(b2dJson* json, b2Body* body);
   virtual Entry* getEntry(b2dJson* json, b2Body* body);
   virtual Exit* getExit(b2dJson* json, b2Body* body);
   virtual Area* getArea(b2dJson* json, b2Body* body);
-  virtual Gravitron* getGravitron(b2dJson* json, b2Body* body);
+  virtual Gravitron* getGravitron(b2dJson* json,
+                                  b2Body* body);
   virtual Level* getLevel(b2dJson* json, b2Body* body);
   virtual Branch* getBranch(b2dJson* json, b2Body* body);
-  virtual DraggableEntity* getDraggableEntity(b2dJson* json, b2Body* body);
+  virtual DraggableEntity* getDraggableEntity(b2dJson* json,
+                                              b2Body* body);
 
 };
 

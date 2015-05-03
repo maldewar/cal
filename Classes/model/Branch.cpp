@@ -8,6 +8,7 @@ Branch::Branch() : Entity(), ContactComponent() {
   m_topAngle = 0;
   m_bottomAngle = 0;
   m_motorSpeed = 0;
+  m_shapeDrawEnabled = true;
 }
 
 Branch::~Branch() {}
@@ -21,13 +22,13 @@ Branch* Branch::create() {
 }
 
 Branch* Branch::create(bool active) {
-  Branch *gravitron = new (std::nothrow) Branch();
-  if (gravitron && gravitron->init(active))
+  Branch *branch = new (std::nothrow) Branch();
+  if (branch && branch->init(active))
   {
-    gravitron->autorelease();
-    return gravitron;
+    branch->autorelease();
+    return branch;
   }
-  CC_SAFE_DELETE(gravitron);
+  CC_SAFE_DELETE(branch);
   return nullptr;
 }
 
@@ -60,7 +61,6 @@ void Branch::update(float dt) {
 }
 
 void Branch::select(b2Body* body) {
-  cocos2d::log("Branch::select(b2Body*)");
   getWorldLevelLayer()->setNavigationEnabled(false);
   getWorldLevelLayer()->addTouchListener(this);
 }
@@ -70,8 +70,13 @@ void Branch::addJoint(b2RevoluteJoint* joint) {
 }
 
 void Branch::addBody(b2Body* body, int index) {
-  cocos2d::log("Adding Body to Branch with Index: %d", index);
   m_bodies[index] = body;
+  void* bodyUserData  = body->GetUserData();
+  if (bodyUserData) {
+    Entity* entity = (Entity*)bodyUserData;
+    entity->enableShapeDraw(true);
+    entity->scheduleUpdate();
+  }
 }
 
 void Branch::setAngle(float angle) {

@@ -65,6 +65,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Area
   if ( b.getCustomString( 'category' ) == 'area' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderDraw" ||
+        propertyName == "zOrderTouch" ||
         propertyName == "material") {
       shouldDisplay = true;
     }
@@ -73,6 +75,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Entry
   if ( b.getCustomString( 'category' ) == 'entry' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderDraw" ||
+        propertyName == "zOrderTouch" ||
         propertyName == "capacity" ||
         propertyName == "interval" ||
         propertyName == "isOpen" ||
@@ -90,6 +94,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Exit
   if ( b.getCustomString( 'category' ) == 'exit' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderDraw" ||
+        propertyName == "zOrderTouch" ||
         propertyName == "capacity" ||
         propertyName == "isOpen" ||
         propertyName == "useOpenTime" ||
@@ -101,6 +107,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Gravitron
   if ( b.getCustomString( 'category' ) == 'gravitron' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderTouch" ||
+        propertyName == "zOrderDraw" ||
         propertyName == "active") {
       shouldDisplay = true;
     }
@@ -109,6 +117,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Level
   if ( b.getCustomString( 'category' ) == 'level' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderDraw" ||
+        propertyName == "zOrderTouch" ||
         propertyName == "level" ||
         propertyName == "inactive" ||
         propertyName == "active") {
@@ -119,6 +129,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Branch
   if ( b.getCustomString( 'category' ) == 'branch' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderDraw" ||
+        propertyName == "zOrderTouch" ||
         propertyName == "m_id" ||
         propertyName == "angle" ||
         propertyName == "topAngle" ||
@@ -134,6 +146,8 @@ bool shouldDisplayProperty( body b, const string& in propertyName ) {
   // Draggable
   if ( b.getCustomString( 'category' ) == 'draggable' ) {
     if (propertyName == "category" ||
+        propertyName == "zOrderDraw" ||
+        propertyName == "zOrderTouch" ||
         propertyName == "draggablePinX" ||
         propertyName == "draggablePinY" ||
         propertyName == "active") {

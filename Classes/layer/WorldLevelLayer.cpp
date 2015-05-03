@@ -22,9 +22,9 @@ WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   m_unitLayer = Layer::create();
   m_areaLayer = Layer::create();
   m_assetLayer = Layer::create();
-  BasicRUBELayer::addChild(m_areaLayer, 3);
-  BasicRUBELayer::addChild(m_unitLayer, 2);
-  BasicRUBELayer::addChild(m_assetLayer, 1);
+  BasicRUBELayer::addChild(m_assetLayer, 3);
+  BasicRUBELayer::addChild(m_areaLayer, 2);
+  BasicRUBELayer::addChild(m_unitLayer, 1);
   m_contactSystem = nullptr;
   m_AISystem = nullptr;
 }
@@ -43,7 +43,6 @@ WorldLevelLayer* WorldLevelLayer::create(WorldLevelScene* parent,
 bool WorldLevelLayer::init(WorldLevelScene* parent, WorldLayerDef* worldLayerDef) {
   m_AISystem = new AISystem(parent->getGravityAngle());
   if (BasicRUBELayer::init(parent, worldLayerDef)) {
-    cocos2d::log("WorldLevelLayer::init creating contact system.");
     m_filename = worldLayerDef->getPath();
     cocos2d::log("WorldLevelLayer::init loading file %s", m_filename.c_str());
     return true;
@@ -53,6 +52,20 @@ bool WorldLevelLayer::init(WorldLevelScene* parent, WorldLayerDef* worldLayerDef
 
 int WorldLevelLayer::getUnitCount() {
   return m_unitCount;
+}
+
+void WorldLevelLayer::removeUnit(int count, bool isLost) {
+  m_unitCount--;
+  if (m_isMain) {
+    m_worldScene->removeUnit(count, isLost);
+  }
+}
+
+void WorldLevelLayer::addUnit(int count) {
+  m_unitCount++;
+  if (m_isMain) {
+    m_worldScene->addUnit(count);
+  }
 }
 
 // This is called after the Box2D world has been loaded, and while the b2dJson information
@@ -79,6 +92,7 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
       }else if (category.compare("unit") == 0) {
         Unit* unit = EntityFactory::getInstance()->getUnit(json, b2Bodies[i]);
         addChild(unit);
+        addUnit(1);
       } else if (category.compare("area") == 0) {
         Area* area = EntityFactory::getInstance()->getArea(json, b2Bodies[i]);
         addChild(area);
@@ -93,7 +107,8 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
           addChild(branch);
         }
       } else if (category.compare("draggable") == 0) {
-        DraggableEntity* draggableEntity = EntityFactory::getInstance()->getDraggableEntity(json, b2Bodies[i]);
+        DraggableEntity* draggableEntity =
+          EntityFactory::getInstance()->getDraggableEntity(json, b2Bodies[i]);
         addChild(draggableEntity);
       }
       BodyFactory::getInstance()->addBodyDef(category, b2Bodies[i]);
@@ -105,8 +120,12 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
       std::string belongsToId = json->getCustomString(b2Bodies[i], "belongsToId", "");
       int belongsToIndex = json->getCustomInt(b2Bodies[i], "belongsToIndex", 0);
       if (belongsToCategory.compare("branch") == 0) {
-        cocos2d::log("Belongs to ID: %s", belongsToId.c_str());
         if (m_branches.count(belongsToId) > 0) {
+          void* bodyUserData  = b2Bodies[i]->GetUserData();
+          if (!bodyUserData) {
+            Entity* branchEntity = EntityFactory::getInstance()->getEntity(b2Bodies[i], json);
+            addChild(branchEntity);
+          }
           m_branches[belongsToId]->addBody(b2Bodies[i], belongsToIndex);
         }
       }
@@ -140,11 +159,7 @@ void WorldLevelLayer::addChild(Node* node) {
       Unit* unit = static_cast<Unit*>(entity);
       unit->commandWander();
       m_unitLayer->addChild(node);
-      m_unitCount++;
       m_AISystem->registerComponent(unit->getId(), unit);
-      if (m_isMain) {
-        m_worldScene->addUnit(1);
-      }
       return;
     } else if (entity->getType() == ENTITY_TYPE_AREA) {
       m_areaLayer->addChild(node);
@@ -157,14 +172,20 @@ void WorldLevelLayer::addChild(Node* node) {
 void WorldLevelLayer::removeChild(Node* node, bool cleanup) {
   Entity* entity = dynamic_cast<Entity*>(node);
   if (entity) {
-    m_deletedEntities.push_back(entity);
-    Unit* unit = dynamic_cast<Unit*>(entity);
-    if (unit) {
-      m_unitCount--;
+    if (entity->getType() == ENTITY_TYPE_UNIT) {
+      m_deletedEntities.push_back(entity);
+      //entity->unscheduleUpdate();
+      //entity->unscheduleAllCallbacks();
+      //m_unitLayer->removeChild(node, cleanup);
+      //removeBodyFromWorld(entity->getBody());
+      //node->removeFromParent();
+      return;
+    } else if (entity->getType() == ENTITY_TYPE_AREA) {
+      m_areaLayer->removeChild(node, cleanup);
+      return;
     }
-  } else {
-    m_assetLayer->removeChild(node, cleanup);
   }
+  m_assetLayer->removeChild(node, cleanup);
 }
 
 void WorldLevelLayer::setWorldLevelScene(WorldLevelScene* worldLevelScene) {
@@ -199,16 +220,11 @@ void WorldLevelLayer::clear()
 // move the images to match the physics body positions
 void WorldLevelLayer::update(float dt)
 {
-  /*
   if (m_deletedEntities.size() > 0) {
     vector<Entity*>::iterator entityIt = m_deletedEntities.begin();
     while (entityIt != m_deletedEntities.end()) {
       removeBodyFromWorld((*entityIt)->getBody());
       if ((*entityIt)->getType() == ENTITY_TYPE_UNIT) {
-        if (m_isMain) {
-          Unit* unit = dynamic_cast<Unit*>((*entityIt));
-          m_worldScene->removeUnit(1, unit->isLost());
-        }
         m_unitLayer->removeChild((*entityIt), true);
       } else if ((*entityIt)->getType() == ENTITY_TYPE_AREA) {
         m_areaLayer->removeChild((*entityIt), true);
@@ -218,7 +234,6 @@ void WorldLevelLayer::update(float dt)
       entityIt = m_deletedEntities.erase(entityIt);
     }
   }
-  */
   BasicRUBELayer::update(dt);
 }
 
@@ -274,8 +289,11 @@ void WorldLevelLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches
 }
 */
 
-void WorldLevelLayer::onBodyTouchBegan(b2Body* body, b2Fixture* fixture) {
-  cocos2d::log("WorldLevelLayer::onBodyTouchBegan... 1");
+void WorldLevelLayer::onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<b2Fixture*> fixtures) {
+  int index = getTouchedBody(bodies);
+  if (index < 0)
+    return;
+  b2Body* body = bodies[index];
   switch(body->GetType()) {
     case b2_staticBody:
       void* bodyUserData;
@@ -389,6 +407,23 @@ bool WorldLevelLayer::removeTouchListener(Entity* entity) {
     return true;
   }
   return false;
+}
+
+int WorldLevelLayer::getTouchedBody(std::vector<b2Body*> bodies) {
+  int index = -1;
+  int zIndex = -1000;
+  for (int i = 0; i < bodies.size(); i++) {
+    b2Body* body = bodies[i];
+    void* userData = body->GetUserData();
+    if (userData) {
+      Entity* entity = (Entity*)userData;
+      if (entity->getZOrderTouch() >= zIndex) {
+        zIndex = entity->getZOrderTouch();
+        index = i;
+      }
+    }
+  }
+  return index;
 }
 
 void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {

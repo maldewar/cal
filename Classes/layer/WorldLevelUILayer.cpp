@@ -9,6 +9,13 @@ USING_NS_CC;
 
 char* WorldLevelUILayer::GAME_MENU_JSON = "GameMenu.json";
 
+WorldLevelUILayer::WorldLevelUILayer() : UILayer() {
+  m_totalUnits = 0;
+  m_totalRequiredUnits = 0;
+  m_totalLostUnits = 0;
+  m_totalSavedUnits = 0;
+}
+
 // on "init" you need to initialize your instance
 bool WorldLevelUILayer::init()
 {
@@ -125,4 +132,32 @@ void WorldLevelUILayer::playStateAnimation(std::string name) {
 }
 
 void WorldLevelUILayer::finishStateAnimation() {
+}
+
+void WorldLevelUILayer::setTotalUnits(int totalUnits) {
+  if (totalUnits >= 0) {
+    m_totalUnits = totalUnits;
+  }
+  cocos2d::log("WorldLevelUILayer::setTotalUnits %d", m_totalUnits);
+}
+
+void WorldLevelUILayer::setTotalRequiredUnits(int totalRequiredUnits) {
+  if (totalRequiredUnits >= 0) {
+    m_totalRequiredUnits = totalRequiredUnits;
+  }
+  cocos2d::log("WorldLevelUILayer::setTotalRequiredUnits %d", m_totalRequiredUnits);
+}
+
+void WorldLevelUILayer::setTotalSavedUnits(int totalSavedUnits) {
+  if (totalSavedUnits >= 0) {
+    m_totalSavedUnits = totalSavedUnits;
+  }
+  cocos2d::log("WorldLevelUILayer::setTotalSavedUnits %d", m_totalSavedUnits);
+}
+
+void WorldLevelUILayer::setTotalLostUnits(int totalLostUnits) {
+  if (totalLostUnits >= 0) {
+    m_totalLostUnits = totalLostUnits;
+  }
+  cocos2d::log("WorldLevelUILayer::setTotalLostUnits %d", m_totalLostUnits);
 }

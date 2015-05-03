@@ -59,6 +59,8 @@ for (uint n = 0; n < numSegments; n++) {
   fDx -= fSegmentLength/2 + n*fSegmentLength;
 
   body b = addBody(-1, '{"type":"dynamic","awake":true}');
+  b.setCustomInt("zOrderTouch", 1000);
+  b.setCustomInt("zOrderDraw", 1000);
 
   string fixtureDef = '{"density":'+(fInitialDensity - (n*fDensityStep))+',"shapes":[{"radius":0,"type":"polygon"}],"friction":0.2,"vertices":{"x":['+fCx+','+fDx+','+fBx+','+fAx+'],"y":['+fCy+','+fDy+','+fBy+','+fAy+']}}';
   b.addFixture(-1, fixtureDef);
@@ -75,7 +77,7 @@ for (uint n = 0; n < numSegments; n++) {
     j.setCustomString("category", "branch");
     j.setCustomString("m_id", 'branch_' + m_id);
     if (bIsDraggable && n == numSegments - 1) {
-      b.addFixture(-1, '{"name":"draggable_sensor","density":0,"sensor":true,"restitution":0.4,"friction":1,"shapes":[{"radius":0.4,"type":"circle"}],"friction":0.2,"vertices":{"x":['+(fSegmentLength/2)+'],"y":['+0+']}}');
+      b.addFixture(-1, '{"name":"draggable_sensor","density":0,"sensor":true,"restitution":0.4,"friction":1,"shapes":[{"radius":0.45,"type":"circle"}],"friction":0.2,"vertices":{"x":['+(fSegmentLength/2)+'],"y":['+0+']}}');
       b.setCustomString("category", "draggable");
       b.setCustomBool("active", true);
       b.setCustomFloat("draggablePinX", fSegmentLength/2);
@@ -89,7 +91,7 @@ for (uint n = 0; n < numSegments; n++) {
     vec2 sensorPosition = cursor();
     sensorPosition.y = 0;
     sensorPosition.x = 0;
-    b.addFixture(-1, '{"name":"body_sensor","density":0,"sensor":true,"restitution":0.4,"friction":1,"shapes":[{"radius":0.4,"type":"circle"}],"friction":0.2,"vertices":{"x":['+sensorPosition.x+'],"y":['+sensorPosition.y+']}}');
+    b.addFixture(-1, '{"name":"body_sensor","density":0,"sensor":true,"restitution":0.4,"friction":1,"shapes":[{"radius":0.45,"type":"circle"}],"friction":0.2,"vertices":{"x":['+sensorPosition.x+'],"y":['+sensorPosition.y+']}}');
     b.setCustomString("category", "branch");
     b.setCustomBool("active", true);
     b.setCustomBool("isPositionable", bIsPositionable);

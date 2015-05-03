@@ -49,10 +49,10 @@ protected:
   bool m_gravityAngleRotatesWorld;
   int m_ctrl;
 
-  int m_unitsInScene;
-  int m_unitsSaved;
-  int m_unitsLost;
-  int m_unitsRequired;
+  int m_totalUnits;
+  int m_totalSavedUnits;
+  int m_totalLostUnits;
+  int m_totalRequiredUnits;
   cocos2d::Touch* m_startTouch;
   cocos2d::Touch* m_endTouch;
   cocos2d::Vec2* m_startTouchLocation;

@@ -2,6 +2,8 @@
  * LEVEL
  */
 addCustomProperty('body', 'category', 'Category', 'string');
+addCustomProperty('body', 'zOrderTouch', 'Z Order Touch', 'int');
+addCustomProperty('body', 'zOrderDraw', 'Z Order Draw', 'int');
 addCustomProperty('body', 'm_id', '_ID', 'string');
 addCustomProperty('body', 'material', 'Material', 'string');
 addCustomProperty('body', 'capacity', 'Capacity', 'int');

@@ -38,6 +38,10 @@ protected:
   static std::unordered_map<int, int> m_ids;
   int m_animation;
   int m_skin;
+  bool m_shapeDrawEnabled;
+  cocos2d::Color4F m_color;
+  int m_zOrderDraw;
+  int m_zOrderTouch;
 
 public:
   /**
@@ -88,6 +92,11 @@ public:
   virtual void select(cocos2d::Touch* touch);
   virtual float getSkeletonScale();
   virtual float getGroundOffset();
+  virtual void enableShapeDraw(bool isShapeDrawEnabled);
+  virtual void setZOrderDraw(int zOrderDraw);
+  virtual int getZOrderDraw();
+  virtual void setZOrderTouch(int zOrderTouch);
+  virtual int getZOrderTouch();
 
   virtual void onDirectionChange(int direction);
   virtual void setAnimation(int animation);
@@ -99,8 +108,14 @@ public:
   virtual bool onMoveTouchEvent(cocos2d::Touch* touch);
   virtual bool onEndTouchEvent(cocos2d::Touch* touch);
 
+  virtual void draw(cocos2d::Renderer* renderer,
+                    const cocos2d::Mat4 &transform,
+                    uint32_t flags) override;
+
 protected:
   void setAutoId();
+  void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
+  cocos2d::CustomCommand m_customCommand;
 };
 
 #endif // __ENTITY_NODE_H__
