@@ -145,20 +145,24 @@ set(GAME_SRC
   Classes/util/IdUtil.cpp
   Classes/util/CppTweener.cpp
   Classes/engine/RayCastTool.cpp
+  Classes/engine/Timer.cpp
   Classes/component/DraggableComponent.cpp
   Classes/component/ContactComponent.cpp
   Classes/component/AIComponentCmd.cpp
   Classes/component/AIComponentWanderCmd.cpp
+  Classes/component/AIComponentGoToCmd.cpp
   Classes/component/AIComponentSeekCmd.cpp
   Classes/component/AIComponent.cpp
   Classes/model/ImageNode.cpp
   Classes/model/ImageBody.cpp
   Classes/model/Entity.cpp
+  Classes/model/EntityElem.cpp
   Classes/model/Entry.cpp
   Classes/model/Exit.cpp
   Classes/model/Unit.cpp
   Classes/model/Area.cpp
   Classes/model/Gravitron.cpp
+  Classes/model/Flux.cpp
   Classes/model/DraggableEntity.cpp
   Classes/model/ctrl/WheelCtrl.cpp
   Classes/model/LayerDef.cpp
@@ -169,6 +173,8 @@ set(GAME_SRC
   Classes/model/LevelSceneDef.cpp
   Classes/model/Level.cpp
   Classes/model/Branch.cpp
+  Classes/engine/GraphNode.cpp
+  Classes/engine/ChoiceGraph.cpp
   Classes/system/ContactSystem.cpp
   Classes/system/AISystem.cpp
   Classes/layer/BaseLayer.cpp

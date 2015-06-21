@@ -15,7 +15,6 @@ Entity::Entity() {
   m_color = cocos2d::Color4F(0.1, 0.1, 0.1, 1);
   m_zOrderDraw = 0;
   m_zOrderTouch = 0;
-  setAutoId();
 }
 
 Entity::~Entity() {
@@ -50,6 +49,17 @@ WorldLevelLayer* Entity::getWorldLevelLayer() {
   return m_worldLayer;
 }
 
+bool Entity::isValidTouch(b2Fixture* fixture) {
+  void* userData = fixture->GetUserData();
+  if (userData) {
+    EntityElem* entityElem = (EntityElem*)userData;
+    if (!entityElem->isTouchEnabled()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void Entity::update(float dt)
 {
   Node::update(dt);
@@ -69,6 +79,9 @@ void Entity::select(b2Body* body) {
 }
 
 void Entity::select(cocos2d::Touch* touch) {
+}
+
+void Entity::deselect() {
 }
 
 float Entity::getSkeletonScale() {
@@ -99,6 +112,21 @@ int Entity::getZOrderTouch() {
   return m_zOrderTouch;
 }
 
+void Entity::addEntityElem(EntityElem* entityElem) {
+  m_entityElems[entityElem->getId()] = entityElem;
+}
+
+bool Entity::hasEntityElems() {
+  return (m_entityElems.size() > 0);
+}
+
+EntityElem* Entity::getEntityElem(std::string id) {
+  if (m_entityElems.count(id) > 0) {
+    return m_entityElems[id];
+  }
+  return nullptr;
+}
+
 void Entity::setAutoId() {
   int type = getType();
   if (m_ids.count(type) == 0) {
@@ -120,6 +148,9 @@ void Entity::setAutoId() {
       break;
     case ENTITY_TYPE_GRAVITRON:
       kind = "gravitron_";
+      break;
+    case ENTITY_TYPE_FLUX:
+      kind = "flux_";
       break;
     case ENTITY_TYPE_IMAGE:
       kind = "image_";
@@ -193,24 +224,40 @@ void Entity::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
   float mRatio = 1.0f;
   int maxVertices = 64;              
   cocos2d::Point *mVertices = new cocos2d::Point[maxVertices];
-  b2PolygonShape* poly = nullptr;
   int32 vertexCount = 0;
   const b2Transform& _xf = m_body->GetTransform();
   for (b2Fixture* f = m_body->GetFixtureList(); f; f = f->GetNext()) {
-    poly = (b2PolygonShape*)f->GetShape();
-    vertexCount = poly->m_count;
-    b2Assert(vertexCount <= b2_maxPolygonVertices);
-    b2Vec2 vertices[b2_maxPolygonVertices];
-    for (int32 i = 0; i < vertexCount; ++i)
-    {
-      vertices[i] = poly->m_vertices[i];
+    if (f->GetShape()->GetType() == b2Shape::e_polygon) {
+      b2PolygonShape* poly = nullptr;
+      poly = (b2PolygonShape*)f->GetShape();
+      vertexCount = poly->m_count;
+      b2Assert(vertexCount <= b2_maxPolygonVertices);
+      b2Vec2 vertices[b2_maxPolygonVertices];
+      for (int32 i = 0; i < vertexCount; ++i)
+      {
+        vertices[i] = poly->m_vertices[i];
+      }
+      for (int i = 0; i < maxVertices && i < vertexCount; i++ ) {
+        mVertices[i].setPoint( mRatio * vertices[i].x, mRatio * vertices[i].y );
+      }
+      cocos2d::DrawPrimitives::drawSolidPoly(mVertices, vertexCount, m_color);
+      cocos2d::DrawPrimitives::setDrawColor4F(m_color.r, m_color.g, m_color.b, m_color.a);
+      cocos2d::DrawPrimitives::drawPoly(mVertices, vertexCount, true);
+    } else if(f->GetShape()->GetType() == b2Shape::e_chain) {
+      b2ChainShape* chain = nullptr;
+      chain = (b2ChainShape*)f->GetShape();
+      vertexCount = chain->m_count;
+      b2Vec2 vertices[vertexCount];
+      for (int32 i = 0; i < vertexCount; ++i) { 
+        vertices[i] = chain->m_vertices[i];
+      }
+      for (int i = 0; i < maxVertices && i < vertexCount; i++ ) {
+        mVertices[i].setPoint( mRatio * vertices[i].x, mRatio * vertices[i].y );
+      }
+      cocos2d::DrawPrimitives::drawSolidPoly(mVertices, vertexCount, m_color);
+      cocos2d::DrawPrimitives::setDrawColor4F(m_color.r, m_color.g, m_color.b, m_color.a);
+      cocos2d::DrawPrimitives::drawPoly(mVertices, vertexCount, true);
     }
-    for (int i = 0; i < maxVertices && i < vertexCount; i++ ) {
-      mVertices[i].setPoint( mRatio * vertices[i].x, mRatio * vertices[i].y );
-    }
-    cocos2d::DrawPrimitives::drawSolidPoly(mVertices, vertexCount, m_color);
-    cocos2d::DrawPrimitives::setDrawColor4F(m_color.r, m_color.g, m_color.b, m_color.a);
-    cocos2d::DrawPrimitives::drawPoly(mVertices, vertexCount, true);
   }
   cocos2d::Director::getInstance()->popMatrix(cocos2d::MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 }

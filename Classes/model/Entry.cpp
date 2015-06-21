@@ -18,6 +18,7 @@ Entry::Entry() : Entity() {
   m_transition = false;
   m_width = 0.2f;
   m_height = 0.075f;
+  setAutoId();
 }
 
 Entry::~Entry() {

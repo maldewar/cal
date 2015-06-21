@@ -1,6 +1,7 @@
 #include "DraggableEntity.h"
 
 DraggableEntity::DraggableEntity() : Entity(), DraggableComponent() {
+  setAutoId();
 }
 
 DraggableEntity::~DraggableEntity() {
@@ -42,7 +43,6 @@ void DraggableEntity::update(float dt) {
 }
 
 void DraggableEntity::select(cocos2d::Touch* touch) {
-  cocos2d::log("SELECTING draggable entity.");
   getWorldLevelLayer()->setNavigationEnabled(false);
   getWorldLevelLayer()->addTouchListener(this);
   createMouseJoint(getWorldLevelLayer()->getWorld(),
@@ -51,13 +51,11 @@ void DraggableEntity::select(cocos2d::Touch* touch) {
 }
 
 bool DraggableEntity::onMoveTouchEvent(cocos2d::Touch* touch) {
-  cocos2d::log(" onMoveTouchEvent");
   moveMouseJoint(getWorldLevelLayer()->screenToWorld(touch->getLocation()));
   return false;
 }
 
 bool DraggableEntity::onEndTouchEvent(cocos2d::Touch* touch) {
-  cocos2d::log("onEndTouchEvent");
   getWorldLevelLayer()->setNavigationEnabled(true);
   destroyMouseJoint(getWorldLevelLayer()->getWorld());
   return true;

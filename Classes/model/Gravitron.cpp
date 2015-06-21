@@ -7,6 +7,7 @@ Gravitron::Gravitron() : Entity(), ContactComponent() {
   m_armature = nullptr;
   m_width = 0.15f;
   m_height = 0.15f;
+  setAutoId();
 }
 
 Gravitron::~Gravitron() {

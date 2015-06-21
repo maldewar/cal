@@ -1,6 +1,8 @@
 #include "ChoiceGraph.h"
 #include <sstream>
 #include <algorithm>
+#include "../util/CMath.h"
+#include "../scene/WorldLevelScene.h"
 //#include "../Engine/RayCastTool.h"
 //#include "../Util/Log.h"
 //#include "Scene.h"
@@ -28,7 +30,7 @@ template <class CGraph> struct ChoiceGraph::exercise_vertex {
         s1 << std::endl;
         Log::L(s1.str());
     }
-};
+}
 */
 
 /*
@@ -36,42 +38,143 @@ ChoiceGraph::ChoiceGraph(WorldLayer* worldLayer) {
     m_worldLayer = worldLayer;
     m_graph = new CGraph();
     m_nodeIndex = 0;
-    //AccessVertexSet();
     //AccessEdgeSet();
     //std::for_each(boost::vertices(*m_graph).first, boost::vertices(*m_graph).second,
     //              exercise_vertex<Graph>(*m_graph));
-};
+}
 */
 
 ChoiceGraph::ChoiceGraph() {
-    m_graph = new CGraph();
-    m_nodeIndex = 0;
-    //AccessVertexSet();
-    //AccessEdgeSet();
-    //std::for_each(boost::vertices(*m_graph).first, boost::vertices(*m_graph).second,
-    //              exercise_vertex<Graph>(*m_graph));
-};
+  m_graph = new CGraph();
+  m_nodeIndex = 0;
+  m_debugDrawEnabled = false;
+  m_drawNode = cocos2d::DrawNode::create();
+  //AccessEdgeSet();
+  //std::for_each(boost::vertices(*m_graph).first, boost::vertices(*m_graph).second,
+  //              exercise_vertex<Graph>(*m_graph));
+}
 
-CGraph* ChoiceGraph::GetGraph() {
-    return m_graph;
-};
+CGraph* ChoiceGraph::getGraph() {
+  return m_graph;
+}
+
+cocos2d::DrawNode* ChoiceGraph::getDrawNode() {
+  return m_drawNode;
+}
+
+bool ChoiceGraph::addEntity(Entity* entity) {
+  if (m_entities.count(entity->getId()) == 0) {
+    m_entities[entity->getId()] = entity;
+    addWalkableBody(entity->getBody());
+    updateNodeDraw();
+    return true;
+  }
+  return false;
+}
+
+bool ChoiceGraph::removeEntity(std::string id) {
+  if (m_entities.count(id) >= 1) {
+    m_entities.erase(id);
+    // TODO: remove nodes from graph.
+    return true;
+  }
+  return false;
+}
 
 /*
 GraphNode* ChoiceGraph::GetGraphNode(int areaNodeId) {
     GraphNode* graphNode;
     graphNode = &(*m_graph)[areaNodeId];
     return graphNode;
-};
+}
+*/
 
-GraphNode* ChoiceGraph::AddGraphNode(float x, float y, bool offsetAgainstGravity) {
+void ChoiceGraph::setDebugDrawEnabled(bool debugDrawEnabled) {
+  m_debugDrawEnabled = debugDrawEnabled;
+}
+
+bool ChoiceGraph::isDebugDrawEnabled() {
+  return m_debugDrawEnabled;
+}
+
+void ChoiceGraph::updateNodeDraw() {
+  if (!m_debugDrawEnabled)
+    return;
+
+  //cocos2d::2d::DrawPrimitives::setDrawColor4F(255, 255, 255, 1);
+  //cocos2d::DrawPrimitives::drawLine(cocos2d::Point(-1,1), cocos2d::Point(1,-1));
+  
+  CIndexMap index = boost::get(boost::vertex_index, *m_graph);
+  vertex_t v, _v;
+  GraphNode* node;
+  GraphNode* neighbourNode;
+  std::pair<CVertexIter, CVertexIter> vp;
+  CGraph::adjacency_iterator neighbourIt, neighbourEnd;
+  
+  // Iteration through the graph pairs of edges.
+  m_drawNode->clear();
+  
+  for (vp = boost::vertices(*m_graph); vp.first != vp.second; ++vp.first) {
+  
+    v = index[*vp.first];
+    node = &(*m_graph)[v];
+  
+  
+    //m_drawNode->drawPoints(node->GetPoint(), 1, cocos2d::Color4F(255,255,255,1));
+    //cocos2d::log("Printing at x:%f y:%f", (**node->GetPoint()).x, (**node->GetPoint()).y);
+    //m_drawNode->drawDot(*node->GetPoint(), 0.0001, cocos2d::Color4F(128,128,255,0.5));
+    m_drawNode->drawDot(cocos2d::Vec2(node->x, node->y), 0.02, cocos2d::Color4F::WHITE);  /*
+    m_pointRect->x = CMath::MToPxInt(node->x) - m_pointRect->w/2;
+    m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas(node->y, m_scene_height)) - m_pointRect->h/2;
+    if (node->terminal) {
+      RendererUtil::SetColor(m_renderer, RendererUtil::Color::ORANGE, 192);
+      if (node->action == ACTION_DESCEND)
+        RendererUtil::SetColor(m_renderer, RendererUtil::Color::RED);
+    } else {
+      RendererUtil::SetColor(m_renderer, RendererUtil::Color::YELLOW, 192);
+    }
+    SDL_RenderFillRect(m_renderer, m_pointRect);
+    if (node->anchor) {
+      RendererUtil::SetColor(m_renderer, RendererUtil::Color::GREEN, 92);
+      SDL_RenderDrawLine(m_renderer,
+        CMath::MToPxInt(node->x),
+        CMath::MToPxInt(CMath::ToCanvas(node->y, m_scene_height)),
+        CMath::MToPxInt(node->anchor->x),
+        CMath::MToPxInt(CMath::ToCanvas(node->anchor->y, m_scene_height)));
+      m_pointRect->x = CMath::MToPxInt(node->anchor->x) - m_pointRect->w/2;
+      m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas(node->anchor->y, m_scene_height)) - m_pointRect->h/2;
+      SDL_RenderFillRect(m_renderer, m_pointRect);
+    }
+    RendererUtil::SetColor(m_renderer, RendererUtil::Color::WHITE);
+    boost::tie(neighbourIt, neighbourEnd) = boost::adjacent_vertices(v, *m_graph);
+    for (; neighbourIt != neighbourEnd; ++neighbourIt){
+      _v = index[*neighbourIt];
+      neighbourNode = &(*m_graph)[_v];
+      if (node->IsIntern())
+        RendererUtil::SetColor(m_renderer, RendererUtil::Color::RED, 92);
+      else
+        RendererUtil::SetColor(m_renderer, RendererUtil::Color::GREEN, 92);
+      SDL_RenderDrawLine(m_renderer,
+        CMath::MToPxInt(node->x),
+        CMath::MToPxInt(CMath::ToCanvas(node->y, m_scene_height)),
+        CMath::MToPxInt(neighbourNode->x),
+        CMath::MToPxInt(CMath::ToCanvas(neighbourNode->y, m_scene_height)));
+    }
+*/
+   }
+
+    //RendererUtil::ResetColor(m_renderer);
+}
+
+GraphNode* ChoiceGraph::addGraphNode(float x, float y, bool offsetAgainstGravity) {
     GraphNode* graphNode;
     vertex_t vGraphNode;
     vGraphNode = boost::add_vertex(m_nodeIndex, *m_graph);
     graphNode = &(*m_graph)[vGraphNode];
     graphNode->id = m_nodeIndex;
     if (offsetAgainstGravity) {
-        double gravityAgainstAngle = CMath::GetAngleOffset(Scene::GetGravity()->Angle(), M_PI);
-        Vector2* graphNodeLocation = CMath::GetPointAt(x, y, VERTEX_GROUND_OFFSET, gravityAgainstAngle);
+        double gravityAgainstAngle = CMath::getAngleOffset(WorldLevelScene::getGravityAngle(), M_PI);
+        cocos2d::Vec2* graphNodeLocation = CMath::getPointAt(x, y, VERTEX_GROUND_OFFSET, gravityAgainstAngle);
         graphNode->x = graphNodeLocation->x;
         graphNode->y = graphNodeLocation->y;
     } else {
@@ -80,8 +183,9 @@ GraphNode* ChoiceGraph::AddGraphNode(float x, float y, bool offsetAgainstGravity
     }
     m_nodeIndex++;
     return graphNode;
-};
+}
 
+/*
 GraphNode* ChoiceGraph::AddGraphNode(AreaNode* areaNode) {
     GraphNode* graphNode;
     vertex_t vGraphNode;
@@ -101,96 +205,202 @@ GraphNode* ChoiceGraph::AddGraphNode(AreaNode* areaNode) {
     m_nodeIndex++;
     return graphNode;
 };
+*/
 
-void ChoiceGraph::AddArea(Area* area) {
-    AreaNode* point = NULL;
-    AreaNode* _point  = NULL;
-    AreaNode* __point = NULL;
-    AreaNode* firstPoint = NULL;
-    Vector2* graphPoint = NULL;
+void ChoiceGraph::addWalkableBody(b2Body* body) {
+  b2Fixture* fixture = body->GetFixtureList();
+
+  if (fixture) {
+    // Trail of shape points.
+    b2Vec2* point = nullptr;
+    b2Vec2* _point  = nullptr;
+    b2Vec2* __point = nullptr;
+    b2Vec2* firstPoint = nullptr;
+
+    // Point to save.
+    cocos2d::Vec2* graphPoint = nullptr;
+
+    // Trail of edges.
     vertex_t v = 0;
     vertex_t _v = 0;
     vertex_t __v = 0;
     vertex_t firstV = -1;
-    GraphNode* node = NULL;
-    GraphNode* _node = NULL;
-    GraphNode* firstNode = NULL;
+
+    // Trail of graph node.
+    GraphNode* node = nullptr;
+    GraphNode* _node = nullptr;
+    GraphNode* firstNode = nullptr;
+
     float angle, _angle, absangle, linesAngle, distance = 0.0f;
-    double gravityAngle = Scene::GetGravity()->Angle();
-    double gravityOffsetAngle = CMath::GetAngleOffset(gravityAngle, M_PI_2);
+    double gravityAngle = WorldLevelScene::getGravityAngle();
+    double gravityOffsetAngle = CMath::getAngleOffset(gravityAngle, M_PI_2);
     typedef boost::graph_traits<CGraph>::vertex_descriptor vertex_t;
     int line = 0;
     bool newWalkLine = true;
     bool isIntern = false;
     bool convexChange = false;
-    for(auto &point_ : area->GetPoints()) { // Inspect every point in the area.
-        point = point_;
-        point->graphNodeId = -1;
+
+    b2Shape::Type shapeType = fixture->GetShape()->GetType();
+    if ( shapeType == b2Shape::e_chain ) {
+      b2ChainShape* shape = (b2ChainShape*)fixture->GetShape();
+      // shape->m_count repeats its last node.
+      if (shape->m_count < 3)
+        return;
+      for (int i = 0; i < shape->m_count - 1; i++) {
+        cocos2d::log("x:%f, y:%f", shape->m_vertices[i].x, shape->m_vertices[i].y);
+
+
+        point = new b2Vec2(body->GetWorldPoint(shape->m_vertices[i]));
+        cocos2d::log("walkable body vertex X:%f, Y:%f", point->x, point->y);
+        //point->graphNodeId = -1;
         if (_point) { // Wait until we have a previous point.
-            // Get angle of edge.
-            angle = CMath::GetAngleOffset(CMath::GetAngle(_point->x, _point->y, point->x, point->y), -gravityOffsetAngle);
-            // Get absolute angle of edge (to test walkability).
-            absangle = CMath::GetAbsoluteAngle(angle);
-            if (__point) { //Checks for change in line convexion
-                convexChange = IsConvexChange(_point->x, _point->y, 
-                                                point->x, point->y, 
-                                                __point->x, __point->y, gravityAngle);
-                if (convexChange) {
-                    isIntern = !isIntern;
-                    // If there's a change to convex, we set the last line terminal node.
-                    if (_node) {
-                        _node->terminal = true;
-                    }
-                }
-            }
-            if (absangle < SLOPE_ANGLE_THRESHOLD) {
-                // If the angle edge is walkable process the points involved (these are definetly
-                // going to get added, but their connections to other edges remain to be seen).
-                if (newWalkLine || convexChange) {
-                    //If there's a newline we set the terminal node on the old one.
-                    if (_node) {
-                        _node->terminal = true;
-                    }
-                    // If a new walking line need to be created we add its first node.
-                    _node = AddGraphNode(_point);
-                    _v = boost::vertex(_node->id, *m_graph);
-                    // Set the terminal node for the new line.
-                    _node->terminal = true;
-                    if (area->IsClosed() && firstV == -1) {
-                        // Save reference to the first node ever created in case we have a closes area.
-                        // This is used to check the final connection.
-                        firstV = _v;
-                        firstPoint = _point;
-                        firstNode = _node;
-                    }
-                    newWalkLine = false;
-                }
-                // If no new line is needed, we already have a previous node to connect to, so we
-                // create the second node.
-                node = AddGraphNode(point);
-                v = boost::vertex(node->id, *m_graph);
-                if (area->IsClosed()) {// If the area is closed mark node as intern or extern.
-                    node->intern = isIntern;
-                    _node->intern = isIntern;
-                }
-                if (node->IsIntern() == _node->IsIntern()) {
-                    distance = _point->Dist(point);
-                    boost::add_edge(v, _v, CEdge(distance), *m_graph);
-                    boost::add_edge(_v, v, CEdge(distance), *m_graph);
-                }
-                _v = v;
-                _node = node;
-            } else {
-                //If the angle edge is not walkable next one should make a new walking line.
-                newWalkLine = true;
-            }
-            convexChange = false;
+          // Get angle of edge.
+          angle = CMath::getAngleOffset(CMath::getAngle(_point->x, _point->y, point->x, point->y), -gravityOffsetAngle);
+          // Get absolute angle of edge (to test walkability).
+          absangle = CMath::getAbsoluteAngle(angle);
+          if (__point) { //Checks for change in line convexion
+              convexChange = isConvexChange(_point->x, _point->y, 
+                                            point->x, point->y, 
+                                            __point->x, __point->y, gravityAngle);
+              if (convexChange) {
+                  isIntern = !isIntern;
+                  // If there's a change to convex, we set the last line terminal node.
+                  if (_node) {
+                      _node->terminal = true;
+                  }
+              }
+          }
+          if (absangle < SLOPE_ANGLE_THRESHOLD) {
+              // If the angle edge is walkable process the points involved (these are definetly
+              // going to get added, but their connections to other edges remain to be seen).
+              if (newWalkLine || convexChange) {
+                  //If there's a newline we set the terminal node on the old one.
+                  if (_node) {
+                      _node->terminal = true;
+                  }
+                  // If a new walking line need to be created we add its first node.
+                  _node = addGraphNode(_point->x, _point->y, true);
+                  _v = boost::vertex(_node->id, *m_graph);
+                  // Set the terminal node for the new line.
+                  _node->terminal = true;
+                  //if (area->IsClosed() && firstV == -1) {
+                  if (firstV == -1) {
+                      // Save reference to the first node ever created in case we have a closes area.
+                      // This is used to check the final connection.
+                      firstV = _v;
+                      firstPoint = _point;
+                      firstNode = _node;
+                  }
+                  newWalkLine = false;
+              }
+              // If no new line is needed, we already have a previous node to connect to, so we
+              // create the second node.
+              node = addGraphNode(point->x, point->y, true);
+              v = boost::vertex(node->id, *m_graph);
+              //if (area->IsClosed()) {// If the area is closed mark node as intern or extern.
+                  node->intern = isIntern;
+                  _node->intern = isIntern;
+              //}
+              if (node->IsIntern() == _node->IsIntern()) {
+                  //distance = _point->Dist(point);
+                  distance = CMath::getDistance2(node->x, node->y, _node->x, _node->y);
+                  boost::add_edge(v, _v, CEdge(distance), *m_graph);
+                  boost::add_edge(_v, v, CEdge(distance), *m_graph);
+              }
+              _v = v;
+              _node = node;
+          } else {
+              //If the angle edge is not walkable next one should make a new walking line.
+              newWalkLine = true;
+          }
+          convexChange = false;
         }
         __point = _point;
         _point = point;
         line++;
+      }
     }
+
+
+    /**
+     * Inspect every point in the body (countour).
+     */
+        /*
+    cocos2d::log("!!!!!!!!!!!!!! Vertex count:%d ", shape->GetVertexCount());
+    for (int i = 0; i < shape->GetVertexCount(); i ++) {
+      point = new b2Vec2(body->GetWorldPoint(shape->GetVertex(i)));
+      cocos2d::log("walkable body vertex X:%f, Y:%f", point->x, point->y);
+      */
+      /*
+      point = point_;
+      point->graphNodeId = -1;
+      if (_point) { // Wait until we have a previous point.
+        // Get angle of edge.
+        angle = CMath::GetAngleOffset(CMath::GetAngle(_point->x, _point->y, point->x, point->y), -gravityOffsetAngle);
+        // Get absolute angle of edge (to test walkability).
+        absangle = CMath::GetAbsoluteAngle(angle);
+        if (__point) { //Checks for change in line convexion
+            convexChange = IsConvexChange(_point->x, _point->y, 
+                                            point->x, point->y, 
+                                            __point->x, __point->y, gravityAngle);
+            if (convexChange) {
+                isIntern = !isIntern;
+                // If there's a change to convex, we set the last line terminal node.
+                if (_node) {
+                    _node->terminal = true;
+                }
+            }
+        }
+        if (absangle < SLOPE_ANGLE_THRESHOLD) {
+            // If the angle edge is walkable process the points involved (these are definetly
+            // going to get added, but their connections to other edges remain to be seen).
+            if (newWalkLine || convexChange) {
+                //If there's a newline we set the terminal node on the old one.
+                if (_node) {
+                    _node->terminal = true;
+                }
+                // If a new walking line need to be created we add its first node.
+                _node = AddGraphNode(_point);
+                _v = boost::vertex(_node->id, *m_graph);
+                // Set the terminal node for the new line.
+                _node->terminal = true;
+                if (area->IsClosed() && firstV == -1) {
+                    // Save reference to the first node ever created in case we have a closes area.
+                    // This is used to check the final connection.
+                    firstV = _v;
+                    firstPoint = _point;
+                    firstNode = _node;
+                }
+                newWalkLine = false;
+            }
+            // If no new line is needed, we already have a previous node to connect to, so we
+            // create the second node.
+            node = AddGraphNode(point);
+            v = boost::vertex(node->id, *m_graph);
+            if (area->IsClosed()) {// If the area is closed mark node as intern or extern.
+                node->intern = isIntern;
+                _node->intern = isIntern;
+            }
+            if (node->IsIntern() == _node->IsIntern()) {
+                distance = _point->Dist(point);
+                boost::add_edge(v, _v, CEdge(distance), *m_graph);
+                boost::add_edge(_v, v, CEdge(distance), *m_graph);
+            }
+            _v = v;
+            _node = node;
+        } else {
+            //If the angle edge is not walkable next one should make a new walking line.
+            newWalkLine = true;
+        }
+        convexChange = false;
+      }
+      __point = _point;
+      _point = point;
+      line++;
+    }
+    */
     // Make last connection for closed areas.
+    /*
     if (area->IsClosed() && firstV != -1 && v != firstV && !newWalkLine) {
         angle = CMath::GetAngleOffset(CMath::GetAngle(_point->x, _point->y, firstPoint->x, firstPoint->y), -gravityOffsetAngle);
         absangle = CMath::GetAbsoluteAngle(angle);
@@ -202,7 +412,11 @@ void ChoiceGraph::AddArea(Area* area) {
     } else if (_node) {
         _node->terminal = true;
     }
-};
+    */
+  }
+}
+
+/*
 
 void ChoiceGraph::AddExit(Exit* exit) {
 };
@@ -225,7 +439,6 @@ void ChoiceGraph::Build() {
     for (auto &exit : m_worldLayer->GetExits()) {
         AddExit(exit);
     }
-    //AccessVertexSet();
     //typedef std::pair<int, int> Edge;
     //Edge edge_array[] = {Edge(A,B), Edge(A,D), Edge(C,A), Edge(D,C),
     //    Edge(C,E), Edge(B,D), Edge(D,E)};
@@ -450,21 +663,22 @@ bool ChoiceGraph::ConnectTriad(AreaNode* node, float x, float y, AreaNode* nodeA
     graphNodeN->terminal = false;
     return true;
 };
+*/
 
-bool ChoiceGraph::IsConvexChange(float xV, float yV, float xA, float yA, float xB, float yB, float angle) {
+bool ChoiceGraph::isConvexChange(float xV, float yV, float xA, float yA, float xB, float yB, float angle) {
     float xVA = (xV + xA) / 2;
     float yVA = (yV + yA) / 2;
     float xVB = (xV + xB) / 2;
     float yVB = (yV + yB) / 2;
-    Vector2* pVA1 = CMath::GetPointAt(xVA, yVA, 300, angle);
-    Vector2* pVA2 = CMath::GetPointAt(xVA, yVA, -300, angle);
-    Vector2* pVB1 = CMath::GetPointAt(xVB, yVB, 300, angle);
-    Vector2* pVB2 = CMath::GetPointAt(xVB, yVB, -300, angle);
-    bool aIntersect = CMath::LinesIntersect(xV, yV, xA, yA, pVB1->x, pVB1->y, pVB2->x, pVB2->y);
-    bool bIntersect = CMath::LinesIntersect(xV, yV, xB, yB, pVA1->x, pVA1->y, pVA2->x, pVA2->y);
+    cocos2d::Vec2* pVA1 = CMath::getPointAt(xVA, yVA, 300, angle);
+    cocos2d::Vec2* pVA2 = CMath::getPointAt(xVA, yVA, -300, angle);
+    cocos2d::Vec2* pVB1 = CMath::getPointAt(xVB, yVB, 300, angle);
+    cocos2d::Vec2* pVB2 = CMath::getPointAt(xVB, yVB, -300, angle);
+    bool aIntersect = CMath::linesIntersect(xV, yV, xA, yA, pVB1->x, pVB1->y, pVB2->x, pVB2->y);
+    bool bIntersect = CMath::linesIntersect(xV, yV, xB, yB, pVA1->x, pVA1->y, pVA2->x, pVA2->y);
     return (aIntersect || bIntersect);
 };
-*/
+
 /*
 void ChoiceGraph::CollectVertexInfo() {
     CIndexMap index = boost::get(boost::vertex_index, *m_graph);

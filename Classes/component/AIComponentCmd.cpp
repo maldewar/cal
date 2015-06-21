@@ -41,6 +41,14 @@ int AIComponentCmd::getAnimation() {
   return m_animation;
 }
 
+float AIComponentCmd::getCompleteness() {
+  return 0;
+}
+
+int AIComponentCmd::getAwareness() {
+  return Awareness::None;
+}
+
 b2Vec2 AIComponentCmd::getDirectionForce(AIComponentCmd::Walk direction,
                                          float desiredVelocity,
                                          b2Vec2 currentVelocity,

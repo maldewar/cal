@@ -44,6 +44,39 @@ float CMath::random(float a, float b) {
   return (a + r);
 };
 
+float CMath::getTriangleAngle(float aX, float aY,
+                              float bX, float bY,
+                              float cX, float cY) {
+  float dAB = getDistance(aX, aY, bX, bY);
+  float dBC = getDistance(bX, bY, cX, cY);
+  float dCA = getDistance(cX, cY, aX, aY);
+  float pX, pY;
+  if (dAB < dBC && dAB < dCA) {
+    //dAB smaller edge, C pointing vertix.
+    pX = cX;
+    pY = cY;
+  } else if (dBC < dAB && dBC < dCA) {
+    //dBC smaller edge, A pointing vertix.
+    pX = aX;
+    pY = aY;
+    aX = bX;
+    aY = bY;
+    bX = cX;
+    bY = cY;
+  } else {
+    //dCA smaller edge, B pointing vertix.
+    pX = bX;
+    pY = bY;
+    bX = aX;
+    bY = aY;
+    aX = cX;
+    aY = cY;
+  }
+  float angleAP = CMath::getAngle(pX, pY, aX, aY);
+  float angleBP = CMath::getAngle(pX, pY, bX, bY);
+  return ((angleAP + angleBP) / 2) + M_PI;
+}
+
 float CMath::getAngleOffset(float base, float offset) {
   float angle = fmod(base + offset, M_PI * 2);
   if (angle > M_PI)

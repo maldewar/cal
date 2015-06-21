@@ -3,16 +3,13 @@
 
 #include "Box2D/Box2D.h"
 
-const int AI_CMD_STAY   = 0;
-const int AI_CMD_SEEK  = 1;
-const int AI_CMD_FOLLOW = 2;
-
 class AIComponentCmd
 {
 public:
   enum Type {
     Stay,
     Seek,
+    GoTo,
     Follow,
     Evade,
     Wander 
@@ -21,6 +18,11 @@ public:
     Right,
     Stop,
     Left
+  };
+  enum Awareness {
+    None,
+    Evade_,
+    Seek_
   };
 protected:
   Type m_type;
@@ -34,10 +36,25 @@ public:
   ~AIComponentCmd(void);
   Type getType();
   virtual void update(float dt, b2Body *body);
+  /**
+   * Applies a force to make the body walk.
+   * @param body Body of the entity to apply the force to.
+   * @param direction Enum for the pulling direction.
+   */
   virtual void walk(b2Body* body, Walk direction);
   virtual void correct();
   virtual void onDirectionChange(int direction);
   int getAnimation();
+  /**
+   * Evaluates the command's goal.
+   * @return 1 if the goal is met.
+   */
+  virtual float getCompleteness();
+  /**
+   * Enumeration for awareness.
+   * @return int Enumaration for entities found.
+   */
+  virtual int getAwareness();
 
 protected:
   virtual b2Vec2 getDirectionForce(AIComponentCmd::Walk direction,

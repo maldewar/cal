@@ -141,7 +141,6 @@ void WorldLevelScene::toggleDebug() {
 }
 
 void WorldLevelScene::onLayerAdded(BaseLayer* layer, LayerDef* layerDef) {
-  cocos2d::log("!!!!!!!!!!!!!!!!!!!!!!!!!!! ON LAYER ADDED: %f", m_gravityAngle);
   // TODO: Inspect, probably not respecting isMain
   if (layerDef->getType() == LAYER_TYPE_WORLD) {
     m_worldLevelLayer = static_cast<WorldLevelLayer*>(layer);
@@ -158,7 +157,6 @@ void WorldLevelScene::onLayerAdded(BaseLayer* layer, LayerDef* layerDef) {
 }
 
 void WorldLevelScene::setGravityAngle(float angle) {
-  cocos2d::log("!!!!!!!!!!!!!!!!!!!!!!!!!!! SET GRAVITY ANGLE: %f", angle);
   m_gravityAngle = CMath::wrapPosNegPI(angle);
   float xGravity = cos(m_gravityAngle) * 6;
   float yGravity = sin(m_gravityAngle) * 6;

@@ -15,6 +15,7 @@
 class Branch;
 class WorldLevelScene;
 class RayCastTool;
+class AISystem;
 
 class WorldLevelLayer : public BasicRUBELayer
 {
@@ -27,6 +28,7 @@ protected:
   cocos2d::Layer* m_assetLayer;
   RayCastTool* m_rayCastTool;
   bool m_controlGrabbed;
+  Entity* m_touchedEntity;
   WorldLevelScene* m_parent;
   ContactSystem* m_contactSystem;
   AISystem* m_AISystem;
@@ -48,10 +50,11 @@ public:
   virtual void setWorldLevelScene (WorldLevelScene* worldScene);
   virtual WorldLevelScene* getWorldLevelScene ();
   virtual void setParentScene(BaseScene* parent);
-  virtual void clear ();
-  virtual void update (float dt);
-  void removeBodyFromWorld (b2Body* body);
-  virtual void onBodyTouchBegan (std::vector<b2Body*> bodies, std::vector<b2Fixture*> fixtures);
+  virtual void clear();
+  virtual void update(float dt);
+  void removeBodyFromWorld(b2Body* body);
+  virtual void onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<b2Fixture*> fixtures);
+  virtual void onBodyTouchEnded();
   virtual void onWorldTouchBegan(b2Vec2& position);
   virtual AISystem* getAISystem();
 
@@ -74,6 +77,7 @@ public:
 
 protected:
   virtual void onDraw(const cocos2d::Mat4 &transform, uint32_t flags) override;
+  virtual void setDataOnFixtures(b2dJson* json, b2Body* body, Entity* parent);
 
 };
 

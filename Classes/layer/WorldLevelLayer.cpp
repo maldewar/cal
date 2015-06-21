@@ -27,6 +27,7 @@ WorldLevelLayer::WorldLevelLayer() : BasicRUBELayer() {
   BasicRUBELayer::addChild(m_unitLayer, 1);
   m_contactSystem = nullptr;
   m_AISystem = nullptr;
+  m_touchedEntity = nullptr;
 }
 
 WorldLevelLayer* WorldLevelLayer::create(WorldLevelScene* parent,
@@ -42,9 +43,12 @@ WorldLevelLayer* WorldLevelLayer::create(WorldLevelScene* parent,
 
 bool WorldLevelLayer::init(WorldLevelScene* parent, WorldLayerDef* worldLayerDef) {
   m_AISystem = new AISystem(parent->getGravityAngle());
+  m_AISystem->setDebugDrawEnabled(true);
+  if (m_AISystem->isDebugDrawEnabled()) {
+    this->addChild(m_AISystem->getChoiceGraph()->getDrawNode());
+  }
   if (BasicRUBELayer::init(parent, worldLayerDef)) {
     m_filename = worldLayerDef->getPath();
-    cocos2d::log("WorldLevelLayer::init loading file %s", m_filename.c_str());
     return true;
   }
   return false;
@@ -68,6 +72,18 @@ void WorldLevelLayer::addUnit(int count) {
   }
 }
 
+void WorldLevelLayer::setDataOnFixtures(b2dJson* json, b2Body* body, Entity* parent) {
+  for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+    if (json->hasCustomString(f, "category")) {
+      std::string category = json->getCustomString(f, "category");
+      if (category.compare("default") == 0) {
+        EntityElem* entityElem = EntityFactory::getInstance()->getEntityElem(f, json);
+        entityElem->setEntity(parent);
+      }
+    }
+  }
+}
+
 // This is called after the Box2D world has been loaded, and while the b2dJson information
 // is still available to do extra loading. Here is where we load the images.
 void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
@@ -82,7 +98,6 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
   for (int i = 0; i < b2Bodies.size(); i++) {
     if (json->hasCustomString(b2Bodies[i], "category")) {
       std::string category = json->getCustomString(b2Bodies[i], "category");
-      cocos2d::log("!!Found body with category: %s", category.c_str());
       if (category.compare("entry") == 0) {
         Entry* entry = EntityFactory::getInstance()->getEntry(json, b2Bodies[i]);
         addChild(entry);
@@ -96,6 +111,7 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
       } else if (category.compare("area") == 0) {
         Area* area = EntityFactory::getInstance()->getArea(json, b2Bodies[i]);
         addChild(area);
+        m_AISystem->addWalkableEntity(area);
       } else if (category.compare("gravitron") == 0) {
         Gravitron* gravitron = EntityFactory::getInstance()->getGravitron(json, b2Bodies[i]);
         addChild(gravitron);
@@ -106,7 +122,11 @@ void WorldLevelLayer::afterLoadProcessing(b2dJson* json)
           m_branches.insert(std::make_pair(_id, branch));
           addChild(branch);
         }
-      } else if (category.compare("draggable") == 0) {
+      } else if (category.compare("flux") == 0) {
+        Flux* flux = EntityFactory::getInstance()->getFlux(json, b2Bodies[i]);
+        setDataOnFixtures(json, b2Bodies[i], flux);
+        addChild(flux);
+      }else if (category.compare("draggable") == 0) {
         DraggableEntity* draggableEntity =
           EntityFactory::getInstance()->getDraggableEntity(json, b2Bodies[i]);
         addChild(draggableEntity);
@@ -240,7 +260,6 @@ void WorldLevelLayer::update(float dt)
 // Remove one body and any images is had attached to it from the layer
 void WorldLevelLayer::removeBodyFromWorld(b2Body* body)
 {
-  cocos2d::log("WorldLevelLayer::removeBodyFromWorld...");
   m_world->DestroyBody(body);
   /*
     
@@ -294,6 +313,7 @@ void WorldLevelLayer::onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<
   if (index < 0)
     return;
   b2Body* body = bodies[index];
+  b2Fixture* fixture = fixtures[index];
   switch(body->GetType()) {
     case b2_staticBody:
       void* bodyUserData;
@@ -308,10 +328,10 @@ void WorldLevelLayer::onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<
             entity->select();
             break;
         }
+        m_touchedEntity = entity;
       } else {
-        CCLOG("Static body touched.");
+        m_touchedEntity = nullptr;
       }
-      break;
       break;
     case b2_kinematicBody:
     case b2_dynamicBody:
@@ -332,16 +352,27 @@ void WorldLevelLayer::onBodyTouchBegan(std::vector<b2Body*> bodies, std::vector<
           case ENTITY_TYPE_DRAGGABLE:
             entity->select(getWorldLevelScene()->getStartTouch());
             break;
+          case ENTITY_TYPE_FLUX:
+            if (entity->isValidTouch(fixture)) {
+              entity->select();
+            }
+            break;
         }
+        m_touchedEntity = entity;
       } else {
-        CCLOG("Dynamic body touched.");
+        m_touchedEntity = nullptr;
       }
       break;
   }
 }
 
+void WorldLevelLayer::onBodyTouchEnded() {
+  if (m_touchedEntity) {
+    m_touchedEntity->deselect();
+  }
+}
+
 void WorldLevelLayer::onWorldTouchBegan(b2Vec2& position) {
-  cocos2d::log("WorldLevelLayer::onWorldTouchBegan... 1");
 }
 
 AISystem* WorldLevelLayer::getAISystem() {
@@ -429,8 +460,11 @@ int WorldLevelLayer::getTouchedBody(std::vector<b2Body*> bodies) {
 void WorldLevelLayer::onDraw(const cocos2d::Mat4 &transform, uint32_t flags) {
   Director::getInstance()->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
   Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
-  DrawPrimitives::setDrawColor4F(255, 255, 255, 1);
-  DrawPrimitives::drawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
+  //DrawPrimitives::setDrawColor4F(255, 255, 255, 1);
+  //DrawPrimitives::drawLine(*m_rayCastTool->GetStart(), *m_rayCastTool->GetEnd());
+  if (m_AISystem->isDebugDrawEnabled()) {
+    m_AISystem->debugDraw();
+  }
   Director::getInstance()->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 
   BasicRUBELayer::onDraw(transform, flags);

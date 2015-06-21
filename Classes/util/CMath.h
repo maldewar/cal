@@ -84,6 +84,9 @@ public:
   static b2Vec2* getWorldPointAt(float x, float y, float distance, float angle);
   static b2Vec2* getWorldPointAt(b2Vec2* base, float distance, float angle);
   static float random(float a, float b);
+  static float getTriangleAngle(float aX, float aY,
+                                float bX, float bY,
+                                float cX, float cY);
   /**
    * Normalizes an angle in radian between 0 and PI and 0 and -  PI.
    * @angle Angle to normalize in radians.

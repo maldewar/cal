@@ -467,7 +467,6 @@ void BasicRUBELayer::setCenter() {
 bool BasicRUBELayer::scale(float factor) {
   if (m_scaleEnabled) {
     m_scale = factor;
-    cocos2d::log("setting scale at %f, with factor of %f and m_wToPx of %f", (m_scale * m_wToPx), m_scale, m_wToPx);
     setScale(m_scale * m_wToPx);
     if (m_isMain && m_parent) {
       m_parent->scaleCallback(m_scale, this);

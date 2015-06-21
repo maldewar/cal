@@ -18,7 +18,6 @@ class Unit : public Entity, public ContactComponent, public AIComponent
 {
 protected:
   bool m_isLost;
-  cocos2d::Sprite* m_sprite;
 
 public:
   /**

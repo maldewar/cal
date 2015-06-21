@@ -235,7 +235,6 @@ AIComponentCmd* AIComponent::popCommand() {
 }
 
 void AIComponent::disturb() {
-  cocos2d::log("Calling AIComponent::disturb()");
   if (m_cmd) {
     m_cmd->correct();
   }
@@ -251,6 +250,12 @@ void AIComponent::commandWander(b2Body* target) {
 }
 
 void AIComponent::commandWander(b2Vec2* target) {
+}
+
+void AIComponent::commandGoTo(float x, float y) {
+  AIComponentGoToCmd* cmd = new AIComponentGoToCmd(new b2Vec2(x, y));
+  pushCommand((AIComponentCmd*)cmd);
+  cocos2d::log("Received command GoTo x:%f y:%f", x, y);
 }
 
 int AIComponent::getAnimation() {

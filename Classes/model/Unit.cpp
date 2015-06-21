@@ -7,6 +7,7 @@ Unit::Unit() : Entity(), ContactComponent(), AIComponent() {
   m_width = 0.3f;
   m_height = 0.3f;
   setSubstateStandDuration(0.67f);
+  setAutoId();
 }
 
 Unit::~Unit() {

@@ -5,6 +5,7 @@
 #include "Box2D/Box2D.h"
 
 #include "AIComponentWanderCmd.h"
+#include "AIComponentGoToCmd.h"
 
 const int AI_STATE_LOOSE = 0;
 const int AI_STATE_AFOOT = 1;
@@ -70,6 +71,7 @@ public:
   virtual void commandWander();
   virtual void commandWander(b2Body* target);
   virtual void commandWander(b2Vec2* target);
+  virtual void commandGoTo(float x, float y);
   int getAnimation();
 
 protected:

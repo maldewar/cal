@@ -2,8 +2,9 @@
 #include "../util/IdUtil.h"
 
 Area::Area() : Entity() {
-  m_shapeDrawEnabled = true;
+  m_shapeDrawEnabled = false;
   m_color = cocos2d::Color4F(0.2, 0.1, 0.1, 1);
+  setAutoId();
 }
 
 Area::~Area() {

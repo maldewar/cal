@@ -9,7 +9,9 @@
 #include "2d/CCNode.h"
 #include "../manager/ConfigurationManager.h"
 #include "../layer/WorldLevelLayer.h"
+#include "../model/EntityElem.h"
 class WorldLevelLayer;
+class EntityElem;
 
 const int ENTITY_TYPE_UNIT  = 1;
 const int ENTITY_TYPE_ENTRY = 2;
@@ -21,6 +23,7 @@ const int ENTITY_TYPE_IMAGE_BODY = 7;
 const int ENTITY_TYPE_LEVEL = 8;
 const int ENTITY_TYPE_BRANCH = 9;
 const int ENTITY_TYPE_DRAGGABLE = 10;
+const int ENTITY_TYPE_FLUX = 11;
 
 const int ENTITY_ANIM_STAND = 0;
 const int ENTITY_ANIM_WALK  = 1;
@@ -42,6 +45,7 @@ protected:
   cocos2d::Color4F m_color;
   int m_zOrderDraw;
   int m_zOrderTouch;
+  std::unordered_map<std::string, EntityElem*> m_entityElems;
 
 public:
   /**
@@ -80,6 +84,13 @@ public:
    */
   virtual WorldLevelLayer* getWorldLevelLayer();
   /**
+   * Tells if the entity has a valid touch based on the
+   * fixture that received the event.
+   * @param fixture Fixture that received the event.
+   * @return True is the touch is valid.
+   */
+  virtual bool isValidTouch(b2Fixture* fixture);
+  /**
    * Override Node update method.
    * @param dt Time passed from the last update call.
    */
@@ -90,6 +101,7 @@ public:
   virtual void select();
   virtual void select(b2Body* body);
   virtual void select(cocos2d::Touch* touch);
+  virtual void deselect();
   virtual float getSkeletonScale();
   virtual float getGroundOffset();
   virtual void enableShapeDraw(bool isShapeDrawEnabled);
@@ -97,6 +109,9 @@ public:
   virtual int getZOrderDraw();
   virtual void setZOrderTouch(int zOrderTouch);
   virtual int getZOrderTouch();
+  virtual void addEntityElem(EntityElem* entityElem);
+  virtual bool hasEntityElems();
+  virtual EntityElem* getEntityElem(std::string id);
 
   virtual void onDirectionChange(int direction);
   virtual void setAnimation(int animation);

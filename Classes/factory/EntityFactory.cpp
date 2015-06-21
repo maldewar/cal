@@ -1,5 +1,6 @@
 #include "EntityFactory.h"
-#include "../component/AIComponentWanderCmd.h"
+#include "../util/CMath.h"
+
 
 static EntityFactory* s_sharedEntityFactory = nullptr;
 
@@ -32,7 +33,29 @@ void EntityFactory::makeEntity(Entity* entity,
     int zOrderDraw = json->getCustomInt(body, "zOrderDraw", 0);
     entity->setZOrderDraw(zOrderDraw);
     entity->setLocalZOrder(zOrderDraw);
+    entity->setSkin(json->getCustomInt(body, "skin", 0));
   }
+}
+
+void EntityFactory::makeEntityElem(EntityElem* entityElem,
+                                   b2Fixture* fixture,
+                                   b2dJson* json) {
+  entityElem->setFixture(fixture);
+  if (json) {
+    entityElem->setTouchEnabled(json->getCustomBool(fixture, "touch", true));
+  }
+}
+
+b2Fixture* EntityFactory::getByName(std::string name, b2Body* body, b2dJson* json) {
+  b2Fixture* result = nullptr;
+  for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
+    std::string fixtureName = json->getFixtureName(f);
+    if (fixtureName.compare(name) == 0) {
+      result = f;
+      break;
+    }
+  }
+  return result;
 }
 
 bool EntityFactory::init() {
@@ -43,6 +66,12 @@ Entity* EntityFactory::getEntity(b2Body* body, b2dJson* json) {
   Entity* entity = new Entity();
   makeEntity(entity, body, json);
   return entity;
+}
+
+EntityElem* EntityFactory::getEntityElem(b2Fixture* fixture, b2dJson* json) {
+  EntityElem* entityElem = new EntityElem();
+  makeEntityElem(entityElem, fixture, json);
+  return entityElem;
 }
 
 Unit* EntityFactory::getUnit(b2dJson* json, b2Body* body) {
@@ -119,7 +148,29 @@ DraggableEntity* EntityFactory::getDraggableEntity(b2dJson* json, b2Body* body) 
   makeEntity(draggableEntity, body, json);
   draggableEntity->setPinX(json->getCustomFloat(body, "draggablePinX", 0));
   draggableEntity->setPinY(json->getCustomFloat(body, "draggablePinY", 0));
-  draggableEntity->setSkin(json->getCustomInt(body, "skin", 0));
   draggableEntity->update(0);
   return draggableEntity;
+}
+
+Flux* EntityFactory::getFlux(b2dJson* json, b2Body* body) {
+  bool isActive = json->getCustomBool(body, "active", true);
+  Flux* flux = Flux::create(isActive);
+  makeEntity(flux, body, json);
+  flux->update(0);
+  b2Fixture* fixture = getByName("arrow_fixture", body, json);
+  if (fixture) {
+    b2PolygonShape* shape = (b2PolygonShape*)fixture->GetShape();
+    const b2Vec2 pA = body->GetWorldPoint(shape->GetVertex(0));
+    const b2Vec2 pB = body->GetWorldPoint(shape->GetVertex(1));
+    const b2Vec2 pC = body->GetWorldPoint(shape->GetVertex(2));
+    float angle = CMath::getTriangleAngle(pA.x, pA.y, pB.x, pB.y, pC.x, pC.y);
+    flux->setArrowAngle(angle);
+    b2Fixture* targetFixture = getByName("direction_fixture", body, json);
+    if (targetFixture) {
+      b2PolygonShape* targetShape = (b2PolygonShape*)fixture->GetShape();
+      const b2Vec2 targetPosition = body->GetWorldPoint(targetShape->GetVertex(0));
+      flux->setTarget(targetPosition.x, targetPosition.y);
+    }
+  }
+  return flux;
 }

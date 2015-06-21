@@ -13,6 +13,7 @@ Exit::Exit() : Entity(), ContactComponent() {
   m_transition = false;
   m_width = 0.4f;
   m_height = 0.4f;
+  setAutoId();
 }
 
 Exit::~Exit() {

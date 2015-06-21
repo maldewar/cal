@@ -9,13 +9,17 @@ GraphNode::GraphNode(int id, float x, float y) : b2Vec2(x, y) {
     intern   = false;
     terminal = false;
     action   = 0;
-    anchor   = NULL;
-};
+    m_anchor   = nullptr;
+}
 
 int GraphNode::GetId() {
     return id;
-};
+}
 
 bool GraphNode::IsIntern() {
     return intern;
-};
+}
+
+b2Vec2* GraphNode::GetAnchor() {
+  return m_anchor;
+}
