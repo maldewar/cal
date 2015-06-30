@@ -60,7 +60,8 @@ public:
 
 private:
   GraphNode* addGraphNode(float x, float y,
-                          bool offsetAgainstGravity = false);
+                          bool offsetAgainstGravity = false,
+                          b2Vec2* anchor = nullptr);
   void addWalkableBody(b2Body* body);
 
 /*
@@ -72,10 +73,9 @@ private:
   bool isConvexChange(float xV, float yV,
                       float xA, float yA, 
                       float xB, float yB, float angle);
+  void commit();
+  bool expandNode(GraphNode* originNode, int direction = 0);
   /*
-  void ProcessAreaSegments();
-  void CollectVertexInfo();
-  bool ExpandNode(AreaNode* areaNode, int direction = 0);
   bool BreaksGravity(AreaNode* nodeA, AreaNode* nodeB);
   AreaNode* SelectDownNode(AreaNode* nodeA, AreaNode* nodeB);
   bool AreConnected(AreaNode* nodeA, AreaNode* nodeB);

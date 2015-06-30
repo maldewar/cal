@@ -20,7 +20,9 @@ public:
   GraphNode(int id, float x, float y);
   int GetId();
   bool IsIntern();
+  void SetAnchor(b2Vec2* anchor);
   b2Vec2* GetAnchor();
+  bool HasAnchor();
 
 };
 

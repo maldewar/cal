@@ -20,6 +20,14 @@ bool GraphNode::IsIntern() {
     return intern;
 }
 
+void GraphNode::SetAnchor(b2Vec2* anchor) {
+  m_anchor = anchor;
+}
+
 b2Vec2* GraphNode::GetAnchor() {
   return m_anchor;
+}
+
+bool GraphNode::HasAnchor() {
+  return (m_anchor != nullptr);
 }
